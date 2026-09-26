@@ -35,6 +35,7 @@ Gotchas
 - [Shader nodes](gotchas/shader-nodes.md) — node traps and shading techniques.
 - [Cycles](gotchas/cycles.md) — lighting, refraction, geometry, output quality.
 - [Colour](gotchas/colour.md) — view transforms, clipping, dark fades.
+- [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes.
 
 Process
 - [Review loop](process/review-loop.md) — the adversarial render-and-score loop.

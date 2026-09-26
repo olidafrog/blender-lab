@@ -13,6 +13,9 @@ How the system changes itself. `/capture-learnings` adds to this at the end of e
 
 ## Changed
 
+- **2026-09-26 — Local Blender docs.** `tools/fetch_docs.sh` builds `reference/` (not in git, about 65 MB of text): an exact API dump of the installed Blender (`tools/dump_api.py`, every type, enum and node socket), the Python API docs for 5.2 and 4.4, the manual source and the release notes. The `blender-docs` skill says when and how to look things up. Evidence: past traps (`MULTI_GGX`, `OPEN_EXR`, 5.x compositor sockets) were all exact-name questions that a lookup answers. Windows: run `tools/fetch_docs.sh` there to get the 4.4 dump.
+
+- **2026-09-26 — Library `.blend` files are committed.** Added `!library/**/*.blend` to `.gitignore`, and a rule to `library/README.md` that a built model keeps its build script beside it. Evidence: `library/README.md` says library binaries are committed, but `*.blend` was ignored everywhere, so `wonder_logos.blend` would not reach the Windows machine. Files: `.gitignore`, `library/README.md`.
 - **2026-09-26 — Screen FFT tool and visible tool output.** Added `tools/screen_fft.py`, ported from the Photoshop build; it reads ref1's lime screen as 2.04 px at 63.4°, matching that build's findings. `tools/blender.sh` now passes `[out]` lines, and `compare.py` and `crop_compare.py` print with that prefix. Evidence: a flipped screen angle in `printed-plastic` ran until v16; `compare.py` printed nothing through the filter. Files: `tools/screen_fft.py`, `tools/blender.sh`, `tools/compare.py`, `tools/crop_compare.py`.
 
 - **2026-09-26 — Autonomous by default.** Removed approval gates from the research and review steps; the user follows `PROGRESS.md`. Evidence: the user wants to kick off experiments and let them run. Files: all skills.

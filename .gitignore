@@ -11,3 +11,9 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+
+# Library files are the exception: they are committed
+!library/**/*.blend
+
+# Local Blender docs, rebuilt by tools/fetch_docs.sh
+reference/

@@ -11,7 +11,7 @@ Work out how the reference was probably made, then find the Blender techniques f
 
 1. **Look hard at each reference.** Read every image, then 1:1 crops of the telling areas (`tools/crops.py`). Write down what you see as physical or digital effects: light path (refraction, caustics, dispersion, subsurface), surface (grain, print, bumps), camera (DOF, bloom, lens distortion), post (blur, halftone, grain, grading).
 2. **List hypotheses.** For each effect, 2–3 ways it could have been made: photographed practically, rendered in 3D, or made in 2D/post. Say which is most likely and why.
-3. **Check `knowledge/` first.** Search it for each effect (`grep -ri`). Past experiments may already have the answer or the trap.
+3. **Check local sources first.** Search `knowledge/` for each effect (`grep -ri`); past experiments may have the answer or the trap. Then the local Blender manual and release notes in `reference/` (see the `blender-docs` skill): a feature added in a recent version is often the shortcut.
 4. **Search the web.** Use WebSearch and WebFetch, in parallel subagents if there are many effects. For each effect look for:
    - Blender tutorials and breakdowns (Blender Stack Exchange, Blender Artists, YouTube breakdowns, artist posts),
    - recent Blender features that do it natively. Check the release notes for the Blender version you run (`tools/blender.sh` prints it), for example Cycles manifold next-event estimation for caustics, and new compositor or shader nodes,

@@ -13,6 +13,10 @@ tools/blender.sh tools/smoke_test.py            # check the toolchain (~5 s)
 
 It finds Blender on either machine, runs headless with `--factory-startup` and a real exit code, and filters the output. `BLENDER=`, `BLEND=`, `PREFS=1`, `VERBOSE=1` change that; see the script header.
 
+## Blender docs
+
+`reference/` holds a local copy of the Blender docs: an exact API dump of the installed version, the Python API docs, the manual and the release notes. It is not in git; build it with `tools/fetch_docs.sh`. Look names up there before guessing (`blender-docs` skill).
+
 ## Before you start
 
 Read [knowledge/README.md](knowledge/README.md) and the entries that touch the task. `/new-experiment` does this for you.
@@ -22,6 +26,7 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 - `/new-experiment` — scaffold an experiment and load relevant learnings.
 - `/research-reference` — work out how the reference was made and find Blender techniques on the web, before building.
 - `/review-render` — one round of the adversarial review loop (always an Opus reviewer).
+- `blender-docs` — how to look things up in `reference/`. Loads by itself when writing bpy code.
 - `/finish-experiment` — final PNG plus an editable `.blend` where each material is one control node.
 - `/capture-learnings` — promote this session's lessons into `knowledge/`. A Stop hook reminds you once per session.
 
