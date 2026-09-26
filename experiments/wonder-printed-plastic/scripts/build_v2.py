@@ -29,7 +29,7 @@ P = dict(
     edge_rough=0.45,
     # ink
     ink_density=0.72, ink_grain=0.03, pinholes=0.3, edge_erosion=0.7, edge_scatter=1.0, toner_patch=0.06, ink_grain_scale=1.0, ragged=2.6, speckle=0.5, backer=(0.80, 0.82, 0.85), backer_mottle=0.02,
-    artwork_front='', density_mottle=0.14, fluoro_rim=2.0, speck_light=0.92,
+    artwork_front='', density_mottle=0.14, fluoro_rim=0.5, speck_light=0.92, front_density=0.95,
     fluoro=1.2, soft_copy=0.6, soft_radius_mm=1.8, pre_blur=0.7, pre_blur_mm=2.5, core_soften_mm=0.5, soft_offset=(0.0, 0.0),
     screen=0.4, screen_dip=0.12, toner_tone=0.1, screen_pitch_mm=0.34, screen_angle_k=63.4, screen_angle_c=-26.6, screen_jitter=0.25, tracking_dots=1.0,
     # stage
@@ -288,6 +288,7 @@ def group_ink():
     sock(ng, "Light Specks", 'NodeSocketFloat', P["speck_light"], 0, 1, desc="Share of specks that are pale (dust) rather than dark toner")
     sock(ng, "Front Color", 'NodeSocketColor', (0, 0, 0, 1))
     sock(ng, "Front Alpha", 'NodeSocketFloat', 0.0, 0, 1)
+    sock(ng, "Front Density", 'NodeSocketFloat', P["front_density"], 0, 1, desc="Toner density of the crisp FRONT plate")
     sock(ng, "BSDF", 'NodeSocketShader', out=True)
     nt = ng; gi = N(nt, "NodeGroupInput", (-1400, 0)); go = N(nt, "NodeGroupOutput", (900, 0))
     uv = gi.outputs["UV"]
@@ -407,7 +408,8 @@ def group_ink():
     col = mix_col(nt, math_(nt, 'MULTIPLY', specks, pale, (300, -150)), col, (0.93, 0.93, 0.94, 1), 'MIX', (350, -100))
     col = mix_col(nt, math_(nt, 'MULTIPLY', specks, math_(nt, 'SUBTRACT', 1.0, pale, (300, -250)), (350, -250)), col, (0.06, 0.06, 0.06, 1), 'MIX', (400, -100))
     # FRONT plate: crisp type/linework, no pre-blur or soft copy, multiplied onto the page like toner
-    fcov = math_(nt, 'MULTIPLY', math_(nt, 'MULTIPLY', gi.outputs["Front Alpha"], gi.outputs["Ink Density"], (300, -500)),
+    fdip = math_(nt, 'MULTIPLY', math_(nt, 'MULTIPLY', gap, P['screen_dip'] * 2.0, (250, -450)), gi.outputs["Laser Screen"], (300, -450))
+    fcov = math_(nt, 'MULTIPLY', math_(nt, 'MULTIPLY', gi.outputs["Front Alpha"], math_(nt, 'SUBTRACT', gi.outputs["Front Density"], fdip, (250, -400)), (300, -500)),
                  math_(nt, 'SUBTRACT', 1.0, math_(nt, 'MULTIPLY', loss, 0.3, (250, -600)), (300, -600)), (400, -550))
     col = mix_col(nt, fcov, col, mix_col(nt, 1.0, col, gi.outputs["Front Color"], 'MULTIPLY', (400, -700)), 'MIX', (450, -550))
     # printer tracking dots: ~1 mm grid, sparse yellow 0.12 mm dots
@@ -433,7 +435,7 @@ def group_ink():
     band = math_(nt, 'MULTIPLY', math_(nt, 'MULTIPLY', a_, math_(nt, 'SUBTRACT', 1.0, a_, (200, -500)), (300, -500)), 4.0, (400, -500), clamp=True)
     hue = math_(nt, 'SUBTRACT', 1.0, math_(nt, 'MULTIPLY', math_(nt, 'ABSOLUTE', math_(nt, 'SUBTRACT', sepc.outputs["Red"], 0.23, (200, -600)), None, (300, -600)), 8.0, (400, -600)), (500, -600), clamp=True)
     rim = math_(nt, 'MULTIPLY', math_(nt, 'MULTIPLY', band, hue, (500, -500)), math_(nt, 'MULTIPLY', sepc.outputs["Green"], gi.outputs["Fluoro Rim"], (500, -700)), (600, -550))
-    link(nt, mix_col(nt, math_(nt, 'MULTIPLY', rim, 0.3, (650, -650), clamp=True), gi.outputs["Artwork Color"], (1.0, 1.0, 0.45, 1), 'MIX', (700, -650)), bs.inputs["Emission Color"])
+    link(nt, mix_col(nt, math_(nt, 'MULTIPLY', rim, 1.0, (650, -650), clamp=True), gi.outputs["Artwork Color"], (0.9, 1.0, 0.05, 1), 'MIX', (700, -650)), bs.inputs["Emission Color"])
     link(nt, math_(nt, 'ADD', fl, rim, (650, -450)), bs.inputs["Emission Strength"])
     link(nt, bs.outputs[0], go.inputs["BSDF"])
     return ng

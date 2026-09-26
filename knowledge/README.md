@@ -48,3 +48,4 @@ Process
 Decisions
 - [eclipse-glow](decisions/eclipse-glow.md)
 - [wonder-printed-plastic](decisions/wonder-printed-plastic.md)
+- [wonder-caustics and caustics-v2](decisions/wonder-caustics.md) — dispersive glass

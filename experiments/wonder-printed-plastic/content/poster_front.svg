@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="148mm" height="210mm" viewBox="0 0 148 210">
+  <!-- FRONT plate: crisp type and linework. Poster from claude-photoshop (160x200 mm), scaled to fit A5. -->
+  <g transform="translate(0 12.5) scale(0.925)">
+
+  <!-- FRONT: crisp print on top. -->
+  <text x="9" y="13" font-family="Helvetica Neue" font-weight="500" font-size="2.6" fill="#141414">Wonder Studios is an independent design practice. Printed Matter collects print experiments.</text>
+  <text x="9" y="68" font-family="Helvetica Neue" font-weight="500" font-size="2.2" fill="#141414">The studio programme draws to a close, the night continues with a special print session at the workshop.</text>
+  <g font-family="Helvetica Neue" font-weight="700" font-size="15" letter-spacing="-1.1" fill="#141414">
+    <text x="8" y="88">Reverse Print:</text>
+    <text x="8" y="103">Frosted Acrylic</text>
+    <text x="8" y="118">Line Screen</text>
+    <text x="8" y="133">Toner &amp; Film</text>
+    <text x="8" y="148">Scan 600dpi</text>
+  </g>
+  <text x="120" y="80" font-family="Helvetica Neue" font-weight="500" font-size="3" fill="#141414">23:00</text>
+  <text x="120" y="84" font-family="Helvetica Neue" font-weight="500" font-size="3" fill="#141414">[From]</text>
+  <g transform="translate(10 158) scale(0.2)" fill="#141414">
+    <path d="M113.579 0.0012207C120.441 0.0012207 126.003 5.57385 126.003 12.448C126.003 15.0602 125.2 17.4844 123.827 19.4863C121.395 23.0342 118.411 26.7157 118.411 31.0199C118.411 35.3242 121.395 39.0058 123.827 42.5539C125.2 44.556 126.003 46.9804 126.003 49.5926C126.003 56.4668 120.441 62.0394 113.579 62.0394C106.717 62.0394 101.155 56.4668 101.155 49.5926C101.155 46.9804 101.958 44.556 103.331 42.5539C105.763 39.0058 108.747 35.3242 108.747 31.0199C108.747 26.7157 105.763 23.0342 103.331 19.4863C101.958 17.4844 101.155 15.0602 101.155 12.448C101.155 5.57385 106.717 0.0012207 113.579 0.0012207Z"/>
+    <path d="M77.2366 56.7033C77.2366 61.2861 80.9449 65.0012 85.5192 65.0012H95.1823C99.7566 65.0012 103.465 68.7163 103.465 73.2991V119.703C103.465 124.286 99.7566 128.001 95.1823 128.001H84.829C80.2547 128.001 76.5464 124.286 76.5464 119.703V73.9906C76.5464 69.4078 72.8382 65.6927 68.2638 65.6927H58.6008C54.0264 65.6927 50.3181 61.9776 50.3181 57.3948V8.29909C50.3181 3.7163 54.0264 0.0012207 58.6008 0.0012207H68.954C73.5284 0.0012207 77.2366 3.71631 77.2366 8.29909V56.7033Z"/>
+    <path d="M28.9214 71.2246C28.9214 75.8074 32.6297 79.5225 37.204 79.5225H46.8671C51.4414 79.5225 55.1497 83.2376 55.1497 87.8204V119.703C55.1497 124.286 51.4414 128.001 46.8671 128.001H36.5138C31.9394 128.001 28.2312 124.286 28.2312 119.703V88.5119C28.2312 83.9291 24.5229 80.214 19.9486 80.214H10.2855C5.71118 80.214 2.00293 76.4989 2.00293 71.9161V8.29909C2.00293 3.7163 5.71118 0.0012207 10.2855 0.0012207H20.6388C25.2132 0.0012207 28.9214 3.7163 28.9214 8.29909V71.2246Z"/>
+  </g>
+  <rect x="136" y="16" width="6" height="6" fill="#141414"/>
+  <text x="112" y="193" font-family="Helvetica Neue" font-weight="700" font-size="6" letter-spacing="-0.3" fill="#2a1fe0">14.09.26</text>
+  </g>
+</svg>

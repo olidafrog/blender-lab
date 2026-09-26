@@ -29,6 +29,11 @@ Each experiment improves in a loop: render, have an adversarial reviewer score i
 - The reviewer passed `caustics` v1 at 8.6 on 35–50% renders; the user then found jagged edges. Review at full scale.
 - Reviewers describe structure ("two overlapping circles", "ears") better than numbers. When a structural complaint repeats, stop tuning values and look at a crop. The fix is usually a different mechanism.
 - Do not spend rounds on changes that only show at 400% zoom unless the reviewer names them.
+- Reproduce the reviewer's own measures (gradient fractions, connected components, clipping) in a script and run them before each review. `caustics-v2`
+- The reviewer flags real optics as bugs, such as corner-prism refraction read as "floating chips". Decide from the brief whether to fix, retouch or keep, and say which in the reviewer brief. `caustics-v2`
+- Refuse asks that break the brief (octagon corners, a hollow shell against "solid perspex") in the reviewer brief, so they do not return. `caustics-v2`
+- The user's own markup is the strongest tie-breaker. When the circled artefacts are fixed and only reviewer taste remains, say so and stop. `caustics-v2`
+- Some trade-offs have no score-neutral answer. Expose the value as a `--set` override and hand the choice to the user. `caustics-v2`
 - Test swappable content (a text lockup, another subject) before you finish. It shows problems the hero content hides.
 
 ## When to stop

@@ -38,13 +38,12 @@ The first satin light put a veil over the logo. A small glossy-only strip, place
 - A faint hairline shows where the front bevel meets the side.
 - Edge damage on outlines only shows in close crops.
 
-## Leads from the Photoshop build
+## V2: leads from the Photoshop build
 
-The same references were rebuilt in Photoshop (`~/GitHub/claude-photoshop/wonder-printed-plastic`, 8.5/10). Its `research/findings.md` has measured targets this experiment lacked. Untested in Blender:
-- Split the art into plates: blurred BACK fields, crisp FRONT type, one plate per fluoro ink. This fixes the small-type limit above.
-- The fluoro "halo" is a 1–2 px bright rim (R +10–19), not a wide glow. Fluoro must read brighter than the backer.
-- Screen angles are exactly atan(½)/atan(2): black 153.4°, lime 63.4°, orange 116.6°. The build uses ±75°. Check with `tools/screen_fft.py`.
-- A smooth sinusoid screen does not alias into a crosshatch the way a thresholded one does. It may make the 2× render unnecessary.
-- Get patchiness from ink-only density mottle after the tone curve, not a stronger screen.
-- Clean paper has many more light specks than dark (≈350 vs ≈20 per Mpx). Paper beside ink darkens slightly (≈4 % of the ink's contrast, out to 3 % W).
-
+The same references were rebuilt in Photoshop (`~/GitHub/claude-photoshop/wonder-printed-plastic`, 8.5/10). `scripts/build_v2.py` applies its findings. `build.py` stays as the v29 original. Not yet reviewed.
+- **Plates (the big win).** A crisp FRONT plate for type and linework, with no pre-blur or soft copy, over the blurred BACK plate. Small type is now readable. The FRONT plate needs its own density (0.95) and the screen: without them it read as a flat grey sticker.
+- **Screen angles** from ref1: the dark lines now measure 156° in the render (ref 153.4°; v1 was 23°).
+- **Fluoro rim.** At 2.0 it read as a pale sticker outline, which the Photoshop build had rejected. 0.5 with a yellow tint is a faint edge.
+- Ink density mottle and mostly-light specks: subtle at full frame.
+- Untried: a smooth sinusoid screen, which might remove the need for 2× renders.
+- Test content: `content/poster_back.svg` and `poster_front.svg` are the Photoshop poster scaled to A5.
