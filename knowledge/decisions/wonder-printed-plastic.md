@@ -37,3 +37,14 @@ The first satin light put a veil over the logo. A small glossy-only strip, place
 - Fluoro inks glow but do not spread a halo yet.
 - A faint hairline shows where the front bevel meets the side.
 - Edge damage on outlines only shows in close crops.
+
+## Leads from the Photoshop build
+
+The same references were rebuilt in Photoshop (`~/GitHub/claude-photoshop/wonder-printed-plastic`, 8.5/10). Its `research/findings.md` has measured targets this experiment lacked. Untested in Blender:
+- Split the art into plates: blurred BACK fields, crisp FRONT type, one plate per fluoro ink. This fixes the small-type limit above.
+- The fluoro "halo" is a 1–2 px bright rim (R +10–19), not a wide glow. Fluoro must read brighter than the backer.
+- Screen angles are exactly atan(½)/atan(2): black 153.4°, lime 63.4°, orange 116.6°. The build uses ±75°. Check with `tools/screen_fft.py`.
+- A smooth sinusoid screen does not alias into a crosshatch the way a thresholded one does. It may make the 2× render unnecessary.
+- Get patchiness from ink-only density mottle after the tone curve, not a stronger screen.
+- Clean paper has many more light specks than dark (≈350 vs ≈20 per Mpx). Paper beside ink darkens slightly (≈4 % of the ink's contrast, out to 3 % W).
+

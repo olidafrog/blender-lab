@@ -28,7 +28,7 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 ## Layout
 
 - `experiments/<name>/` — `BRIEF.md`, `RESEARCH.md`, `PROGRESS.md`, `references/`, `assets/`, `scripts/build.py`, `renders/` (not in git), `reviews/`, `output/` (FINAL PNGs; `.blend` not in git), `LEARNINGS.md`.
-- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `comp.py` (compositor with live preview), `compare.py`, `crop_compare.py`, `crops.py`.
+- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `comp.py` (compositor with live preview), `compare.py`, `crop_compare.py`, `crops.py`, `screen_fft.py` (line-screen pitch and angle).
 - `knowledge/` — gotchas, process, insights, decisions.
 - `library/` — reusable models, textures, HDRIs, materials, node groups.
 

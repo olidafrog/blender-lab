@@ -35,4 +35,4 @@ img.pixels.foreach_set(np.concatenate([sbs, np.ones((H, W, 1))], axis=2)[::-1].a
 img.filepath_raw = str(out)
 img.file_format = "PNG"
 img.save()
-print(f"CROP {out}")
+print(f"[out] CROP {out}")

@@ -34,16 +34,16 @@ def main():
         sys.exit(f"size mismatch {ref.shape} vs {ren.shape}")
     h, w, _ = ref.shape
     diff = np.abs(ref - ren)
-    print(f"MAE overall {diff.mean():.1f}")
+    print(f"[out] MAE overall {diff.mean():.1f}")
     ys, xs = slice(h // 5, 4 * h // 5), slice(w // 10, 9 * w // 10)
-    print(f"MAE subject-box {diff[ys, xs].mean():.1f}")
+    print(f"[out] MAE subject-box {diff[ys, xs].mean():.1f}")
 
     def row(label, pts):
-        print(label)
+        print(f"[out] {label}")
         for (y, x) in pts:
             r = ref[y - 2:y + 3, x - 2:x + 3].reshape(-1, 3).mean(0).astype(int)
             n = ren[y - 2:y + 3, x - 2:x + 3].reshape(-1, 3).mean(0).astype(int)
-            print(f"  y={y:4d} x={x:4d}  ref {tuple(r)}  ren {tuple(n)}")
+            print(f"[out]   y={y:4d} x={x:4d}  ref {tuple(r)}  ren {tuple(n)}")
 
     cx = w // 2
     row("vertical centre", [(y, cx) for y in range(180, 1100, 30)])
@@ -59,7 +59,7 @@ def main():
     out.filepath_raw = str(out_path)
     out.file_format = "PNG"
     out.save()
-    print(f"SIDE-BY-SIDE {out_path}")
+    print(f"[out] SIDE-BY-SIDE {out_path}")
 
 
 main()

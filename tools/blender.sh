@@ -36,6 +36,6 @@ if [[ "${VERBOSE:-0}" == 1 ]]; then
   "$BLENDER" "${args[@]}"
 else
   set +o pipefail
-  "$BLENDER" "${args[@]}" 2>&1 | grep -E "\[common\]|RENDER TIME|Saved|WROTE|OK$|Error|Traceback|^  File|Exception"
+  "$BLENDER" "${args[@]}" 2>&1 | grep -E "\[common\]|\[out\]|RENDER TIME|Saved|WROTE|OK$|Error|Traceback|^  File|Exception"
   exit "${PIPESTATUS[0]}"
 fi
