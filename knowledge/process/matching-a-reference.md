@@ -10,7 +10,7 @@ For "recreate this image" work. Learned on eclipse-glow (93 renders, 17 judge ro
 
 ## Workflow
 
-- Check whether another project already measured the same reference. `~/GitHub/claude-photoshop` rebuilt the Warp refs with a full numeric record that `printed-plastic` never had.
+- Check whether another project already measured the same reference. `~/GitHub/photoshop-lab` rebuilt the Warp refs with a full numeric record that `printed-plastic` never had.
 
 1. Sample the reference first: colours along lines, edge positions, radii. Seed ramps from real values, so early renders land close.
 2. Iterate on numbers with `compare.py` until the pixel profile matches.

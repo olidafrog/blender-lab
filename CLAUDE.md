@@ -1,6 +1,6 @@
 # blender-lab
 
-Blender experiments, driven headlessly from Python. One folder per experiment. What we learn goes into `knowledge/`, and every new experiment starts from it.
+Blender experiments, driven headlessly from Python. One folder per experiment. What we learn goes into `knowledge/`, and every new experiment starts from it. Sibling lab for 2D and Photoshop: `~/GitHub/photoshop-lab`.
 
 Runs on two machines: Mac (Blender 5.2, Metal) and Windows (Blender 4.4, OptiX). Scripts can break across the version gap; see [API changes](knowledge/gotchas/api-changes.md).
 

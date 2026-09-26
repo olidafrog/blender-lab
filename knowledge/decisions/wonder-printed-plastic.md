@@ -40,7 +40,7 @@ The first satin light put a veil over the logo. A small glossy-only strip, place
 
 ## V2: leads from the Photoshop build
 
-The same references were rebuilt in Photoshop (`~/GitHub/claude-photoshop/wonder-printed-plastic`, 8.5/10). `scripts/build_v2.py` applies its findings. `build.py` stays as the v29 original. Not yet reviewed.
+The same references were rebuilt in Photoshop (`~/GitHub/photoshop-lab/projects/wonder-printed-plastic`, 8.5/10). `scripts/build_v2.py` applies its findings. `build.py` stays as the v29 original. Not yet reviewed.
 - **Plates (the big win).** A crisp FRONT plate for type and linework, with no pre-blur or soft copy, over the blurred BACK plate. Small type is now readable. The FRONT plate needs its own density (0.95) and the screen: without them it read as a flat grey sticker.
 - **Screen angles** from ref1: the dark lines now measure 156° in the render (ref 153.4°; v1 was 23°).
 - **Fluoro rim.** At 2.0 it read as a pale sticker outline, which the Photoshop build had rejected. 0.5 with a yellow tint is a faint edge.

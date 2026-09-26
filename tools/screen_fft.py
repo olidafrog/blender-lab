@@ -5,7 +5,7 @@ Run:
 
 Analyses the size x size square with its top-left corner at (x, y), in image pixels from the top.
 Pick a flat tint with no edges. Run it on the reference and on the render, and compare.
-Angles are in degrees, counter-clockwise from horizontal, 0-180. Ported from claude-photoshop.
+Angles are in degrees, counter-clockwise from horizontal, 0-180. Ported from photoshop-lab.
 """
 import sys
 from pathlib import Path
