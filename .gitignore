@@ -1,0 +1,12 @@
+# Rebuildable from scripts, or too big for git
+*.blend
+*.blend1
+experiments/*/renders/
+experiments/*/export/
+experiments/*/exports/
+experiments/*/reviews/crops_*/
+
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

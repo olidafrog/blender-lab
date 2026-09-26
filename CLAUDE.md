@@ -1,0 +1,44 @@
+# blender-lab
+
+Blender experiments, driven headlessly from Python. One folder per experiment. What we learn goes into `knowledge/`, and every new experiment starts from it.
+
+Runs on two machines: Mac (Blender 5.2, Metal) and Windows (Blender 4.4, OptiX). Scripts can break across the version gap; see [API changes](knowledge/gotchas/api-changes.md).
+
+## Run
+
+```bash
+tools/blender.sh <script.py> [script args]      # from the repo root
+tools/blender.sh tools/smoke_test.py            # check the toolchain (~5 s)
+```
+
+It finds Blender on either machine, runs headless with `--factory-startup` and a real exit code, and filters the output. `BLENDER=`, `BLEND=`, `PREFS=1`, `VERBOSE=1` change that; see the script header.
+
+## Before you start
+
+Read [knowledge/README.md](knowledge/README.md) and the entries that touch the task. `/new-experiment` does this for you.
+
+## Skills
+
+- `/new-experiment` — scaffold an experiment and load relevant learnings.
+- `/review-render` — one round of the adversarial review loop.
+- `/capture-learnings` — promote this session's lessons into `knowledge/`. A Stop hook reminds you once per session.
+
+## Layout
+
+- `experiments/<name>/` — `BRIEF.md`, `references/`, `assets/`, `scripts/build.py`, `renders/` (not in git), `reviews/`, `output/` (FINAL PNGs; `.blend` not in git), `LEARNINGS.md`.
+- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `compare.py`, `crop_compare.py`, `crops.py`.
+- `knowledge/` — gotchas, process, insights, decisions.
+- `library/` — reusable models, textures, HDRIs, materials, node groups.
+
+## Conventions
+
+- Rebuild the scene from `build.py`. Every tunable value lives in its `P` dict; override with `--set key=value`. Never hand-edit a `.blend` and lose it on the next build.
+- Put designer controls on named node-group inputs with ranges, and add a `HOW_TO_TWEAK` text block to the `.blend`.
+- Never overwrite a render the user liked. Add a suffix.
+- Fix one ranked problem per review round.
+- When something costs time, note it in the experiment's `LEARNINGS.md` straight away.
+
+## Experiments
+
+- `eclipse-glow` — camera-space normals and compositor glows. Blender 4.4 only (not yet ported to the 5.x compositor).
+- `wonder-printed-plastic`, `wonder-caustics`, `wonder-caustics-v2`, `wonder-popart` — Wonder look-dev. Blender 5.x, Metal only. They predate this layout: `refs/` not `references/`, finals at the folder root, and `--out` resolves against the shell's cwd.
