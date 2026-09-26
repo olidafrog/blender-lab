@@ -18,6 +18,13 @@ __REFERENCE_PATHS__
 <!-- How the reference was made, if known. Otherwise write "None yet." -->
 __RESEARCH__
 
+## Numeric targets
+
+<!-- From RESEARCH.md: measured values from reference crops, e.g. "ink core RGB 80–85, edge ramp 6–8 px, background 168". Write "None" if not a matching task. -->
+__TARGETS__
+
+Measure these in the crops and report each as hit or missed.
+
 ## What to judge
 
 <!-- For example: material read, light, colour, fidelity to the reference's process. -->
@@ -41,9 +48,11 @@ Open the full frame first, then every 1:1 crop. Crops show aliasing, seams, nois
 
 ## Output format
 
-Write exactly these sections to the review file you are given:
+Write exactly these sections to the review file you are given, in under 450 words:
 
 1. **Score:** N.N / 10
-2. **What works** — up to 4 bullets.
-3. **Problems, ranked** — most damaging first. For each: where in the frame, what is wrong, and a concrete CG fix (node, light, value or mechanism).
-4. **What 8.5 needs** — the shortest list of changes that would get there.
+2. **Targets** — each numeric target: measured value, hit or missed.
+3. **What works** — up to 3 bullets.
+4. **Problems, ranked** — at most 3, most damaging first. For each: where in the frame, what is wrong, and a concrete CG fix. If a value tweak has clearly not fixed it, name a different mechanism. If you ask for "more" or "less" of something, give the acceptable range.
+5. **Research check** — does the image agree with the research findings above? Name any claim the image contradicts.
+6. **What 8.5 needs** — the shortest list of changes that would get there.

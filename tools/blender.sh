@@ -25,7 +25,8 @@ fi
 
 script="$1"; shift
 args=(-b)
-[[ -n "${BLEND:-}" ]] && args+=("$BLEND")
+# Absolute path: a relative .blend with --factory-startup crashes 5.2 on Mac (NSURL nil).
+[[ -n "${BLEND:-}" ]] && args+=("$(cd "$(dirname "$BLEND")" && pwd)/$(basename "$BLEND")")
 [[ "${PREFS:-0}" == 1 ]] || args+=(--factory-startup)
 args+=(--python-exit-code 1 -P "$script")
 [[ $# -gt 0 ]] && args+=(-- "$@")

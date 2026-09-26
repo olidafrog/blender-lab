@@ -18,6 +18,8 @@ Launch with `tools/blender.sh`. It handles most of the items below.
 
 ## Paths
 
+- Opening a `.blend` by relative path with `--factory-startup` crashes Blender with `NSURL initFileURLWithPath: nil string`. Pass an absolute path; `tools/blender.sh` does this for `BLEND=`. `5.x` `mac`
+
 - `blender -P` does not put the script's folder on `sys.path`. Scripts insert `tools/` themselves.
 - `bpy.data.images.load("relative/path")` does not resolve against the shell's cwd. Pass `Path(p).resolve()`.
 - Wonder scripts resolve `--out renders/x.png` against the shell's cwd. Pass an absolute path, or `cd` into the experiment first.

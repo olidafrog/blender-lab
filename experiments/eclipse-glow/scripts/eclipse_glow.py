@@ -133,7 +133,7 @@ LENS = {
     "arc_glow_far_tint": (1.0, 0.45, 0.25, 1.0),
     "arc_glow_px": (12, 50, 150),
     "arc_glow_amounts": (1.0, 1.2, 0.5),  # near, mid, far  # near, mid, far (near is fixed at 1)
-    "glow_threshold": 0.1,
+    "glow_threshold": 1.0,  # 4.4 ignored the old 0.1 and rendered the final at 1.0
     "glow_mix": -0.88,
     "glow_size": 9,
     "dispersion": 0.004,
@@ -501,10 +501,31 @@ def film_grain_image():
     return img
 
 
+# 4.4 keeps the compositor on scene.node_tree; 5.x uses a node group and has no MixRGB or compositor
+# Math, and moved most node settings onto input sockets.
+LEGACY_COMP = "node_tree" in bpy.types.Scene.bl_rna.properties
+
+
+def mix_in(n, which):
+    """Mix node colour input A or B (4.4 CompositorNodeMixRGB / 5.x ShaderNodeMix)."""
+    return n.inputs[{"A": 1, "B": 2}[which] if LEGACY_COMP else {"A": 6, "B": 7}[which]]
+
+
+def out(n):
+    """The node's main output. ShaderNodeMix lists its colour result third."""
+    return n.outputs[2] if n.bl_idname == "ShaderNodeMix" else n.outputs[0]
+
+
 def build_compositor(scene):
-    scene.use_nodes = True
-    t = scene.node_tree
-    t.nodes.clear()
+    if LEGACY_COMP:
+        scene.use_nodes = True
+        t = scene.node_tree
+        t.nodes.clear()
+    else:
+        t = bpy.data.node_groups.new("Eclipse Compositor", "CompositorNodeTree")
+        t.interface.new_socket("Image", in_out="OUTPUT", socket_type="NodeSocketColor")
+        scene.compositing_node_group = t
+        scene.render.use_compositing = True
     frame = t.nodes.new("NodeFrame"); frame.label = "Eclipse Lens — tweak here"; frame.label_size = 24
     nodes = []
 
@@ -516,11 +537,30 @@ def build_compositor(scene):
         return n
 
     def blur(label, loc, px):
-        return node("CompositorNodeBlur", label, loc, filter_type="GAUSS", size_x=px, size_y=px)
+        if LEGACY_COMP:
+            return node("CompositorNodeBlur", label, loc, filter_type="GAUSS", size_x=px, size_y=px)
+        n = node("CompositorNodeBlur", label, loc)
+        n.inputs["Size"].default_value = (px, px)
+        n.inputs["Type"].default_value = "Gaussian"
+        return n
 
     def mixrgb(label, loc, blend, fac=1.0):
-        n = node("CompositorNodeMixRGB", label, loc, blend_type=blend)
-        n.inputs["Fac"].default_value = fac
+        if LEGACY_COMP:
+            n = node("CompositorNodeMixRGB", label, loc, blend_type=blend)
+        else:
+            # 4.4 MixRGB never clamped its factor; several amounts here are above 1.
+            n = node("ShaderNodeMix", label, loc, data_type="RGBA", blend_type=blend, clamp_factor=False)
+        n.inputs[0].default_value = fac
+        return n
+
+    def math(label, loc, op, clamp=False):
+        return node("CompositorNodeMath" if LEGACY_COMP else "ShaderNodeMath", label, loc,
+                    operation=op, use_clamp=clamp)
+
+    def nearest(n):
+        # 4.4 Translate/Transform sampled Nearest; 5.x defaults to Bilinear, which softens the crescent.
+        if not LEGACY_COMP:
+            n.inputs["Interpolation"].default_value = "Nearest"
         return n
 
     rl = t.nodes.new("CompositorNodeRLayers"); rl.location = (-1200, 0)
@@ -528,10 +568,9 @@ def build_compositor(scene):
 
     # Halo: masked to outside the object (halo *= 1 - coverage*kill), then tight + wide blurs.
     cover = blur("Object Coverage", (-900, -150), LENS["coverage_px"])
-    kill = node("CompositorNodeMath", "Halo Inside Kill (0 = glow inside too)", (-750, -150),
-                operation="MULTIPLY", use_clamp=True)
+    kill = math("Halo Inside Kill (0 = glow inside too)", (-750, -150), "MULTIPLY", clamp=True)
     kill.inputs[1].default_value = LENS["halo_inside_kill"]
-    outside = node("CompositorNodeMath", "Outside Mask", (-600, -150), operation="SUBTRACT")
+    outside = math("Outside Mask", (-600, -150), "SUBTRACT")
     outside.inputs[0].default_value = 1.0
     halo_tight = blur("Halo Spread", (-900, -350), LENS["halo_px"])
     halo_wide = blur("Halo Wide Spread", (-900, -550), LENS["halo_wide_px"])
@@ -539,104 +578,120 @@ def build_compositor(scene):
     halo_masked = mixrgb("Halo × Outside", (-450, -250), "MULTIPLY")
     halo_add = mixrgb("Add Halo", (-250, 100), "ADD")
 
-    arc_move = node("CompositorNodeTranslate", "Arc Glow Lift (Y px)", (-900, -800))
+    arc_move = nearest(node("CompositorNodeTranslate", "Arc Glow Lift (Y px)", (-900, -800)))
     arc_move.inputs["Y"].default_value = LENS["arc_lift_px"]
     # Three stacked blurs ≈ a hotspot with a long soft tail, without clipping the core.
     arc_b = [blur(f"Arc Glow {name}", (-700, -800 - 150 * i), px)
              for i, (name, px) in enumerate(zip(("Near", "Mid", "Far"), LENS["arc_glow_px"]))]
     arc_near = mixrgb("Arc Glow Near Amount", (-550, -750), "MULTIPLY", 1.0)
-    arc_near.inputs[2].default_value = (LENS["arc_glow_amounts"][0],) * 3 + (1.0,)
+    mix_in(arc_near, "B").default_value = (LENS["arc_glow_amounts"][0],) * 3 + (1.0,)
     arc_m1 = mixrgb("Arc Glow Mid Amount", (-500, -900), "ADD", LENS["arc_glow_amounts"][1])
     arc_far_tint = mixrgb("Arc Glow Far Tint", (-550, -1050), "MULTIPLY", 1.0)
-    arc_far_tint.inputs[2].default_value = LENS["arc_glow_far_tint"]
+    mix_in(arc_far_tint, "B").default_value = LENS["arc_glow_far_tint"]
     arc_blur = mixrgb("Arc Glow Far Amount", (-350, -950), "ADD", LENS["arc_glow_amounts"][2])
     arc_add = mixrgb("Add Arc Glow", (-50, 0), "ADD")
     arc_cover = blur("Arc Occluder Edge", (-900, -1100), LENS["arc_cover_px"])
-    arc_kill = node("CompositorNodeMath", "Arc Glow Inside Kill", (-750, -1100), operation="MULTIPLY",
-                    use_clamp=True)
+    arc_kill = math("Arc Glow Inside Kill", (-750, -1100), "MULTIPLY", clamp=True)
     arc_kill.inputs[1].default_value = LENS["arc_glow_inside_kill"]
-    arc_outside = node("CompositorNodeMath", "Arc Glow Outside Mask", (-600, -1100), operation="SUBTRACT")
+    arc_outside = math("Arc Glow Outside Mask", (-600, -1100), "SUBTRACT")
     arc_outside.inputs[0].default_value = 1.0
 
     # Crescent: the object's silhouette, lifted and shrunk, minus the silhouette itself — the classic
     # eclipse lens. Works for any object because it is built from the object's own coverage.
-    cres_move = node("CompositorNodeTransform", "Crescent Offset (Y = lift px, Scale)", (-900, -1300))
+    cres_move = nearest(node("CompositorNodeTransform", "Crescent Offset (Y = lift px, Scale)", (-900, -1300)))
     cres_move.inputs["Y"].default_value = LENS["crescent_lift_px"]
     cres_move.inputs["Scale"].default_value = LENS["crescent_scale"]
-    cres_hole = node("CompositorNodeMath", "Crescent = Shifted × (1 − Object)", (-700, -1300),
-                     operation="SUBTRACT", use_clamp=True)
+    cres_hole = math("Crescent = Shifted × (1 − Object)", (-700, -1300), "SUBTRACT", clamp=True)
     cres_soft = blur("Crescent Softness", (-550, -1300), LENS["crescent_soft_px"])
     cres_col = mixrgb("Crescent Colour", (-400, -1300), "MULTIPLY", 1.0)
-    cres_col.inputs[2].default_value = LENS["crescent_color"]
+    mix_in(cres_col, "B").default_value = LENS["crescent_color"]
     cres_glow = blur("Crescent Glow Spread", (-400, -1450), LENS["crescent_glow_px"])
     cres_glow_col = mixrgb("Crescent Glow Colour", (-250, -1450), "MULTIPLY", 1.0)
-    cres_glow_col.inputs[2].default_value = LENS["crescent_glow_color"]
+    mix_in(cres_glow_col, "B").default_value = LENS["crescent_glow_color"]
     cres_sum = mixrgb("Crescent Glow Amount", (-150, -1300), "ADD", LENS["crescent_glow_amount"])
     cres_add = mixrgb("Add Crescent (Fac = amount)", (0, -150), "ADD", LENS["crescent_amount"])
 
-    bloom = node("CompositorNodeGlare", "Bloom", (150, 0), glare_type="FOG_GLOW", quality="HIGH",
-                 threshold=LENS["glow_threshold"], mix=LENS["glow_mix"], size=LENS["glow_size"])
-    lens = node("CompositorNodeLensdist", "Chromatic Dispersion", (350, 0), use_fit=True)
+    if LEGACY_COMP:
+        bloom = node("CompositorNodeGlare", "Bloom", (150, 0), glare_type="FOG_GLOW", quality="HIGH",
+                     threshold=LENS["glow_threshold"], mix=LENS["glow_mix"], size=LENS["glow_size"])
+        lens = node("CompositorNodeLensdist", "Chromatic Dispersion", (350, 0), use_fit=True)
+    else:
+        # Same conversion Blender uses when it opens a 4.4 file: mix -> strength, size 9 -> 1.0.
+        bloom = node("CompositorNodeGlare", "Bloom", (150, 0))
+        bi = bloom.inputs
+        bi["Type"].default_value = "Fog Glow"
+        bi["Quality"].default_value = "High"
+        bi["Threshold"].default_value = LENS["glow_threshold"]
+        bi["Strength"].default_value = 1.0 - min(max(-LENS["glow_mix"], 0.0), 1.0)
+        bi["Size"].default_value = 2.0 ** (LENS["glow_size"] - 9)
+        lens = node("CompositorNodeLensdist", "Chromatic Dispersion", (350, 0))
+        lens.inputs["Fit"].default_value = True
     lens.inputs["Dispersion"].default_value = LENS["dispersion"]
     grain_img = node("CompositorNodeImage", "Grain Texture", (350, -300), image=film_grain_image())
     grain = mixrgb("Film Grain (Fac = amount)", (550, 0), "OVERLAY", LENS["grain"])
     tint = mixrgb("Shadow Tint (colour = lift)", (750, 0), "ADD")
-    tint.inputs[2].default_value = LENS["shadow_tint"]
+    mix_in(tint, "B").default_value = LENS["shadow_tint"]
 
     sgrain = mixrgb("Shadow Grain (Fac = amount)", (900, 0), "LINEAR_LIGHT", LENS["shadow_grain"])
-    comp = t.nodes.new("CompositorNodeComposite"); comp.location = (1100, 0)
+    if LEGACY_COMP:
+        comp = t.nodes.new("CompositorNodeComposite")
+    else:
+        comp = t.nodes.new("NodeGroupOutput")
+    comp.location = (1100, 0)
     view = t.nodes.new("CompositorNodeViewer"); view.location = (1000, -200)
 
     L = t.links.new
+    A = lambda n: mix_in(n, "A")  # noqa: E731
+    B = lambda n: mix_in(n, "B")  # noqa: E731
     L(rl.outputs["Image"], soften.inputs["Image"])
     L(rl.outputs["Alpha"], cover.inputs["Image"])
-    L(cover.outputs["Image"], kill.inputs[0])
-    L(kill.outputs[0], outside.inputs[1])
+    L(out(cover), kill.inputs[0])
+    L(out(kill), outside.inputs[1])
     L(rl.outputs["Alpha"], arc_cover.inputs["Image"])
-    L(arc_cover.outputs["Image"], arc_kill.inputs[0])
-    L(arc_kill.outputs[0], arc_outside.inputs[1])
+    L(out(arc_cover), arc_kill.inputs[0])
+    L(out(arc_kill), arc_outside.inputs[1])
     L(rl.outputs["halo"], halo_tight.inputs["Image"])
     L(rl.outputs["halo"], halo_wide.inputs["Image"])
-    L(halo_tight.outputs["Image"], wide_mix.inputs[1])
-    L(halo_wide.outputs["Image"], wide_mix.inputs[2])
-    L(wide_mix.outputs["Image"], halo_masked.inputs[1])
-    L(outside.outputs[0], halo_masked.inputs[2])
-    L(soften.outputs["Image"], halo_add.inputs[1])
-    L(halo_masked.outputs["Image"], halo_add.inputs[2])
+    L(out(halo_tight), A(wide_mix))
+    L(out(halo_wide), B(wide_mix))
+    L(out(wide_mix), A(halo_masked))
+    L(out(outside), B(halo_masked))
+    L(out(soften), A(halo_add))
+    L(out(halo_masked), B(halo_add))
     L(rl.outputs["arc_glow"], arc_move.inputs["Image"])
     for b in arc_b:
-        L(arc_move.outputs["Image"], b.inputs["Image"])
-    L(arc_b[0].outputs["Image"], arc_near.inputs[1])
-    L(arc_near.outputs["Image"], arc_m1.inputs[1])
-    L(arc_b[1].outputs["Image"], arc_m1.inputs[2])
-    L(arc_m1.outputs["Image"], arc_blur.inputs[1])
-    L(arc_b[2].outputs["Image"], arc_far_tint.inputs[1])
-    L(arc_far_tint.outputs["Image"], arc_blur.inputs[2])
-    L(halo_add.outputs["Image"], arc_add.inputs[1])
+        L(out(arc_move), b.inputs["Image"])
+    L(out(arc_b[0]), A(arc_near))
+    L(out(arc_near), A(arc_m1))
+    L(out(arc_b[1]), B(arc_m1))
+    L(out(arc_m1), A(arc_blur))
+    L(out(arc_b[2]), A(arc_far_tint))
+    L(out(arc_far_tint), B(arc_blur))
+    L(out(halo_add), A(arc_add))
     arc_masked = mixrgb("Arc Glow × Outside", (-200, -700), "MULTIPLY")
-    L(arc_blur.outputs["Image"], arc_masked.inputs[1])
-    L(arc_outside.outputs[0], arc_masked.inputs[2])
-    L(arc_masked.outputs["Image"], arc_add.inputs[2])
+    L(out(arc_blur), A(arc_masked))
+    L(out(arc_outside), B(arc_masked))
+    L(out(arc_masked), B(arc_add))
     L(rl.outputs["Alpha"], cres_move.inputs["Image"])
-    L(cres_move.outputs["Image"], cres_hole.inputs[0])
+    L(out(cres_move), cres_hole.inputs[0])
     L(rl.outputs["Alpha"], cres_hole.inputs[1])
-    L(cres_hole.outputs[0], cres_soft.inputs["Image"])
-    L(cres_soft.outputs["Image"], cres_col.inputs[1])
-    L(cres_soft.outputs["Image"], cres_glow.inputs["Image"])
-    L(cres_glow.outputs["Image"], cres_glow_col.inputs[1])
-    L(cres_col.outputs["Image"], cres_sum.inputs[1])
-    L(cres_glow_col.outputs["Image"], cres_sum.inputs[2])
-    L(arc_add.outputs["Image"], cres_add.inputs[1])
-    L(cres_sum.outputs["Image"], cres_add.inputs[2])
-    L(cres_add.outputs["Image"], bloom.inputs["Image"])
+    L(out(cres_hole), cres_soft.inputs["Image"])
+    L(out(cres_soft), A(cres_col))
+    L(out(cres_soft), cres_glow.inputs["Image"])
+    L(out(cres_glow), A(cres_glow_col))
+    L(out(cres_col), A(cres_sum))
+    L(out(cres_glow_col), B(cres_sum))
+    L(out(arc_add), A(cres_add))
+    L(out(cres_sum), B(cres_add))
+    L(out(cres_add), bloom.inputs["Image"])
     L(bloom.outputs["Image"], lens.inputs["Image"])
-    L(lens.outputs["Image"], grain.inputs[1])
-    L(grain_img.outputs["Image"], grain.inputs[2])
-    L(grain.outputs["Image"], tint.inputs[1])
-    L(tint.outputs["Image"], sgrain.inputs[1])
-    L(grain_img.outputs["Image"], sgrain.inputs[2])
-    L(sgrain.outputs["Image"], comp.inputs["Image"])
-    L(sgrain.outputs["Image"], view.inputs["Image"])
+    L(out(lens), A(grain))
+    L(grain_img.outputs["Image"], B(grain))
+    L(out(grain), A(tint))
+    L(out(tint), A(sgrain))
+    L(grain_img.outputs["Image"], B(sgrain))
+    L(out(sgrain), comp.inputs["Image"])
+    L(out(sgrain), view.inputs["Image"])
     for n in nodes + [soften]:
         n.parent = frame
 

@@ -15,6 +15,7 @@ import bpy
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
 from common import enable_gpu, experiment_paths  # noqa: E402
+from nodes import auto_layout, group, how_to_tweak, material_from_group  # noqa: E402
 
 EXP = experiment_paths(__file__)
 
@@ -33,9 +34,34 @@ P = {
 
 HOW_TO_TWEAK = """\
 __NAME__ — how to tweak
-- Material controls: select the object, Shader Editor, "Look" group inputs.
-- Rebuild from scripts/build.py rather than hand-editing this file.
+
+Each material is one node. Select the object, open the Shader Editor, and change
+the inputs on its group node. Hover an input for its range.
+
+- Look: Colour, Gloss (0 matte → 1 mirror).
+- Key light: select "Key", change Power and Size in Object Data.
+
+Built by experiments/__NAME__/scripts/build.py. Changes made here are lost on rebuild;
+copy good values back into P.
 """
+
+
+def look_group():
+    """The designer-facing control node. Keep internals inside; expose 3-8 inputs."""
+    ng, gi, go = group("Look", [
+        ("Colour", "NodeSocketColor", P["base_color"], None, None),
+        ("Gloss", "NodeSocketFloat", 1 - P["roughness"], 0.0, 1.0),  # 0 matte, 1 mirror
+    ], [("Shader", "NodeSocketShader")])
+    bsdf = ng.nodes.new("ShaderNodeBsdfPrincipled")
+    inv = ng.nodes.new("ShaderNodeMath")
+    inv.operation = "SUBTRACT"
+    inv.inputs[0].default_value = 1.0
+    ng.links.new(gi.outputs["Gloss"], inv.inputs[1])
+    ng.links.new(gi.outputs["Colour"], bsdf.inputs["Base Color"])
+    ng.links.new(inv.outputs[0], bsdf.inputs["Roughness"])
+    ng.links.new(bsdf.outputs[0], go.inputs["Shader"])
+    auto_layout(ng)
+    return ng
 
 
 def parse_args():
@@ -68,15 +94,11 @@ def build_scene():
     subject.modifiers.new("Subdiv", "SUBSURF").levels = 2
     bpy.ops.object.shade_smooth()
 
-    mat = bpy.data.materials.new("Look")
-    mat.use_nodes = True
-    bsdf = mat.node_tree.nodes["Principled BSDF"]
-    bsdf.inputs["Base Color"].default_value = P["base_color"]
-    bsdf.inputs["Roughness"].default_value = P["roughness"]
-    subject.data.materials.append(mat)
+    subject.data.materials.append(material_from_group("Subject", look_group()))
 
     bpy.ops.object.light_add(type="AREA", location=(3, -3, 5))
     key = bpy.context.active_object
+    key.name = "Key"
     key.data.energy = P["key_power"]
     key.data.size = P["key_size"]
     key.rotation_euler = (math.radians(40), 0, math.radians(45))
@@ -93,8 +115,7 @@ def build_scene():
 
     scene.render.resolution_x = P["res_x"]
     scene.render.resolution_y = P["res_y"]
-    txt = bpy.data.texts.new("HOW_TO_TWEAK")
-    txt.write(HOW_TO_TWEAK)
+    how_to_tweak(HOW_TO_TWEAK)
     return scene
 
 

@@ -20,13 +20,15 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 ## Skills
 
 - `/new-experiment` — scaffold an experiment and load relevant learnings.
-- `/review-render` — one round of the adversarial review loop.
+- `/research-reference` — work out how the reference was made and find Blender techniques on the web, before building.
+- `/review-render` — one round of the adversarial review loop (always an Opus reviewer).
+- `/finish-experiment` — final PNG plus an editable `.blend` where each material is one control node.
 - `/capture-learnings` — promote this session's lessons into `knowledge/`. A Stop hook reminds you once per session.
 
 ## Layout
 
-- `experiments/<name>/` — `BRIEF.md`, `references/`, `assets/`, `scripts/build.py`, `renders/` (not in git), `reviews/`, `output/` (FINAL PNGs; `.blend` not in git), `LEARNINGS.md`.
-- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `compare.py`, `crop_compare.py`, `crops.py`.
+- `experiments/<name>/` — `BRIEF.md`, `RESEARCH.md`, `PROGRESS.md`, `references/`, `assets/`, `scripts/build.py`, `renders/` (not in git), `reviews/`, `output/` (FINAL PNGs; `.blend` not in git), `LEARNINGS.md`.
+- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `compare.py`, `crop_compare.py`, `crops.py`.
 - `knowledge/` — gotchas, process, insights, decisions.
 - `library/` — reusable models, textures, HDRIs, materials, node groups.
 
@@ -40,5 +42,5 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 
 ## Experiments
 
-- `eclipse-glow` — camera-space normals and compositor glows. Blender 4.4 only (not yet ported to the 5.x compositor).
+- `eclipse-glow` — camera-space normals and compositor glows. Runs on 4.4 and 5.x.
 - `wonder-printed-plastic`, `wonder-caustics`, `wonder-caustics-v2`, `wonder-popart` — Wonder look-dev. Blender 5.x, Metal only. They predate this layout: `refs/` not `references/`, finals at the folder root, and `--out` resolves against the shell's cwd.

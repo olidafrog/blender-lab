@@ -6,3 +6,5 @@
 - To find which part of an emitter a pixel images, paint the emitter with its own coordinates and read the pixels back. Linearise the sRGB values first.
 - Render one intermediate value: open the `.blend`, relink a node output into Emission → Material Output. In 4.4, set `scene.use_nodes = False` to skip the compositor.
 - A short metrics script (mean gradient on lit pixels, pixels over two gradient thresholds, clipped %, lit fraction) predicted the direction of the reviewer's score before a review was spent. See `experiments/wonder-caustics-v2/scripts/metrics.py`.
+- To port a script across versions, open its saved `.blend` in the new Blender and dump the node tree. Blender's own conversion shows the new settings. Rendering that file gives a same-machine target to diff against. `eclipse-glow`
+- Mac (Metal) and Windows (OptiX) renders of the same scene differ by about 0.6/255 mean and up to 10/255 at 32 samples, no denoise. Treat a cross-machine diff at that level as matched; do not tune values to it. `eclipse-glow`
