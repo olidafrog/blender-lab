@@ -13,6 +13,8 @@ How the system changes itself. `/capture-learnings` adds to this at the end of e
 
 ## Changed
 
+- **2026-09-26 — Pipeline enforced, not just described.** Added a pipeline section to `CLAUDE.md`, a `UserPromptSubmit` hook (`pipeline-reminder.sh`) that reminds Claude of it on experiment-like prompts, and a Stop-hook check that asks for a review round when a session rendered an experiment but never ran `review-render`. Evidence: across three sessions in blender-lab the only skill used was `capture-learnings`, and only because the hook forced it. The printed-plastic v2 session built a version with no research and no review. `threshold-orbit` was built in the retired folder with no skills at all. The old folders now carry a "MOVED" notice.
+
 - **2026-09-26 — Local Blender docs.** `tools/fetch_docs.sh` builds `reference/` (not in git, about 65 MB of text): an exact API dump of the installed Blender (`tools/dump_api.py`, every type, enum and node socket), the Python API docs for 5.2 and 4.4, the manual source and the release notes. The `blender-docs` skill says when and how to look things up. Evidence: past traps (`MULTI_GGX`, `OPEN_EXR`, 5.x compositor sockets) were all exact-name questions that a lookup answers. Windows: run `tools/fetch_docs.sh` there to get the 4.4 dump.
 
 - **2026-09-26 — Library `.blend` files are committed.** Added `!library/**/*.blend` to `.gitignore`, and a rule to `library/README.md` that a built model keeps its build script beside it. Evidence: `library/README.md` says library binaries are committed, but `*.blend` was ignored everywhere, so `wonder_logos.blend` would not reach the Windows machine. Files: `.gitignore`, `library/README.md`.

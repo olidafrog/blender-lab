@@ -6,7 +6,7 @@ Launch with `tools/blender.sh`. It handles most of the items below.
 
 - `--factory-startup` and `read_factory_settings()` reset preferences, and the GPU choice lives there. Call `common.enable_gpu()` after any factory reset, on every run. `scene.cycles.device = "GPU"` alone silently falls back to CPU.
 - The first OptiX render in a new Blender version prints "Loading render kernels". It is cached after that. `win`
-- Eevee renders headless. In 4.x the engine id is `BLENDER_EEVEE_NEXT`; `BLENDER_EEVEE` does not exist. Use Eevee for fast look-dev and Cycles for finals. `4.4`
+- Eevee renders headless. The engine id is `BLENDER_EEVEE_NEXT` in 4.x and `BLENDER_EEVEE` again in 5.x. Use Eevee for fast look-dev and Cycles for finals.
 
 ## Exit codes and output
 

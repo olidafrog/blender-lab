@@ -17,9 +17,19 @@ It finds Blender on either machine, runs headless with `--factory-startup` and a
 
 `reference/` holds a local copy of the Blender docs: an exact API dump of the installed version, the Python API docs, the manual and the release notes. It is not in git; build it with `tools/fetch_docs.sh`. Look names up there before guessing (`blender-docs` skill).
 
-## Before you start
+## The pipeline — the default for every experiment
 
-Read [knowledge/README.md](knowledge/README.md) and the entries that touch the task. `/new-experiment` does this for you.
+Any request to start an experiment, make a new version, match a reference, or improve a look runs this pipeline, whether or not the user names a skill:
+
+1. `new-experiment` (new) — or read the experiment's `BRIEF.md`, `PROGRESS.md` and `LEARNINGS.md` (existing).
+2. `research-reference` — before building. On a new version, rerun it for any effect a review said is still wrong.
+3. Build, then `review-render` in a loop until its stop rule. Opus reviewer every round.
+4. `finish-experiment` — final render plus an editable `.blend` with one control node per material.
+5. `capture-learnings` — knowledge plus the process retro.
+
+Invoke each skill with the Skill tool; do not work from memory of what it says. Skip a step only when the user says so ("no review", "just a quick test"), and note the skip in `PROGRESS.md`. Tasks that are not look work (fix a script, convert a model, set up tooling) skip steps 2–4.
+
+Read [knowledge/README.md](knowledge/README.md) and the entries that touch the task before starting.
 
 ## Skills
 
@@ -51,4 +61,5 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 ## Experiments
 
 - `eclipse-glow` — camera-space normals and compositor glows. Runs on 4.4 and 5.x.
+- `threshold-orbit` — looping orbital diagram; lines bleed where they cross (blur → threshold in the compositor). v01 predates the pipeline.
 - `wonder-printed-plastic`, `wonder-caustics`, `wonder-caustics-v2`, `wonder-popart` — Wonder look-dev. Blender 5.x, Metal only. They predate this layout: `refs/` not `references/`, finals at the folder root, and `--out` resolves against the shell's cwd.
