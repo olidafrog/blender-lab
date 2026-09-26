@@ -40,6 +40,7 @@ Process
 - [Review loop](process/review-loop.md) — the adversarial render-and-score loop.
 - [Matching a reference](process/matching-a-reference.md) — "recreate this image" tasks.
 - [Debugging a render](process/debugging.md) — isolating, cropping, measuring.
+- [Process improvements](process/improvements.md) — how the skills changed, and proposals.
 
 - [Insights](insights.md) — deeper lessons.
 

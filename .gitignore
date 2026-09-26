@@ -1,6 +1,7 @@
 # Rebuildable from scripts, or too big for git
 *.blend
 *.blend1
+experiments/*/output/*.exr
 experiments/*/renders/
 experiments/*/export/
 experiments/*/exports/

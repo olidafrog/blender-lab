@@ -16,6 +16,7 @@ import bpy
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
 from common import enable_gpu, experiment_paths  # noqa: E402
 from nodes import auto_layout, group, how_to_tweak, material_from_group  # noqa: E402
+from comp import compositor, post_group, use_saved_render  # noqa: E402
 
 EXP = experiment_paths(__file__)
 
@@ -30,6 +31,10 @@ P = {
     "world_strength": 0.3,
     "base_color": (0.8, 0.8, 0.8, 1.0),
     "roughness": 0.4,
+    "glow": 0.5,
+    "glow_size": 0.6,
+    "glow_threshold": 1.0,
+    "chroma": 0.004,
 }
 
 HOW_TO_TWEAK = """\
@@ -40,6 +45,9 @@ the inputs on its group node. Hover an input for its range.
 
 - Look: Colour, Gloss (0 matte → 1 mirror).
 - Key light: select "Key", change Power and Size in Object Data.
+- Post: open the Compositing tab. The backdrop shows the saved render. Change the
+  inputs on the "Post" node and it updates at once, no re-render. Tab into it to see the
+  nodes inside. After a new render (F12), set "Source" to Off to use it.
 
 Built by experiments/__NAME__/scripts/build.py. Changes made here are lost on rebuild;
 copy good values back into P.
@@ -82,6 +90,27 @@ def parse_args():
     return a
 
 
+def post():
+    """Compositor controls on one node. Tab into it in Blender to see the parts."""
+    ng, gi, go = post_group("Post", [
+        ("Glow", "NodeSocketFloat", P["glow"], 0.0, 2.0),
+        ("Glow Size", "NodeSocketFloat", P["glow_size"], 0.0, 1.0),       # fraction of frame
+        ("Glow Threshold", "NodeSocketFloat", P["glow_threshold"], 0.0, 4.0),
+        ("Chroma", "NodeSocketFloat", P["chroma"], 0.0, 0.05),            # edge fringing
+    ])
+    glare = ng.nodes.new("CompositorNodeGlare")
+    glare.inputs["Type"].default_value = "Fog Glow"
+    lens = ng.nodes.new("CompositorNodeLensdist")
+    ng.links.new(gi.outputs["Image"], glare.inputs["Image"])
+    for src, dst in (("Glow", "Strength"), ("Glow Size", "Size"), ("Glow Threshold", "Threshold")):
+        ng.links.new(gi.outputs[src], glare.inputs[dst])
+    ng.links.new(glare.outputs["Image"], lens.inputs["Image"])
+    ng.links.new(gi.outputs["Chroma"], lens.inputs["Dispersion"])
+    ng.links.new(lens.outputs["Image"], go.inputs["Image"])
+    auto_layout(ng)
+    return ng
+
+
 def build_scene():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     scene = bpy.context.scene
@@ -122,12 +151,16 @@ def build_scene():
 if __name__ == "__main__":
     args = parse_args()
     scene = build_scene()
+    raw = EXP["renders"] / f"{args.out}_raw.exr"
+    compositor(scene, post(), raw_exr=raw)  # Blender 5.x compositor API
     scene.cycles.samples = args.samples
     scene.render.resolution_percentage = round(args.scale * 100)
     if not args.norender:
         scene.render.filepath = str(EXP["renders"] / f"{args.out}.png")
         bpy.ops.render.render(write_still=True)
     if args.save:
+        if not args.norender:
+            use_saved_render(scene, raw, EXP["output"])  # opens on the Compositing tab, live preview
         blend = EXP["output"] / f"{EXP['name']}.blend"
         bpy.ops.wm.save_as_mainfile(filepath=str(blend))
         bpy.ops.file.make_paths_relative()

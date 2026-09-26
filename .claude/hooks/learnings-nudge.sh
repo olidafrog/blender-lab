@@ -15,5 +15,5 @@ grep -q '"skill":"capture-learnings"\|"skill": "capture-learnings"' "$transcript
 
 touch "$marker"
 cat <<'JSON'
-{"decision":"block","reason":"Blender work happened this session and learnings were not captured. If anything cost time or changed the approach, run the capture-learnings skill now. If nothing qualifies, say so in one line and stop."}
+{"decision":"block","reason":"Blender work happened this session and learnings were not captured. Run the capture-learnings skill now: record what we learned, and change any skill, template or tool that would have saved time. If nothing qualifies, say so in one line and stop."}
 JSON

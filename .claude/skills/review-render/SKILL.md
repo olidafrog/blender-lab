@@ -19,11 +19,11 @@ Reviewers misread render bugs as look problems (DOF blur as "noise", aliasing as
 
 1. **Find the render.** Default: the newest file in `experiments/<name>/renders/`. Call its version `vNN`. Under about 1200 px wide → re-render at `--scale 1` first; crops of a small render hide nothing.
 2. **Prove the change reached the pixels.** Crop the area you changed and compare with the previous version (a numpy diff, std, or sampled values against the targets in `RESEARCH.md`). If nothing measurable changed, fix that before spending a review.
-3. **Reviewer brief.** If `reviews/REVIEWER_PROMPT.md` exists, use it unchanged; scores only compare when it is fixed. Otherwise fill `REVIEWER_PROMPT.template.md` from `BRIEF.md`, `references/` and `RESEARCH.md` (including its numeric targets), show it to the user, and save it. If the experiment has a metrics script, freeze it and name it in the prompt. Change the prompt only if the user asks; then note that scores reset.
+3. **Reviewer brief.** If `reviews/REVIEWER_PROMPT.md` exists, use it unchanged; scores only compare when it is fixed. Otherwise fill `REVIEWER_PROMPT.template.md` from `BRIEF.md`, `references/` and `RESEARCH.md` (including its numeric targets) and save it. If the experiment has a metrics script, freeze it and name it in the prompt. Change the prompt only if the user asks; then note that scores reset.
 4. **Crops.** `tools/blender.sh tools/crops.py <render> 512 experiments/<name>/reviews/crops_vNN`. Add `x,y` points for any area the user or a previous review flagged. For "recreate this image" work, also run `tools/compare.py` against the main reference.
 5. **Spawn the reviewer** with the Agent tool: `subagent_type: general-purpose`, `model: opus`. Always Opus, every round, even for a quick check; scores from other models do not compare. A new agent every round; never resume or message an old reviewer. Its prompt is exactly: the contents of `REVIEWER_PROMPT.md`, the absolute paths of the render, each crop and each reference, then "Write your review to `<abs path>/reviews/review_vNN.md`." Nothing else: no change list, no earlier scores, no explanations.
 6. **Update `PROGRESS.md`** in the experiment: one table row per version (version, score, the one change, render path), newest first. The user reads this to follow along.
-7. **Report** to the user, short:
+7. **Log, then carry on.** Do not stop for approval between rounds; the user follows `PROGRESS.md`. When you stop the loop, report:
    - score and trend,
    - the top-ranked problem and your planned fix,
    - any complaint repeating from earlier rounds (likely a mechanism problem),
@@ -37,4 +37,4 @@ Reviewers misread render bugs as look problems (DOF blur as "noise", aliasing as
 - On a contradiction between rounds, the brief, the numeric targets and the measured pixels decide.
 - If the last three scores are within 0.2 and only crop-level notes remain, recommend stopping.
 - When the user is happy or the loop stops, run `/finish-experiment`.
-- Log surprises in the experiment's `LEARNINGS.md`.
+- Log surprises in the experiment's `LEARNINGS.md`: facts under Learnings, anything that slowed the loop or a skill got wrong under Process.

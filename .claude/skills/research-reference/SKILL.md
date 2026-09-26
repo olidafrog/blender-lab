@@ -25,7 +25,7 @@ Work out how the reference was probably made, then find the Blender techniques f
    - **Numeric targets** — measured from reference crops: key colours, edge widths in px, black and background levels, pattern pitch. These settle arguments between review rounds.
    - **Open questions** — what a test render must settle.
    - **Sources** — links.
-6. **Plan the first build** from the research. The most likely process is the v01 mechanism, not something to try later. For each effect: the mechanism, and the cheap test render that proves it. If the look has fine patterns, include how you will stop aliasing (2× render, then downsample). Show the user the process guess and the plan before a long build.
+6. **Plan the first build** from the research. The most likely process is the v01 mechanism, not something to try later. For each effect: the mechanism, and the cheap test render that proves it. If the look has fine patterns, include how you will stop aliasing (2× render, then downsample). Then build. Do not wait for approval; show `RESEARCH.md` to the user only if they asked to see it first. Put a one-line process guess in `PROGRESS.md`.
 7. Feed the research findings into `reviews/REVIEWER_PROMPT.md` so the reviewer judges fidelity to the real process.
 
 ## When stuck mid-project

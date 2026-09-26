@@ -28,17 +28,20 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 ## Layout
 
 - `experiments/<name>/` — `BRIEF.md`, `RESEARCH.md`, `PROGRESS.md`, `references/`, `assets/`, `scripts/build.py`, `renders/` (not in git), `reviews/`, `output/` (FINAL PNGs; `.blend` not in git), `LEARNINGS.md`.
-- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `compare.py`, `crop_compare.py`, `crops.py`.
+- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `comp.py` (compositor with live preview), `compare.py`, `crop_compare.py`, `crops.py`.
 - `knowledge/` — gotchas, process, insights, decisions.
 - `library/` — reusable models, textures, HDRIs, materials, node groups.
 
 ## Conventions
 
+- Work autonomously. The user kicks off an experiment and leaves it to run: research, build and review without stopping for approval, unless asked. Keep `PROGRESS.md` current so they can check in.
+
 - Rebuild the scene from `build.py`. Every tunable value lives in its `P` dict; override with `--set key=value`. Never hand-edit a `.blend` and lose it on the next build.
 - Put designer controls on named node-group inputs with ranges, and add a `HOW_TO_TWEAK` text block to the `.blend`.
 - Never overwrite a render the user liked. Add a suffix.
 - Fix one ranked problem per review round.
-- When something costs time, note it in the experiment's `LEARNINGS.md` straight away.
+- When something costs time, note it in the experiment's `LEARNINGS.md` straight away. Put friction with the process itself under Process. `/capture-learnings` turns these into skill and tool changes, logged in `knowledge/process/improvements.md`.
+- Every final `.blend` is a hand-off: one control node per material (`tools/nodes.py`), and the compositor as one Post node with a live preview (`tools/comp.py`).
 
 ## Experiments
 
