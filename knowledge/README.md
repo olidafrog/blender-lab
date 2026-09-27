@@ -44,6 +44,7 @@ Process
 - [Matching a reference](process/matching-a-reference.md) — "recreate this image" tasks.
 - [Debugging a render](process/debugging.md) — isolating, cropping, measuring.
 - [Process improvements](process/improvements.md) — how the skills changed, each with a check, and proposals.
+- [Parallel sessions](process/parallel-sessions.md) — worktrees, when `.claude/` edits take effect, worktree Bash limits.
 - [Scoreboard](process/scoreboard.md) — what each session cost: reviews, best score, Blender runs, tokens, time.
 
 - [Insights](insights.md) — deeper lessons.
