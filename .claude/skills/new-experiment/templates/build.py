@@ -16,7 +16,7 @@ import bpy
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
 from common import enable_gpu, experiment_paths  # noqa: E402
 from nodes import auto_layout, group, how_to_tweak, material_from_group  # noqa: E402
-from comp import compositor, post_group, use_saved_render  # noqa: E402
+from comp import LEGACY, compositor, post_group, use_saved_render  # noqa: E402
 
 EXP = experiment_paths(__file__)
 
@@ -35,6 +35,7 @@ P = {
     "glow_size": 0.6,
     "glow_threshold": 1.0,
     "chroma": 0.004,
+    "clay": False,          # debug: flat grey override for the correctness pass
 }
 
 HOW_TO_TWEAK = """\
@@ -99,11 +100,17 @@ def post():
         ("Chroma", "NodeSocketFloat", P["chroma"], 0.0, 0.05),            # edge fringing
     ])
     glare = ng.nodes.new("CompositorNodeGlare")
-    glare.inputs["Type"].default_value = "Fog Glow"
     lens = ng.nodes.new("CompositorNodeLensdist")
     ng.links.new(gi.outputs["Image"], glare.inputs["Image"])
-    for src, dst in (("Glow", "Strength"), ("Glow Size", "Size"), ("Glow Threshold", "Threshold")):
-        ng.links.new(gi.outputs[src], glare.inputs[dst])
+    if LEGACY:  # 4.4: Glare settings are node properties; the group inputs cannot drive them
+        glare.glare_type, glare.quality = "FOG_GLOW", "HIGH"
+        glare.mix = P["glow"] - 1.0                          # -1 = no glow, 0 = even mix
+        glare.size = max(6, min(9, round(6 + 3 * P["glow_size"])))
+        glare.threshold = P["glow_threshold"]
+    else:
+        glare.inputs["Type"].default_value = "Fog Glow"
+        for src, dst in (("Glow", "Strength"), ("Glow Size", "Size"), ("Glow Threshold", "Threshold")):
+            ng.links.new(gi.outputs[src], glare.inputs[dst])
     ng.links.new(glare.outputs["Image"], lens.inputs["Image"])
     ng.links.new(gi.outputs["Chroma"], lens.inputs["Dispersion"])
     ng.links.new(lens.outputs["Image"], go.inputs["Image"])
@@ -144,6 +151,10 @@ def build_scene():
 
     scene.render.resolution_x = P["res_x"]
     scene.render.resolution_y = P["res_y"]
+    if P["clay"]:
+        clay = bpy.data.materials.new("Clay")
+        clay.use_nodes = True
+        scene.view_layers[0].material_override = clay
     how_to_tweak(HOW_TO_TWEAK)
     return scene
 
@@ -152,7 +163,7 @@ if __name__ == "__main__":
     args = parse_args()
     scene = build_scene()
     raw = EXP["renders"] / f"{args.out}_raw.exr"
-    compositor(scene, post(), raw_exr=raw)  # Blender 5.x compositor API
+    compositor(scene, post(), raw_exr=raw)  # 4.4 or 5.x, see comp.LEGACY
     scene.cycles.samples = args.samples
     scene.render.resolution_percentage = round(args.scale * 100)
     if not args.norender:

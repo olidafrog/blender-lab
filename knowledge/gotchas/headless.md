@@ -14,6 +14,7 @@ Launch with `tools/blender.sh`. It handles most of the items below.
 - Cycles prints a line per step. Filter to `[common]`, `RENDER TIME`, `Saved`, `Error`, `Traceback`.
 - A 2× render at 1024 samples takes about 6 minutes, longer than the 2-minute tool timeout. Run long renders in the background and wait for the file. `mac`
 - For quick checks render at `--scale 0.5` with 128–256 samples.
+- On the 3090 Ti, 1600×1280 at 512 samples with glass, volumes and 32 glossy lobes took about 1 minute; 1024 samples about 2. Test renders at 0.5 scale / 64 samples: ~15 s. `win` `minidisc`
 - Use `--norender --save x.blend` to build the file without rendering. `wonder-*`
 
 ## Paths

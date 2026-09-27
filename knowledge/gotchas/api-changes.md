@@ -16,4 +16,6 @@
 - The Refraction BSDF does not accept `MULTI_GGX`. Use `GGX`. `5.x`
 - Area lights have `visible_transmission`, `visible_glossy`, `use_temperature` with `temperature` in Kelvin, `spread` and `diffuse_factor`. `5.x`
 - Caustics flags live under `.cycles`: `light.cycles.is_caustics_light`, `ob.cycles.is_caustics_caster`, `ob.cycles.is_caustics_receiver`. `5.x`
+- 4.4 compositor: `scene.use_nodes`, `scene.node_tree`, a Composite node, File Output with `base_path`, `format.file_format = "OPEN_EXR"`, `file_slots[0].path`; it appends the frame number (`x0001.exr`). Switch uses `.check`. `tools/comp.py` handles both (`comp.LEGACY`). `4.4`
+- `Collection.collection_objects` has no name lookup; index it to set `light_linking.link_state`. `4.4`
 - For a noisy pass, set `view_layer.cycles.denoising_store_passes = True`. Render Layers then has a `Noisy Image` output. `5.x`

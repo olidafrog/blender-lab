@@ -1,4 +1,4 @@
-"""Compositor hand-off pattern (Blender 5.x): live preview plus one-node controls.
+"""Compositor hand-off pattern (Blender 4.4 and 5.x): live preview plus one-node controls.
 
     Render Layers ─┐
                    ├─ Source switch ─ [Post group node] ─┬─ Group Output (final image)
@@ -16,6 +16,10 @@ source, so every slider on the Post node updates the image at once, no re-render
     tree = compositor(scene, ng, raw_exr=EXP["renders"] / "v01_raw.exr")
     render ...
     use_saved_render(scene, EXP["renders"] / "v01_raw.exr", EXP["output"])   # before --save
+
+On 4.4 (LEGACY) the tree is scene.node_tree and ends in a Composite node. Node settings
+there are properties, not sockets, so a Post group input cannot drive a Glare or Blur
+setting: set those on the node and keep only socket-valued controls on the group.
 """
 import shutil
 from pathlib import Path
@@ -23,6 +27,8 @@ from pathlib import Path
 import bpy
 
 from nodes import auto_layout, group, use
+
+LEGACY = "node_tree" in bpy.types.Scene.bl_rna.properties  # 4.x compositor API
 
 
 def post_group(name, ins):
@@ -35,10 +41,15 @@ def post_group(name, ins):
 def compositor(scene, post_ng=None, raw_exr=None):
     """Build the scene compositor. `raw_exr`: where the File Output node writes the
     linear pre-post beauty pass during the render."""
-    tree = bpy.data.node_groups.new("Compositor", "CompositorNodeTree")
-    scene.compositing_node_group = tree
+    if LEGACY:
+        scene.use_nodes = True
+        tree = scene.node_tree
+        tree.nodes.clear()
+    else:
+        tree = bpy.data.node_groups.new("Compositor", "CompositorNodeTree")
+        scene.compositing_node_group = tree
+        tree.interface.new_socket("Image", in_out="OUTPUT", socket_type="NodeSocketColor")
     scene.render.use_compositing = True
-    tree.interface.new_socket("Image", in_out="OUTPUT", socket_type="NodeSocketColor")
     n = tree.nodes
 
     rl = n.new("CompositorNodeRLayers")
@@ -46,7 +57,7 @@ def compositor(scene, post_ng=None, raw_exr=None):
     saved.name = saved.label = "Saved Render"
     switch = n.new("CompositorNodeSwitch")
     switch.name = switch.label = "Source (On = saved render)"
-    switch.inputs["Switch"].default_value = False
+    _set_switch(switch, False)
     tree.links.new(rl.outputs["Image"], switch.inputs["Off"])
     tree.links.new(saved.outputs["Image"], switch.inputs["On"])
 
@@ -57,7 +68,7 @@ def compositor(scene, post_ng=None, raw_exr=None):
         tree.links.new(final, post.inputs["Image"])
         final = post.outputs["Image"]
 
-    out = n.new("NodeGroupOutput")
+    out = n.new("CompositorNodeComposite" if LEGACY else "NodeGroupOutput")
     viewer = n.new("CompositorNodeViewer")
     tree.links.new(final, out.inputs["Image"])
     tree.links.new(final, viewer.inputs["Image"])
@@ -66,11 +77,17 @@ def compositor(scene, post_ng=None, raw_exr=None):
         raw_exr = Path(raw_exr)
         fo = n.new("CompositorNodeOutputFile")
         fo.name = fo.label = "Raw EXR"
-        fo.directory = str(raw_exr.parent) + "/"
-        fo.file_name = raw_exr.stem
-        fo.format.file_format = "OPEN_EXR_MULTILAYER"  # 5.2 offers only multilayer here
-        fo.format.color_depth = "32"
-        fo.file_output_items.new("RGBA", "Image")
+        if LEGACY:
+            fo.base_path = str(raw_exr.parent) + "/"
+            fo.format.file_format = "OPEN_EXR"
+            fo.format.color_depth = "32"
+            fo.file_slots[0].path = raw_exr.stem
+        else:
+            fo.directory = str(raw_exr.parent) + "/"
+            fo.file_name = raw_exr.stem
+            fo.format.file_format = "OPEN_EXR_MULTILAYER"  # 5.2 offers only multilayer here
+            fo.format.color_depth = "32"
+            fo.file_output_items.new("RGBA", "Image")
         tree.links.new(rl.outputs["Image"], fo.inputs[0])
 
     auto_layout(tree, dx=300)
@@ -81,7 +98,7 @@ def use_saved_render(scene, exr_path, store_dir=None):
     """Point the Saved Render node at an EXR, switch the source to it, and turn on the
     compositor backdrop, so the .blend opens ready to tweak on the Compositing tab.
     The active tab itself cannot be saved from a headless run (see knowledge)."""
-    tree = scene.compositing_node_group
+    tree = scene.node_tree if LEGACY else scene.compositing_node_group
     fo = tree.nodes.get("Raw EXR")
     if fo is not None:
         tree.nodes.remove(fo)  # a later F12 in the GUI must not overwrite the saved pass
@@ -93,7 +110,7 @@ def use_saved_render(scene, exr_path, store_dir=None):
     img = bpy.data.images.load(str(exr_path), check_existing=True)
     img.colorspace_settings.name = "Linear Rec.709"
     tree.nodes["Saved Render"].image = img
-    tree.nodes["Source (On = saved render)"].inputs["Switch"].default_value = True
+    _set_switch(tree.nodes["Source (On = saved render)"], True)
     for scr in bpy.data.screens:
         for area in scr.areas:
             for sp in area.spaces:
@@ -101,6 +118,13 @@ def use_saved_render(scene, exr_path, store_dir=None):
                     sp.tree_type = "CompositorNodeTree"
                     sp.show_backdrop = True
                     sp.backdrop_zoom = 0.5
+
+
+def _set_switch(node, on):
+    if LEGACY:
+        node.check = on          # 4.4: a node property
+    else:
+        node.inputs["Switch"].default_value = on
 
 
 def _written(p):

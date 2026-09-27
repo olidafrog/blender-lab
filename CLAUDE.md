@@ -61,5 +61,6 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 ## Experiments
 
 - `eclipse-glow` — camera-space normals and compositor glows. Runs on 4.4 and 5.x.
+- `wonder-minidisc` — logomark as a CD/MiniDisc (diffraction BSDF) in a moulded tinted case; mirror-direction studio. Built on 4.4.
 - `threshold-orbit` — looping orbital diagram; lines bleed where they cross (blur → threshold in the compositor). v01 predates the pipeline.
 - `wonder-printed-plastic`, `wonder-caustics`, `wonder-caustics-v2`, `wonder-popart` — Wonder look-dev. Blender 5.x, Metal only. They predate this layout: `refs/` not `references/`, finals at the folder root, and `--out` resolves against the shell's cwd.

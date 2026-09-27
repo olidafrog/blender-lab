@@ -12,7 +12,7 @@ Each experiment improves in a loop: render, have an adversarial reviewer score i
 
 ## Before round 1
 
-- Run a correctness pass: DOF off or focused on an empty at the face, fine-pattern pitch checked in pixels, pattern angles checked, a flat-grey override render. In `printed-plastic` a DOF focus bug cost 3 rounds (read as "noise"), aliasing cost ~10 (read as "felt", "twill"), and a flipped screen angle ran until v16.
+- Run a correctness pass (for glossy subjects, render a mirror-material override too; diffuse clay hides bad normals): DOF off or focused on an empty at the face, fine-pattern pitch checked in pixels, pattern angles checked, a flat-grey override render. In `printed-plastic` a DOF focus bug cost 3 rounds (read as "noise"), aliasing cost ~10 (read as "felt", "twill"), and a flipped screen angle ran until v16.
 - Lock numeric targets from reference crops (core RGB, edge ramp in px, background level). Without them, blur and black levels swung back and forth for 15 rounds.
 
 ## Working the loop
@@ -21,6 +21,9 @@ Each experiment improves in a loop: render, have an adversarial reviewer score i
 - Fix one ranked problem per round. When several things change at once and the score drops, you cannot find the cause.
 - Prove each fix reached the pixels before you spend a review. Three `printed-plastic` rounds were lost to changes that never showed.
 - Freeze any metrics script and the reviewer prompt. A reviewer that changed how it measured mid-run (`caustics-v2`) made the numbers incomparable.
+- When the subject departs from the references (a logo-shaped disc vs a round one), write the design facts into the reviewer brief from round 1. `minidisc` lost four rounds at 6.2–6.3 to "the disc should show through the bands"; stating it broke the plateau.
+- When the top asks contradict each other across rounds (stronger tint vs more pink through that tint), stop: expose the trade-off as one control and hand it to the designer. `minidisc`
+- When a reviewer's complaint is numeric (coverage, hue families, clipping), write a small metric script and tune against it; spend reviews only on the result. `minidisc/scripts/disc_metrics.py` took the disc from 3 % to 21 % saturated in two local runs.
 - Cap the reviewer at 3 ranked problems in under 450 words, and make it give a range when it asks for more or less. Uncapped 20 KB reviews gave asks that fought each other.
 - Never pass your reasoning to the reviewer. A reviewer that saw the builder's arguments "accepted your read of the optics" and withdrew complaints.
 - Apply research changes one lever at a time. `caustics-v2` applied a whole diagnostic brief at once and fell from 5.6 to 4.6; 40 versions only got back to 8.3.

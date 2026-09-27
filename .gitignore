@@ -17,3 +17,8 @@ Thumbs.db
 
 # Local Blender docs, rebuilt by tools/fetch_docs.sh
 reference/
+
+# Downloaded CC0 assets: re-fetch from assets/SOURCES.md
+experiments/*/assets/hdri/
+experiments/*/assets/imperfections/
+experiments/*/assets/cache/

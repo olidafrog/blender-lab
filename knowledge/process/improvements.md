@@ -9,9 +9,20 @@ How the system changes itself. `/capture-learnings` adds to this at the end of e
 - **Shared library** (revisit later). Fill `library/` and add tooling to append materials and node groups from it, and to import assets (Poly Haven). Candidates now: `wonder-caustics/assets/monochrome_studio_01_4k.hdr`, the pop art halftone and hatch groups, the printed-plastic blur group.
 
 - **Port `eclipse-glow` to the 5.x compositor** so it runs on both machines. Evidence: it fails on the Mac with `'Scene' object has no attribute 'node_tree'`.
-- **Shared metrics script in `tools/`**, generalised from `experiments/wonder-caustics-v2/scripts/metrics.py`, so every loop can prove a fix reached the pixels. Evidence: 3 wasted review rounds in `printed-plastic`.
+- **Shared metrics script in `tools/`**, generalised from `experiments/wonder-caustics-v2/scripts/metrics.py`, so every loop can prove a fix reached the pixels. Evidence: 3 wasted review rounds in `printed-plastic`; `minidisc/scripts/disc_metrics.py` (hue families, dark and clipped fractions) settled a 3-round disc complaint in two local runs.
+- **Mirror-direction studio as a `tools/` helper** (flag + wedge lights + big-light angle check, from `wonder-minidisc/scripts/build.py`). Evidence: it took most of the minidisc session and applies to any mirror, foil or grating subject.
+- **Reviewer "design facts" section in `REVIEWER_PROMPT.template.md`.** Evidence: `minidisc` lost four rounds to a design fact the reviewer read as a defect.
 
 ## Changed
+
+- **2026-09-27 — First library materials.** `library/materials/cd_diffraction.blend` and `tinted_plastic.blend`, built by `library/materials/build_materials.py`, with their CC0 wear masks in `library/textures/imperfections/`. `wonder-minidisc` now imports its materials from the library, so it rebuilds on either machine after a clone (its maps were in a git-ignored folder). Asked for by the user.
+
+- **2026-09-27 — Windows / Blender 4.4 support and review tooling** (`wonder-minidisc`). Evidence: the repo had never run end-to-end on Windows; the template crashed on 4.4 and `fetch_docs.sh` failed twice.
+  - `tools/comp.py`: `LEGACY` branch for the 4.4 compositor (`scene.node_tree`, Composite, `OPEN_EXR` + `file_slots`, `Switch.check`). The new-experiment template's `post()` sets Glare properties on 4.4.
+  - `tools/fetch_docs.sh` picks a working `python3`/`python`; `tools/html_to_text.py` reads and writes UTF-8.
+  - `tools/review_prompt.py` assembles each round's reviewer prompt (it was pasted by hand 9 times). `review-render` step 5 uses it.
+  - `review-render` correctness pass: mirror override for glossy subjects (a diffuse clay render hid the domed-cap bug for 3 rounds), an isolation set for reflective subjects (~30 guess renders), design facts in the brief. New rules: hand contradicting asks to the designer as a control; tune numeric complaints with a metrics script.
+  - `new-experiment`: step 0 checks the machine (smoke test, `reference/`) before any experiment work. The template gains a `clay` override switch.
 
 - **2026-09-26 — Pipeline enforced, not just described.** Added a pipeline section to `CLAUDE.md`, a `UserPromptSubmit` hook (`pipeline-reminder.sh`) that reminds Claude of it on experiment-like prompts, and a Stop-hook check that asks for a review round when a session rendered an experiment but never ran `review-render`. Evidence: across three sessions in blender-lab the only skill used was `capture-learnings`, and only because the hook forced it. The printed-plastic v2 session built a version with no research and no review. `threshold-orbit` was built in the retired folder with no skills at all. The old folders now carry a "MOVED" notice.
 

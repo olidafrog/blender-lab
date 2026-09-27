@@ -15,6 +15,11 @@
 - Halftone line screens: rotate the UVs, build a triangle wave, threshold against coverage. Gate by coverage so blank paper stays clean. The rotation angle is 90° from the direction the lines run; test at low samples. `printed-plastic`
 - Frosted surface: mix a sharp refraction core with a wide refraction-only halo. A reflection on the wide lobe veils the print. `printed-plastic`
 - Surface specks: mix in a Transparent BSDF, not white. White reads as dust. Transparent reads as texture in the plastic. `printed-plastic`
+- **Diffraction grating (CD) as a BSDF:** one anisotropic Glossy lobe per band (8 bands 400–700 nm, orders ±1, ±2), normal rotated about the groove tangent by ½·asin(mλ/d), band colours from Zucconi's spectral fit normalised to white. Correct under every light, no noise. `experiments/wonder-minidisc/scripts/materials.py`. `minidisc`
+- A grating shows colour only if its mirror direction sees dark: in a white room the bands sum to white. The hue at a point is set by the light's angle off the mirror direction (first order λ = d·sin θ; 15° violet … 25° red). Sector width comes from the light's extent *around* the mirror direction, so wide, radially thin arcs give broad saturated sectors. `minidisc`
+- Principled roughness also blurs transmission. Put scratches and fingerprints on a separate rough Glossy mixed by mask, never on the plastic's own roughness. (The glass rule below holds for plastic too.) `minidisc`
+- Tinted plastic from one colour: k = −ln C, density = max k / depth, absorption colour = 1 − k/max k into Volume Absorption. The depth input is the tint-strength vs see-through trade-off. `minidisc`
+- On 4.4 the Glossy BSDF's id is `ShaderNodeBsdfAnisotropic`; try it before `ShaderNodeBsdfGlossy`. `4.4`
 
 ## Imperfections on glass
 

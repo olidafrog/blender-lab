@@ -8,6 +8,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 REF=reference; TMP="$REF/.tmp"; mkdir -p "$REF" "$TMP"
+# On Windows `python3` is often the Microsoft Store stub, which exits non-zero; use whichever runs.
+PY=$(for c in python3 python; do "$c" -c "" 2>/dev/null && { echo "$c"; break; }; done)
+[[ -n "$PY" ]] || { echo "No working python3/python" >&2; exit 1; }
 
 # 1. Exact API of the installed Blender (seconds)
 tools/blender.sh tools/dump_api.py
@@ -20,7 +23,7 @@ for v in $(printf '%s\n' "${ver_here:-}" "$@" | grep -E '^[0-9]+\.[0-9]+$' | sor
     echo "API docs $v"
     curl -sfL -o "$TMP/api-$v.zip" "https://docs.blender.org/api/$v/blender_python_reference_$u.zip"
     rm -rf "$TMP/api-$v"; unzip -q "$TMP/api-$v.zip" -d "$TMP/api-$v"
-    python3 tools/html_to_text.py "$TMP/api-$v"/blender_python_reference_* "$REF/api-docs-$v"
+    "$PY" tools/html_to_text.py "$TMP/api-$v"/blender_python_reference_* "$REF/api-docs-$v"
     rm -rf "$TMP/api-$v" "$TMP/api-$v.zip"
   fi
 done

@@ -83,12 +83,12 @@ for f in src.rglob("*.html"):
     if any(part.startswith(("_", ".")) for part in f.relative_to(src).parts) or f.name in ("genindex.html", "search.html", "py-modindex.html"):
         continue
     p = Main()
-    p.feed(f.read_text(errors="ignore"))
+    p.feed(f.read_text(encoding="utf-8", errors="ignore"))
     t = p.text()
     if len(t) < 40:
         continue
     out = dst / f.relative_to(src).with_suffix(".txt")
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(t)
+    out.write_text(t, encoding="utf-8")
     n += 1
 print(f"converted {n} pages -> {dst}")

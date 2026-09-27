@@ -9,6 +9,7 @@ Every experiment gets the same folder shape and starts from what past experiment
 
 ## Steps
 
+0. **Check the machine first.** `tools/blender.sh tools/smoke_test.py`, and check `reference/` exists (else run `tools/fetch_docs.sh` in the background). Setup problems (a 5.x-only helper on 4.4, a missing docs folder) should surface before any experiment work.
 1. **Get the inputs.** You need a brief and reference images. Ask only if one is missing. Derive a short kebab-case name from the brief.
 2. **Scaffold** `experiments/<name>/`:
    - `references/`, `assets/`, `renders/`, `reviews/`, `output/`, `scripts/`
