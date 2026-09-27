@@ -1,9 +1,45 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(tools/blender.sh:*)",
+      "Bash(BLEND=* tools/blender.sh:*)",
+      "Bash(VERBOSE=1 tools/blender.sh:*)",
+      "Bash(bash tools/:*)",
+      "Bash(python3 tools/:*)"
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": false,
+    "vercel@claude-plugins-official": false,
+    "figma@claude-plugins-official": false,
+    "feature-dev@claude-plugins-official": false,
+    "code-review@claude-plugins-official": false,
+    "impeccable@impeccable": false,
+    "paper-desktop@paper": false,
+    "frontend-design@claude-plugins-official": false,
+    "swift-lsp@claude-plugins-official": false,
+    "playwright@claude-plugins-official": false
+  },
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh\"" }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [
           { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/pipeline-reminder.sh\"" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/research-gate.sh\"" }
         ]
       }
     ],

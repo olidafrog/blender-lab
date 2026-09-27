@@ -24,6 +24,8 @@ No tag means it holds on both versions and both machines. If you confirm a tagge
 - Update an entry before you add a new one. One fact lives in one place.
 - Keep entries to one to three lines. Link to an experiment file for detail.
 - Record what the code cannot show. Do not describe what a script does.
+- A rule lives in one place: the skill that applies it, or `CLAUDE.md`. Knowledge files keep the evidence and point at the rule.
+- Prune. When an entry has gone three experiments without being used or confirmed, tag it `stale?`. The next retro deletes it or removes the tag.
 
 ## Index
 
@@ -38,10 +40,11 @@ Gotchas
 - [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes.
 
 Process
-- [Review loop](process/review-loop.md) — the adversarial render-and-score loop.
+- [Review loop](process/review-loop.md) — evidence behind the `review-render` rules.
 - [Matching a reference](process/matching-a-reference.md) — "recreate this image" tasks.
 - [Debugging a render](process/debugging.md) — isolating, cropping, measuring.
-- [Process improvements](process/improvements.md) — how the skills changed, and proposals.
+- [Process improvements](process/improvements.md) — how the skills changed, each with a check, and proposals.
+- [Scoreboard](process/scoreboard.md) — what each session cost: reviews, best score, Blender runs, tokens, time.
 
 - [Insights](insights.md) — deeper lessons.
 

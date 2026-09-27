@@ -12,6 +12,10 @@
 
 Score 8.5 from the reviewer. (Change if the brief needs something else.)
 
+## Budget
+
+10 review rounds. When they are spent, `review-render` stops and reports; the user can extend it.
+
 ## Deliverables
 
 - `output/FINAL___NAME__.png`

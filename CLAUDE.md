@@ -23,11 +23,13 @@ Any request to start an experiment, make a new version, match a reference, or im
 
 1. `new-experiment` (new) — or read the experiment's `BRIEF.md`, `PROGRESS.md` and `LEARNINGS.md` (existing).
 2. `research-reference` — before building. On a new version, rerun it for any effect a review said is still wrong.
-3. Build, then `review-render` in a loop until its stop rule. Opus reviewer every round.
+3. Build, then `review-render` in a loop until its stop rule or the round budget in `BRIEF.md`.
 4. `finish-experiment` — final render plus an editable `.blend` with one control node per material.
 5. `capture-learnings` — knowledge plus the process retro.
 
 Invoke each skill with the Skill tool; do not work from memory of what it says. Skip a step only when the user says so ("no review", "just a quick test"), and note the skip in `PROGRESS.md`. Tasks that are not look work (fix a script, convert a model, set up tooling) skip steps 2–4.
+
+Hooks check the artifacts, not the skill names: edits to `build.py` wait for a `RESEARCH.md` with Sources (or `research skipped: <why>` in `PROGRESS.md`), and before stopping, the newest render needs a review and `knowledge/` or `LEARNINGS.md` needs an update.
 
 Read [knowledge/README.md](knowledge/README.md) and the entries that touch the task before starting.
 
@@ -38,25 +40,22 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 - `/review-render` — one round of the adversarial review loop (always an Opus reviewer).
 - `blender-docs` — how to look things up in `reference/`. Loads by itself when writing bpy code.
 - `/finish-experiment` — final PNG plus an editable `.blend` where each material is one control node.
-- `/capture-learnings` — promote this session's lessons into `knowledge/`. A Stop hook reminds you once per session.
+- `/capture-learnings` — promote this session's lessons into `knowledge/`, log the session's cost in `knowledge/process/scoreboard.md`, and run the process retro.
 
 ## Layout
 
 - `experiments/<name>/` — `BRIEF.md`, `RESEARCH.md`, `PROGRESS.md`, `references/`, `assets/`, `scripts/build.py`, `renders/` (not in git), `reviews/`, `output/` (FINAL PNGs; `.blend` not in git), `LEARNINGS.md`.
-- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `comp.py` (compositor with live preview), `compare.py`, `crop_compare.py`, `crops.py`, `screen_fft.py` (line-screen pitch and angle).
+- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `comp.py` (compositor with live preview), `compare.py`, `crop_compare.py`, `crops.py`, `screen_fft.py` (line-screen pitch and angle), `metrics.py` (pre-review gate: did the change reach the pixels), `session_cost.py` (plain `python3`: what a session cost).
 - `knowledge/` — gotchas, process, insights, decisions.
 - `library/` — reusable models, textures, HDRIs, materials, node groups.
 
 ## Conventions
 
 - Work autonomously. The user kicks off an experiment and leaves it to run: research, build and review without stopping for approval, unless asked. Keep `PROGRESS.md` current so they can check in.
-
 - Rebuild the scene from `build.py`. Every tunable value lives in its `P` dict; override with `--set key=value`. Never hand-edit a `.blend` and lose it on the next build.
-- Put designer controls on named node-group inputs with ranges, and add a `HOW_TO_TWEAK` text block to the `.blend`.
 - Never overwrite a render the user liked. Add a suffix.
-- Fix one ranked problem per review round.
-- When something costs time, note it in the experiment's `LEARNINGS.md` straight away. Put friction with the process itself under Process. `/capture-learnings` turns these into skill and tool changes, logged in `knowledge/process/improvements.md`.
-- Every final `.blend` is a hand-off: one control node per material (`tools/nodes.py`), and the compositor as one Post node with a live preview (`tools/comp.py`).
+- When something costs time, note it in the experiment's `LEARNINGS.md` straight away. Put friction with the process itself under Process, and why a version took many rounds under Cost. `/capture-learnings` turns these into skill and tool changes, logged in `knowledge/process/improvements.md`.
+- Every final `.blend` is a hand-off: one control node per material (`tools/nodes.py`) with named inputs and ranges, a `HOW_TO_TWEAK` text block, and the compositor as one Post node with a live preview (`tools/comp.py`).
 
 ## Experiments
 

@@ -1,0 +1,19 @@
+# Scoreboard
+
+What each session cost, so the retro can tell whether a process change made experiments cheaper. One row per session, oldest first. `/capture-learnings` adds the row with `python3 tools/session_cost.py --latest --scoreboard`.
+
+- **Reviews**: Opus reviewer spawns.
+- **Best**: best reviewer score in the experiment's `PROGRESS.md` at the end of the session.
+- **Output**: output tokens, main thread plus subagents. Cache reads are about 200× larger and track context length; `session_cost.py` prints them in its full table.
+- **Active min**: time with gaps over 10 minutes removed.
+
+| Date | Experiment | Session | Reviews | Best | Blender runs | Output | Active min | Note |
+|---|---|---|---|---|---|---|---|---|
+| 2026-09-26 | wonder-printed-plastic | 9afff771 | 0 | - | 20 | 41k | 51 | v2 poster work, before the pipeline |
+| 2026-09-26 | tooling | 5943c0d7 | 0 | - | 14 | 24k | 37 | layout and tools setup |
+| 2026-09-26 | tooling | 22bc0aa0 | 0 | - | 0 | 10k | 16 | local Blender docs |
+| 2026-09-26 | eclipse-glow | 66d18bbe | 14 | 7.3 | 93 | 251k | 141 | still v01–v09 (7.2), rise v01–v07 (7.3), threshold-orbit migration |
+| 2026-09-27 | eclipse-glow | 81e37224 | 4 | 6.8 | 25 | 54k | 41 | sunrise video v01–v04 |
+| 2026-09-27 | opal-essence | d9ef3de3 | 1 | 5.3 | 29 | 81k | 30 | in progress when logged; web research ran in subagents, but `build.py` was written before `RESEARCH.md` |
+| 2026-09-27 | opal-essence | 517bfecf | 0 | - | 2 | 17k | 16 | short follow-up |
+| 2026-09-27 | tooling | edbee1e3 | 0 | - | 6 | 60k | 12 | lab audit: artifact hooks, metrics gate, cost scoreboard, round budget |

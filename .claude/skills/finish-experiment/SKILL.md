@@ -28,5 +28,5 @@ Every experiment ends with two deliverables: the final image, and an editable `.
 4. **Raw EXR.** `--save` copies the final `renders/<out>_raw.exr` into `output/` and points the Saved Render node at it. It is the compositor preview source; keep it with the `.blend`.
 5. **Portable file.** `build.py --save` makes paths relative and deletes `.blend1`. Pack any images the `.blend` needs (`bpy.ops.file.pack_all()`) unless they live in `library/`.
 6. **Verify.** Open the saved `.blend` in a fresh headless Blender (`BLEND=... tools/blender.sh <check.py>`). Check each material is one group node, the inputs have ranges, `HOW_TO_TWEAK` exists, the Saved Render node points at an existing EXR, and a 1-sample render with the source switch On matches the final PNG.
-7. **Record.** Add a decision record to `knowledge/decisions/<name>.md` (chosen mechanism, rejected ones, final score). Then run `/capture-learnings`, including its retro, so the next experiment runs better.
+7. **Record.** Add a decision record to `knowledge/decisions/<name>.md` (chosen mechanism, rejected ones, final score, and the calibration pair from `PROGRESS.md`). Then run `/capture-learnings`, including its cost line and retro, so the next experiment runs better.
 8. **Report** to the user: the two file paths and the list of controls, one line each.

@@ -7,6 +7,7 @@ For "recreate this image" work. Learned on eclipse-glow (93 renders, 17 judge ro
 - `tools/compare.py` — side-by-side PNG, MAE, and sampled colours along the centre lines. Render at the reference's exact resolution so pixels line up.
 - `tools/screen_fft.py` — period and angle of a line screen or fine pattern in a flat patch. Run it on the reference and on the render; it catches a wrong or flipped angle in one run.
 - `tools/crop_compare.py` — zoomed side-by-side of one region. Use it as soon as a reviewer flags a small area.
+- `tools/metrics.py` — levels, clipping and gradient share per region, or a per-region diff between two versions. Works on renders of any size.
 
 ## Workflow
 

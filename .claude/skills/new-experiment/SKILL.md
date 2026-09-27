@@ -13,14 +13,14 @@ Every experiment gets the same folder shape and starts from what past experiment
 1. **Get the inputs.** You need a brief and reference images. Ask only if one is missing. Derive a short kebab-case name from the brief.
 2. **Scaffold** `experiments/<name>/`:
    - `references/`, `assets/`, `renders/`, `reviews/`, `output/`, `scripts/`
-   - Copy `.claude/skills/new-experiment/templates/build.py` to `scripts/build.py`, and `BRIEF.md`, `LEARNINGS.md`, `PROGRESS.md` from that `templates/` folder to the experiment root. Replace `__NAME__` with the name.
-   - Paste the brief word for word into `BRIEF.md`. Copy references into `references/`.
+   - Copy `.claude/skills/new-experiment/templates/build.py` to `scripts/build.py`, and `BRIEF.md`, `LEARNINGS.md`, `PROGRESS.md` from that `templates/` folder to the experiment root, with `cp` then `sed` to replace `__NAME__`. (A hook blocks Edit and Write on `build.py` until research exists; see step 5.)
+   - Paste the brief word for word into `BRIEF.md`. Copy references into `references/`. Set the Budget line if the brief implies more or fewer than 10 review rounds.
    - Stop if the folder already exists. Never overwrite an experiment.
 3. **Load the knowledge.** Read `knowledge/README.md`, then every file it indexes whose topic touches this brief (for example glass → `cycles.md` and the glass section of `shader-nodes.md`). Always read `process/review-loop.md` and `insights.md`.
 4. **Note what applies.** Write to the top of `PROGRESS.md` (do not stop to ask):
    - which Blender version and machine you are on (`tools/blender.sh` prints it), and any `4.4`/`5.x` gotchas that apply,
    - the 3–8 gotchas and process notes most relevant to this brief,
-5. **Research before building.** Run `/research-reference`. Do not build the real scene until `RESEARCH.md` exists.
+5. **Research before building.** Run `/research-reference`. The `research-gate` hook blocks edits to `scripts/build*.py` until `RESEARCH.md` has a Sources section. If the user said to skip research, write `research skipped: <why>` in `PROGRESS.md`.
 6. **Smoke the template.** Run `tools/blender.sh experiments/<name>/scripts/build.py --out v00 --samples 16 --scale 0.25` to prove the scaffold renders. Then replace the placeholder scene.
 
 ## Conventions

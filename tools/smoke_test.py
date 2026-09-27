@@ -3,6 +3,7 @@
 Run:
   tools/blender.sh tools/smoke_test.py
 
+Also builds the new-experiment template at 10% scale, 4 samples (5.x only).
 Outputs go to the system temp dir; nothing lands in the repo.
 """
 import math
@@ -70,4 +71,37 @@ print(f"RENDER TIME {time.perf_counter() - t0:.2f}s")
 
 bpy.ops.wm.save_as_mainfile(filepath=str(OUT["blend"]))
 print(f"Saved {OUT['render']}")
+
+
+def template_check():
+    """Build the new-experiment template at a tiny size, so API drift in nodes.py and comp.py
+    shows up here and not in the next experiment. Runs in a temp copy of the repo layout."""
+    import runpy
+    import shutil
+
+    repo = Path(__file__).resolve().parents[1]
+    if bpy.app.version < (5, 0, 0):
+        print("[out] TEMPLATE SKIPPED: the template uses the 5.x compositor API")
+        return
+    root = TMP / "blender-lab-smoke"
+    shutil.rmtree(root, ignore_errors=True)
+    shutil.copytree(repo / "tools", root / "tools", ignore=shutil.ignore_patterns("__pycache__"))
+    script = root / "experiments" / "smoke" / "scripts" / "build.py"
+    script.parent.mkdir(parents=True)
+    src = (repo / ".claude/skills/new-experiment/templates/build.py").read_text(encoding="utf-8")
+    script.write_text(src.replace("__NAME__", "smoke"), encoding="utf-8")
+    argv = sys.argv
+    sys.argv = [argv[0], "--", "--out", "smoke", "--scale", "0.1", "--samples", "4", "--save"]
+    try:
+        runpy.run_path(str(script), run_name="__main__")
+    finally:
+        sys.argv = argv
+    exp = script.parents[1]
+    for f in (exp / "renders/smoke.png", exp / "renders/smoke_raw.exr", exp / "output/smoke.blend"):
+        if not f.exists():
+            sys.exit(f"TEMPLATE FAILED: missing {f}")
+    print("[out] TEMPLATE OK")
+
+
+template_check()
 print("SMOKE TEST OK")
