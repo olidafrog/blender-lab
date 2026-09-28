@@ -19,6 +19,8 @@ Reusable things for any experiment. It fills as experiments produce things worth
 - `materials/cloud_material.blend` — volumetric cloud: Mie scatter plus albedo absorption. Colour means how the lit cloud looks. For any volume object.
 - `node-groups/build_clouds.py` — builds both, plus the lobe-tier seeder (`seed_points`) and a `Neon` emitter group. Experiments import it; see its docstring and `knowledge/decisions/clouds.md`.
 
+- `node-groups/wax_seal.blend` — the "Wax Seal" GN group: a live heightfield seal (rim bead, stamped field, emblem relief). Its Emblem input takes any curve, text or mesh object, auto-fitted to Emblem Size, with Relief, Bevel and Bevel Shape controls. Built by `node-groups/build_wax_seal.py` (`from build_wax_seal import seal_group, gn_input`). From `wax-seal`.
+
 Python builders for both materials: `from build_materials import disc_group, case_group` (add `LIBRARY / "materials"` to `sys.path`).
 
 ## Rules
