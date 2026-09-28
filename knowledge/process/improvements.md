@@ -14,6 +14,8 @@ Every Changed entry ends with a **Check**: what the next experiment should show 
 - **Mirror-direction studio as a `tools/` helper** (flag + wedge lights + big-light angle check, from `wonder-minidisc/scripts/build.py`). Evidence: it took most of the minidisc session and applies to any mirror, foil or grating subject.
 - **Reviewer "design facts" section in `REVIEWER_PROMPT.template.md`.** Evidence: `minidisc` lost four rounds to a design fact the reviewer read as a defect.
 
+- **Commit at the end of each experiment session** (`finish-experiment` or `capture-learnings`). Evidence: on 2026-09-28 two experiments were uncommitted in the main checkout while the remote and lab-audit moved, and the merge hit 14 conflicted files. Needs the user's OK, since it commits without being asked.
+
 ## Parked
 
 Proposals with no evidence yet. Revive one when a session hits the problem it solves.
@@ -23,9 +25,11 @@ Proposals with no evidence yet. Revive one when a session hits the problem it so
 
 ## Changed
 
+- **2026-09-28 — Output size limit in finish-experiment.** Step 3 now keeps every `output/` file under 100 MB. Evidence: `FINAL_eclipse_sunrise.mp4` was 164 MB, so the push would have failed; it is git-ignored and exists only on the Mac. File: `.claude/skills/finish-experiment/SKILL.md`. **Check:** the next final video is committed and pushes without an error.
+
 - **2026-09-28 — Review-loop hygiene from opal-essence.** `review-render`: the correctness pass now checks exposure against the reference and isolates lights one at a time before tuning a veil; `build.py` is snapshotted per reviewed version. `new-experiment`: fixed the templates path. Evidence: 4 rounds lost to a dim plate read as "smoked glass"; a veil found only by isolation renders; a bad splice duplicated half of `build.py` with no version to diff against; the skill pointed at a `templates/` folder that does not exist at the root. Files: `.claude/skills/review-render/SKILL.md`, `.claude/skills/new-experiment/SKILL.md`. **Check:** the next loop has a `build_vNN.py` per reviewed version and an exposure check before round 1.
 
-- **2026-09-27 — Parallel-sessions note.** New `knowledge/process/parallel-sessions.md`. Evidence: the lab-audit session ran in a worktree beside two live sessions, lost several Bash calls to the worktree guard, and was stopped by the hook it had just replaced. **Check:** the next structural change uses a worktree and loses no calls to the guard.
+- **2026-09-27 — Parallel-sessions note.** New `knowledge/process/parallel-sessions.md`. Evidence: the lab-audit session ran in a worktree beside two live sessions, lost several Bash calls to the worktree guard, and was stopped by the hook it had just replaced. **Check:** the next structural change uses a worktree and loses no calls to the guard. 2026-09-28: held in part. The lab-audit worktree merged cleanly by rebase, but conflicts reached `knowledge/gotchas/*` and `tools/comp.py` too, not only the files the note names.
 
 - **2026-09-27 — Enforce by artifact, measure cost, close the loop.** From an audit of the skills, hooks and all seven session transcripts. Files: `.claude/settings.json`, `.claude/hooks/`, `review-render`, `capture-learnings`, `new-experiment` (skill and templates), `research-reference`, `finish-experiment`, `tools/metrics.py`, `tools/session_cost.py`, `tools/smoke_test.py`, `knowledge/process/scoreboard.md`, `knowledge/README.md`, `CLAUDE.md`.
   - *Research gate.* A `PreToolUse` hook blocks Edit and Write on `experiments/*/scripts/build*.py` when the experiment has references but `RESEARCH.md` has no Sources section. Override: `research skipped: <why>` in `PROGRESS.md`. Evidence: in opal-essence `build.py` was written before `RESEARCH.md`. **Check:** the next new experiment has `RESEARCH.md` with Sources before its first `build.py` edit, and the gate never blocks a session that ran the research.

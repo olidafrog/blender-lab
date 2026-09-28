@@ -17,3 +17,4 @@ What each session cost, so the retro can tell whether a process change made expe
 | 2026-09-27 | opal-essence | d9ef3de3 | 1 | 5.3 | 29 | 81k | 30 | in progress when logged; web research ran in subagents, but `build.py` was written before `RESEARCH.md` |
 | 2026-09-27 | opal-essence | 517bfecf | 0 | - | 2 | 17k | 16 | short follow-up |
 | 2026-09-27 | tooling | edbee1e3 | 0 | - | 6 | 60k | 12 | lab audit: artifact hooks, metrics gate, cost scoreboard, round budget |
+| 2026-09-28 | tooling | 81ad5a6d | 0 | - | 1 | 15k | 4 | git: pulled wonder-minidisc, committed eclipse-glow and opal-essence, merged lab-audit, pushed |
