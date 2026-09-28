@@ -27,3 +27,4 @@ Launch with `tools/blender.sh`. It handles most of the items below.
 - After `save_as_mainfile`, call `bpy.ops.file.make_paths_relative()` and save again. Otherwise image paths are absolute and the file breaks on the other machine.
 - Saving over a file makes a `.blend1` backup. Delete it after the final save.
 - `tools/blender.sh` hides any line that does not match its filter. Measurement tools print with an `[out] ` prefix so their numbers get through; `compare.py`'s MAE was silently hidden before. Use `VERBOSE=1` to see everything.
+- zsh does not word-split `$v`, so `for v in "a k=v k=v"; do tools/blender.sh … --set $v` passes one argument and the settings are ignored with no error. Build a `--set` array in a bash helper. `mac` `clouds`

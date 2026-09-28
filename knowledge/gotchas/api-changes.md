@@ -20,3 +20,4 @@
 - `Collection.collection_objects` has no name lookup; index it to set `light_linking.link_state`. `4.4`
 - For a noisy pass, set `view_layer.cycles.denoising_store_passes = True`. Render Layers then has a `Noisy Image` output. `5.x`
 - Geometry-nodes modifier inputs in 5.2: `mod.properties.inputs.Socket_N.value`. `mod["Socket_N"] = v` raises "id properties not supported for this type". `5.x` `eclipse-glow`
+- `bpy.data.materials.new()` gives a node tree with `use_nodes` False, so the nodes are ignored and a volume renders nothing. Set `use_nodes = True`; it is deprecated but still needed in 5.2. `5.x` `clouds`

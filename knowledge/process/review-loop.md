@@ -30,7 +30,8 @@ The rules live in `.claude/skills/review-render/SKILL.md`. This file keeps the e
 - **Hand score-neutral trade-offs to the user** as a `--set` override. `caustics-v2`
 - **Test swappable content before finishing** (a text lockup, another subject). It shows problems the hero content hides.
 - **State design facts in the reviewer brief from round 1** (correctness pass). When the subject departs from the references (a logo-shaped disc vs a round one), say so. `minidisc` lost four rounds at 6.2–6.3 to "the disc should show through the bands"; stating it broke the plateau.
-- **Hand contradicting asks to the designer** (Rules). When the top asks flip across rounds (stronger tint vs more pink through that tint), expose the trade-off as one control. `minidisc`
+- **Hand contradicting asks to the designer** (Rules). When the top asks flip across rounds (stronger tint vs more pink through that tint), expose the trade-off as one control. `minidisc`. In `clouds` the sun flipped from warm side key (v05) to front key (v06), and the colour from "too magenta" to "not lavender enough" (v04–v08).
+- **Several targets in one experiment.** One fixed `REVIEWER_PROMPT.md` with a table that maps a render-name suffix to its reference (`v09_sunset` → ref 03) kept scores comparable across presets. `clouds`
 - **Tune numeric complaints locally** (Rules). For coverage, hue families or clipping, write a small metric script and review only the result. `minidisc/scripts/disc_metrics.py` took the disc from 3 % to 21 % saturated in two local runs.
 - **Video: contact sheet plus six consecutive 1:1 crops** (step 4). Reviewers still misjudge motion from stills ("the shimmer does not move" when it did). Before acting on a motion or "dark hole" complaint, measure against a control render. `eclipse-glow`
 

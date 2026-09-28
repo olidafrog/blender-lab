@@ -38,6 +38,7 @@ Gotchas
 - [Cycles](gotchas/cycles.md) — lighting, refraction, geometry, output quality.
 - [Colour](gotchas/colour.md) — view transforms, clipping, dark fades.
 - [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes.
+- [Volumes](gotchas/volumes.md) — GN volume grids, albedo vs scatter colour, emitters in volumes, cloud look.
 
 Process
 - [Review loop](process/review-loop.md) — evidence behind the `review-render` rules.
@@ -55,3 +56,4 @@ Decisions
 - [wonder-caustics and caustics-v2](decisions/wonder-caustics.md) — dispersive glass
 - [wonder-minidisc](decisions/wonder-minidisc.md) — CD diffraction BSDF, tinted case, mirror-direction studio
 - [opal-essence](decisions/opal-essence.md) — milky opalescent resin over a gradient backlight
+- [clouds](decisions/clouds.md) — modular volumetric clouds: lobe tiers → density grid, Mie + albedo absorption, emitters inside
