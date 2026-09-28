@@ -60,7 +60,8 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 
 ## Experiments
 
-- `eclipse-glow` — camera-space normals and compositor glows. Runs on 4.4 and 5.x.
+- `eclipse-glow` — camera-space normals and compositor glows. v1 (`eclipse_glow.py`, sphere) runs on 4.4 and 5.x; v2 (`build.py`, Wonder logomark) is 5.x only; `build_rise.py` makes the moonrise video from it; `build_sunrise.py` reworks that as a sunrise over hot water (contact highlight, mirage gap, haze).
 - `wonder-minidisc` — logomark as a CD/MiniDisc (diffraction BSDF) in a moulded tinted case; mirror-direction studio. Built on 4.4.
+- `opal-essence` — milky opalescent resin plate over hardware, 5-stop gradient backlight (editable stops), raised Wonder type. 5.x only (light/shadow linking, Volume Coefficients). Final 6.5/10; open items in its decision record.
 - `threshold-orbit` — looping orbital diagram; lines bleed where they cross (blur → threshold in the compositor). v01 predates the pipeline.
 - `wonder-printed-plastic`, `wonder-caustics`, `wonder-caustics-v2`, `wonder-popart` — Wonder look-dev. Blender 5.x, Metal only. They predate this layout: `refs/` not `references/`, finals at the folder root, and `--out` resolves against the shell's cwd.

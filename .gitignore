@@ -6,6 +6,7 @@ experiments/*/renders/
 experiments/*/export/
 experiments/*/exports/
 experiments/*/reviews/crops_*/
+experiments/*/reviews/*/crops_*/
 
 __pycache__/
 *.pyc
@@ -22,3 +23,6 @@ reference/
 experiments/*/assets/hdri/
 experiments/*/assets/imperfections/
 experiments/*/assets/cache/
+
+# 164 MB, over the GitHub 100 MB file limit
+experiments/eclipse-glow/output/FINAL_eclipse_sunrise.mp4

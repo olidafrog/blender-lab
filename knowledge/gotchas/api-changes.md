@@ -19,3 +19,4 @@
 - 4.4 compositor: `scene.use_nodes`, `scene.node_tree`, a Composite node, File Output with `base_path`, `format.file_format = "OPEN_EXR"`, `file_slots[0].path`; it appends the frame number (`x0001.exr`). Switch uses `.check`. `tools/comp.py` handles both (`comp.LEGACY`). `4.4`
 - `Collection.collection_objects` has no name lookup; index it to set `light_linking.link_state`. `4.4`
 - For a noisy pass, set `view_layer.cycles.denoising_store_passes = True`. Render Layers then has a `Noisy Image` output. `5.x`
+- Geometry-nodes modifier inputs in 5.2: `mod.properties.inputs.Socket_N.value`. `mod["Socket_N"] = v` raises "id properties not supported for this type". `5.x` `eclipse-glow`

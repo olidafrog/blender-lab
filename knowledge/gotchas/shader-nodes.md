@@ -5,6 +5,8 @@
 - `ShaderNodeMix` has typed duplicate sockets, so index them. RGBA: factor `inputs[0]`, A `inputs[6]`, B `inputs[7]`, result `outputs[2]`. FLOAT: A `inputs[2]`, B `inputs[3]`, result `outputs[0]`. `inputs["A"]` returns the float socket.
 - ColorRamp `EASE` interpolation plateaus at every stop and bands with many stops. Use `LINEAR`.
 - A Python variable reused across loops silently rewires a material. A dust loop named `d` shadowed a refraction loop's `d` and turned the material white. Give each layer's temporaries their own names. `caustics-v2`
+- A gradient driven by Texture Coordinate › Object on a scaled plane squeezes into the unscaled unit range: the stops bunch into a narrow rainbow band. Apply the scale first. `opal-essence`
+- In a world shader, `Texture Coordinate › Generated` is not a raw ray direction. For direction masks (softbox cards) use `Geometry › Incoming` × −1. Gate with Light Path › Is Glossy Ray to show them only in reflections. `5.x` `opal-essence`
 
 ## Techniques
 
@@ -20,6 +22,10 @@
 - Principled roughness also blurs transmission. Put scratches and fingerprints on a separate rough Glossy mixed by mask, never on the plastic's own roughness. (The glass rule below holds for plastic too.) `minidisc`
 - Tinted plastic from one colour: k = −ln C, density = max k / depth, absorption colour = 1 − k/max k into Volume Absorption. The depth input is the tint-strength vs see-through trade-off. `minidisc`
 - On 4.4 the Glossy BSDF's id is `ShaderNodeBsdfAnisotropic`; try it before `ShaderNodeBsdfGlossy`. `4.4`
+- Milky, see-through resin: the lever is transmission roughness (~0.3), not scatter density or front light. Wide-angle transmission lets backlight wrap around parts behind, so they lift and veil like an opal diffuser, while parts touching the back face stay sharp. Denser scatter only darkens the plate. `opal-essence`
+- A frosted Principled base also reflects at its roughness and smears every light across the surface. Set `Specular IOR Level` 0 on the base and let a sharp Coat (~0.02) do the reflecting. `5.x` `opal-essence`
+- A Rayleigh-weighted scatter volume (Volume Coefficients, R:G:B ≈ 1:2.3:5.7) is true opalescence, but it shifts all transmitted light warm: a teal gradient stop comes out olive and dark parts brown. Keep it weak (Opal Blue ~0.35) when a designer palette matters. `opal-essence`
+- Raised type as a separate object in a frosted material is a second diffuser that greys and re-blurs what is under it. Give it clear faces (the same group node with Frost 0). Without a volume it can also overlap the plate; with one it renders dark. `opal-essence`
 
 ## Imperfections on glass
 
@@ -28,3 +34,4 @@
 - Fingerprints and haze change glossy roughness only. Touch the refraction lobes and the image behind blurs. `caustics-v2`
 - Scratches: Voronoi distance-to-edge windows under a sparse noise mask, with a tiny bump. Above about 0.15 roughness a Voronoi edge network looks like a mesh. `caustics-v2`
 - Haze patches with any gloss reflect lamps as coloured blobs. Keep them small and low. `caustics-v2`
+- A camera-space normal gradient gives one flat colour on flat faces. Store a per-shape height (Mesh Island → Field Min & Max, grouped by island → Map Range) as a point attribute and blend it in with an Attribute node. `eclipse-glow`

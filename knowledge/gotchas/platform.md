@@ -7,3 +7,4 @@
 - In zsh, `for x in $list` does not split words. Use an array. `--set "comp={}"` needs quotes, or brace expansion eats the braces. `mac`
 - The two machines run different Blender versions. A script written on one can fail on the other. See [API changes](api-changes.md).
 - On Windows `python3` is the Microsoft Store stub ("Python was not found"); use `python`. Windows Python reads and writes files as cp1252, so pass `encoding="utf-8"` (or set `PYTHONUTF8=1`) on anything touching repo text. `win`
+- Trial fonts in `~/Library/Fonts` (Söhne Mono, Founders Grotesk Mono) lack `&`, `·`, `—` and `/`; Blender draws a box for each. Check the cmap with fontTools. `/System/Library/Fonts/SFNSMono.ttf` has them all. `mac` `opal-essence`

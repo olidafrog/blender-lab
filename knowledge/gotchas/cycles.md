@@ -15,6 +15,11 @@
 - A small area light's radiance is P/(A·π): 0.5 W at 5 cm lit the table to 10× white. Lights meant only for reflections: `visible_diffuse = False`. `minidisc`
 - An object resting exactly on the table (coplanar faces) renders its whole interior black and speckled. Lift it 0.03 mm. `minidisc`
 - A white table exposed above 1.0 clips every contact shadow away; reviewers then say "the object floats". Measure the raw table value near the object and set lights so it lands at 1.0–1.05. `minidisc`
+- A milky scatter volume picks up every front light, even glossy-only lights with `visible_transmission`, `visible_diffuse` and `visible_volume_scatter` all False. Emissive meshes do it too. Use light linking (`light_linking.receiver_collection`) to keep accent lights off the milky object. Make highlight emitters thin and bright: the highlight follows radiance (power ÷ area), the veil follows total power. `5.x` `opal-essence`
+- Shadow linking lets parts behind a frosted plate show form: give them their own lights with `light_linking.blocker_collection` set to the parts only, so the plate casts no shadow for those lights. Keep those lights grazing and glossy-only; at the mirror angle, black flat tops turn to grey card. `5.x` `opal-essence`
+- To glint the bevels of raised type under a near-overhead camera, put the rake low (~14°) on the camera side. A rake from the far side never mirrors into the lens. `opal-essence`
+- A coat reflects only ~4% at normal incidence (IOR 1.49). An environment card in the coat needs strength ~40–80 to show over a backlit plate, and glossy parts behind the plate reflect it too. `Filter Glossy` 1.0 smears a thin card into a broad band. `opal-essence`
+- Flat plates cannot show the wet highlights of cast resin; those come from folds and warps. Coat bump and environment cards give nothing, or a uniform band. `opal-essence`
 
 ## Geometry under refraction
 

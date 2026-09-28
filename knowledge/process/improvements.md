@@ -4,16 +4,22 @@ How the system changes itself. `/capture-learnings` adds to this at the end of e
 
 ## Proposed
 
+- **`tools/isolate_lights.py`**: render a scene once per light (others hidden) at 25% and tile the results with labels. Evidence: in `opal-essence` a milky veil cost several tuning rounds; ad-hoc isolation renders found it in two runs, but each needed a throwaway probe script.
+- **Reviewer asks that conflict with physics get a standing answer.** In `opal-essence` reviewers asked for "more front light for the blue skin" and "no grey veil" in alternating rounds. Add a "known trade-offs" section to `REVIEWER_PROMPT.md` when a pair of asks has been tested both ways. Changing the prompt resets scores, so do it only at the start of a new version.
+
+- **Shared video review tools in `tools/`**: generalise `rise_sheet.sh` and `make_video.sh` (sequence name, frames and crop boxes as arguments) so the next video experiment does not copy eclipse-glow's. Evidence: they were hard-coded to one sequence and silently used the wrong frames.
+
 - **Blender MCP for live sessions** (revisit later). Scripts stay the main engine for unattended runs. Add the official Blender Lab MCP (Blender 5.1+, so Mac only until Windows updates) for sessions at the GUI: copying tweaked values back into `build.py`, exploring old `.blend` files, quick back-and-forth. Rule if adopted: anything changed through MCP is written back to `build.py` before the session ends. The community `ahujasid/blender-mcp` adds Poly Haven and Sketchfab import. Links: https://www.blender.org/lab/mcp-server/, https://github.com/ahujasid/blender-mcp
 - **`/sync-tweaks` skill** (can come before MCP). A headless script opens a hand-tweaked `.blend`, reads the control-node values and updates `P` in `build.py`. Evidence: tweaks made in the GUI are lost on the next rebuild.
 - **Shared library** (revisit later). Fill `library/` and add tooling to append materials and node groups from it, and to import assets (Poly Haven). Candidates now: `wonder-caustics/assets/monochrome_studio_01_4k.hdr`, the pop art halftone and hatch groups, the printed-plastic blur group.
 
-- **Port `eclipse-glow` to the 5.x compositor** so it runs on both machines. Evidence: it fails on the Mac with `'Scene' object has no attribute 'node_tree'`.
 - **Shared metrics script in `tools/`**, generalised from `experiments/wonder-caustics-v2/scripts/metrics.py`, so every loop can prove a fix reached the pixels. Evidence: 3 wasted review rounds in `printed-plastic`; `minidisc/scripts/disc_metrics.py` (hue families, dark and clipped fractions) settled a 3-round disc complaint in two local runs.
 - **Mirror-direction studio as a `tools/` helper** (flag + wedge lights + big-light angle check, from `wonder-minidisc/scripts/build.py`). Evidence: it took most of the minidisc session and applies to any mirror, foil or grating subject.
 - **Reviewer "design facts" section in `REVIEWER_PROMPT.template.md`.** Evidence: `minidisc` lost four rounds to a design fact the reviewer read as a defect.
 
 ## Changed
+
+- **2026-09-28 — Review-loop hygiene from opal-essence.** `review-render`: the correctness pass now checks exposure against the reference and isolates lights one at a time before tuning a veil; `build.py` is snapshotted per reviewed version. `new-experiment`: fixed the templates path. Evidence: 4 rounds lost to a dim plate read as "smoked glass"; a veil found only by isolation renders; a bad splice duplicated half of `build.py` with no version to diff against; the skill pointed at a `templates/` folder that does not exist at the root. Files: `.claude/skills/review-render/SKILL.md`, `.claude/skills/new-experiment/SKILL.md`.
 
 - **2026-09-27 — First library materials.** `library/materials/cd_diffraction.blend` and `tinted_plastic.blend`, built by `library/materials/build_materials.py`, with their CC0 wear masks in `library/textures/imperfections/`. `wonder-minidisc` now imports its materials from the library, so it rebuilds on either machine after a clone (its maps were in a git-ignored folder). Asked for by the user.
 
@@ -23,6 +29,13 @@ How the system changes itself. `/capture-learnings` adds to this at the end of e
   - `tools/review_prompt.py` assembles each round's reviewer prompt (it was pasted by hand 9 times). `review-render` step 5 uses it.
   - `review-render` correctness pass: mirror override for glossy subjects (a diffuse clay render hid the domed-cap bug for 3 rounds), an isolation set for reflective subjects (~30 guess renders), design facts in the brief. New rules: hand contradicting asks to the designer as a control; tune numeric complaints with a metrics script.
   - `new-experiment`: step 0 checks the machine (smoke test, `reference/`) before any experiment work. The template gains a `clay` override switch.
+
+- **2026-09-27 — Frozen-grain check and reusable video scripts.** `review-render` correctness pass now diffs two consecutive video frames in a static patch. Evidence: the Post grain was frozen in rise v01–v07 and sunrise v01–v07; a reviewer found it only by measuring. `make_video.sh` and `rise_sheet.sh` take `NAME=` / `REVIEW=`; evidence: encoding sunrise v01 silently re-encoded the old rise v01 frames. Grain fixed in `experiments/eclipse-glow/scripts/build.py`. Files: `.claude/skills/review-render/SKILL.md`, `experiments/eclipse-glow/scripts/{make_video,rise_sheet}.sh`.
+
+- **2026-09-27 — Video review material.** `review-render` now says how to review a video: a contact sheet plus six consecutive 1:1 crops, and a control render before acting on a motion complaint. Helper: `experiments/eclipse-glow/scripts/rise_sheet.sh`. Evidence: the eclipse-glow rise loop; a v03 "shimmer does not move" note was false, and a v04 "dark holes" note was false (a pixel row matched the no-logo frame within 0.1/255). Files: `.claude/skills/review-render/SKILL.md`, `knowledge/process/review-loop.md`.
+
+- **2026-09-26 — Compositor check in the correctness pass.** `review-render` now asks for each compositor effect to be rendered alone before round 1. Evidence: in eclipse-glow v2 every Post blur ran at 0 px for five versions. Two rounds asked for "a halo" that was in the graph. File: `.claude/skills/review-render/SKILL.md`.
+- **2026-09-26 — Multi-pass live preview.** `tools/comp.py` `compositor(..., passes=[...])` carries AOVs (masks, glow sources) through one Source switch and the same saved EXR, so a Post group can use them. The EXR is half float (58 MB, not 100 MB, for 5 passes at 1200×1500; the preview still matches the final within 1/255). Evidence: eclipse-glow's Post needs coverage, halo, arc-glow and height. Also done: eclipse-glow runs on 5.x (earlier this session). Files: `tools/comp.py`, `experiments/eclipse-glow/scripts/check_blend.py`.
 
 - **2026-09-26 — Pipeline enforced, not just described.** Added a pipeline section to `CLAUDE.md`, a `UserPromptSubmit` hook (`pipeline-reminder.sh`) that reminds Claude of it on experiment-like prompts, and a Stop-hook check that asks for a review round when a session rendered an experiment but never ran `review-render`. Evidence: across three sessions in blender-lab the only skill used was `capture-learnings`, and only because the hook forced it. The printed-plastic v2 session built a version with no research and no review. `threshold-orbit` was built in the retired folder with no skills at all. The old folders now carry a "MOVED" notice.
 

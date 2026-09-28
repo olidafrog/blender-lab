@@ -38,9 +38,14 @@ Each experiment improves in a loop: render, have an adversarial reviewer score i
 - The user's own markup is the strongest tie-breaker. When the circled artefacts are fixed and only reviewer taste remains, say so and stop. `caustics-v2`
 - Some trade-offs have no score-neutral answer. Expose the value as a `--set` override and hand the choice to the user. `caustics-v2`
 - Test swappable content (a text lockup, another subject) before you finish. It shows problems the hero content hides.
+- Video: review a 3×3 contact sheet plus six consecutive 1:1 crops of one patch. Reviewers still misjudge motion from stills ("the shimmer does not move" when it did). Before acting on a motion or "dark hole" complaint, measure against a control render (effect off, or a frame without the subject). `eclipse-glow`
+- Stop when reviewers start contradicting each other round to round (haze gone by 40 px, then 150 px); that is taste, not a defect. `eclipse-glow`
 
 ## When to stop
 
 - Scores rise fast (4.6 → 7.5) and then slowly. The last 0.5 comes from crop-level detail.
 - Every plateau (6.5–6.8, 7.7–7.9, 8.4) broke only with a new mechanism, never with tuning.
 - Stop when three reviews in a row sit at the same score with only small notes left.
+- Set numeric targets relative to the subject, not only the physics. A "20–60 px core" target fought 110 px wide logo bars for eight rounds. `eclipse-glow`
+- Judge glow and highlight strength at full scale. Blur radii scale with the render and grain does not, so half-scale tests look far more blown out. `eclipse-glow`
+- Before acting on a highlight or reflection complaint, sample a pixel column across the line. Twice the cause was a different node than the one being tuned (a fade reach, a tint). `eclipse-glow`
