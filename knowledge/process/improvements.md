@@ -14,8 +14,6 @@ Every Changed entry ends with a **Check**: what the next experiment should show 
 - **Mirror-direction studio as a `tools/` helper** (flag + wedge lights + big-light angle check, from `wonder-minidisc/scripts/build.py`). Evidence: it took most of the minidisc session and applies to any mirror, foil or grating subject.
 - **Reviewer "design facts" section in `REVIEWER_PROMPT.template.md`.** Evidence: `minidisc` lost four rounds to a design fact the reviewer read as a defect.
 
-- **Commit at the end of each experiment session** (`finish-experiment` or `capture-learnings`). Evidence: on 2026-09-28 two experiments were uncommitted in the main checkout while the remote and lab-audit moved, and the merge hit 14 conflicted files. Needs the user's OK, since it commits without being asked.
-
 ## Parked
 
 Proposals with no evidence yet. Revive one when a session hits the problem it solves.
@@ -24,6 +22,8 @@ Proposals with no evidence yet. Revive one when a session hits the problem it so
 - **Shared library tooling.** Append materials and node groups from `library/`, import Poly Haven assets. Candidates: `wonder-caustics/assets/monochrome_studio_01_4k.hdr`, the pop art halftone and hatch groups, the printed-plastic blur group.
 
 ## Changed
+
+- **2026-09-28 — Commit at the end of every session.** `capture-learnings` step 8 commits the paths this session changed, never `git add -A`, and does not push. Evidence: two experiments sat uncommitted in the main checkout while the remote and lab-audit moved, and the merge hit 14 conflicted files. Asked for by the user. File: `.claude/skills/capture-learnings/SKILL.md`. **Check:** the next session ends with its work committed and no other session's files in its commit.
 
 - **2026-09-28 — Output size limit in finish-experiment.** Step 3 now keeps every `output/` file under 100 MB. Evidence: `FINAL_eclipse_sunrise.mp4` was 164 MB, so the push would have failed; it is git-ignored and exists only on the Mac. File: `.claude/skills/finish-experiment/SKILL.md`. **Check:** the next final video is committed and pushes without an error.
 

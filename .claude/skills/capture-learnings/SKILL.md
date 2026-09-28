@@ -32,4 +32,5 @@ The goal is a system that gets better with every project: better looks, in fewer
       - **One source per rule.** A rule goes in exactly one place: the `SKILL.md` that applies it (or `CLAUDE.md` if it applies to most tasks). The evidence goes in `knowledge/process/`, with a pointer to the rule. Do not copy the rule into both.
       - Log every change under Changed in `improvements.md`: date, evidence, what changed, which file, and a **Check** line saying what the next experiment should show if it worked.
 7. **Clear** promoted items from each `LEARNINGS.md`. Leave anything not promoted.
-8. **Report** a short list: the cost line, checks marked, knowledge changes, process changes made, proposals. If nothing qualified, say so.
+8. **Commit this session's work** on the current branch, without asking. Stage only the paths this session changed (its experiment folder, the `knowledge/`, skill, template and tool files it edited), never `git add -A`: other sessions may have uncommitted work in the same checkout. Check `git status` first; leave files you did not touch. Message: what changed and why, one line, plus the attribution lines. Do not push unless the user asks.
+9. **Report** a short list: the cost line, the commit, checks marked, knowledge changes, process changes made, proposals. If nothing qualified, say so.
