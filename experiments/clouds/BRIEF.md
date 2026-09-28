@@ -18,7 +18,7 @@ A modular cloud system (one reusable cloud generator + one cloud material with d
 
 ## Budget
 
-12 review rounds across presets. When they are spent, `review-render` stops and reports; the user can extend it.
+12 review rounds across presets, extended by 2 on 2026-09-28 for the v13 camera/haze pass (user request). When they are spent, `review-render` stops and reports; the user can extend it.
 
 ## Deliverables
 

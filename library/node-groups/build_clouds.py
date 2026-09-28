@@ -186,7 +186,9 @@ def shape_group(material, p=None):
     f2g = N.new("GeometryNodeFieldToGrid")
     f2g.data_type = "FLOAT"
     f2g.grid_items.new("FLOAT", "density")
-    L.new(dil.outputs[0], f2g.inputs["Topology"])
+    # voxelize first: Field to Grid gives a sparse tile one value, which rendered as blocky 8-voxel slabs
+    vox = node("GeometryNodeGridVoxelize", Grid=dil.outputs[0])
+    L.new(vox.outputs[0], f2g.inputs["Topology"])
     pos = N.new("GeometryNodeInputPosition")
     smp = node("GeometryNodeSampleGrid", Grid=mean.outputs[0], Position=pos.outputs[0])
     # billows: rounded cells (1 - Voronoi F1) at two scales, plus noise to break the cells

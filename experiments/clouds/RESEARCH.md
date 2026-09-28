@@ -71,6 +71,25 @@ Measured from the references (sRGB 0–255, region means):
 - How many bounces before a pink albedo of 0.8 goes too red/saturated?
 - Do emissive meshes inside the volume converge (light tree note says they sample poorly)? If noisy, add a hidden point/line light at the emitter.
 
+## v13: camera distance and aerial perspective (added 2026-09-28, user request)
+
+- **Perspective depends on distance ÷ size only.** The scene is a scale model (cloud 3–6 m), so compare that ratio with real shots.
+  - A lone cumulus (~1 km) on a telephoto lens at 5–20 km is 5–20 widths away. sunset v11 sat at ~7 widths on 85 mm, so a longer lens at 15–20 widths flattens it the way a telephoto photo does.
+  - A cumulonimbus (~10 km tall) seen from 15–20 km subtends ~30°. Ref 04 fills half of a phone frame. So ~2–3 heights away is realistic for the tower. What is wrong is the camera level: a real viewer stands on the ground, far below the cloud base, looking up.
+- **Aerial perspective.** Over distance d, light from the cloud is attenuated and air light is added: L = L_cloud · T + L_air · (1 − T), with T = exp(−σ d) (Distance fog; Rotenberg). All cloud pixels sit at about the same distance, so T is nearly constant and air light ≈ the horizon sky colour.
+- **Blender mechanism.** A homogeneous box of Volume Absorption plus Emission gives exactly that formula, with no noise: with absorption σ and emission E = σ · air colour, out = in · e^(−σL) + air · (1 − e^(−σL)). Make it camera-only (not visible to shadow, diffuse or volume rays), so it does not dim the sunlight on the cloud. Expose it as one control, "Air" = optical depth τ = σL.
+  - Rejected: a scattering world volume, because it attenuates the background to black at infinity and is noisy.
+  - Rejected: a Post Mist/Z haze, because Cycles writes no depth for volumes, so the cloud would read as sky.
+- **Targets.** In ref 03 the shadow side (95,78,86) sits close to the mid sky (100,94,99): about 30–50 % air light. In ref 04 the distant base (66,74,82) is lifted toward the sky blue.
+
+Sources (this addition):
+- https://en.wikipedia.org/wiki/Distance_fog
+- https://cseweb.ucsd.edu/classes/sp17/cse168-a/CSE168_14_Volumetric.pdf
+- https://www.d5render.com/posts/atmospheric-perspective-for-aerial-rendering
+- https://documentation.chaos.com/space/VBLD/117638865 (V-Ray volume aerial perspective, as a product precedent)
+- https://photographylife.com/how-to-photograph-clouds and https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/the-way-up-and-far-away-shot-any-great-cloud-photos-lately (telephoto compresses cloud scenes, 85–200 mm typical)
+- Search that found nothing: angular size of a cumulonimbus in km terms (derived instead).
+
 ## Sources
 
 Read this session:

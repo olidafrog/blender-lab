@@ -21,6 +21,8 @@ Pre-v01 correctness fixes (scratch tests): GN volume needs Set Material; grid mu
 
 | Version | Score | The one change | Cost | Render |
 |---|---|---|---|---|
+| v13_tower | 5.4 | first tower review: camera below the base looking up (28 m, 60 mm), Air haze 0.45 | 4 runs, ~15 min | renders/v13_tower.png |
+| v13_sunset | 6.7 | realistic camera: 17 widths on 200 mm; Air haze 0.35 (camera-only box glowing in the sky colour behind); multiplicative grain; voxelized topology (no blocky slabs) | 6 runs, ~20 min | renders/v13_sunset.png |
 | v12_pink_ring | 6.2 | pink_ring preset: plume form, soft overcast, ground plane, ring (first review) | 4 runs, ~12 min | renders/v12_pink_ring.png |
 | v11_sunset | 7.1 | warm Fill sun opposite the key (4%), noise-displaced ragged base | 2 runs, ~8 min | renders/v11_sunset.png |
 | v10_sunset | 6.8 | split sky: camera sees the gradient, cloud lit by gradient + 0.015× physical sky | 7 runs, ~15 min | renders/v10_sunset.png |
@@ -48,3 +50,5 @@ Open (mechanism candidates for a next version):
 - pink_ring lit flat (v12): softer overcast needs a bigger sun angle or a stronger density so the base darkens.
 - Denoiser smear on tiny puffs at 128 spp: finals at 512 spp.
 - pink_ring final: ring power 500 (after v12) lights the ground plane bright pink; ref 01 ground stays neutral. Lower Neon Strength (~200) or light-link the ring to the Cloud only. Not re-reviewed.
+
+- v13 (user request, +2 review budget): the realistic camera and Air haze did not raise the sunset score (6.7 vs 7.1 at v11, within reviewer noise); the reviewer still leads with the unlit left lobe. Tower first review 5.4: body grey not white (exposure), hollow core (tower lobes do not overlap), thin see-through base.

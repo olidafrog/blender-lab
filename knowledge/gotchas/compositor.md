@@ -19,6 +19,7 @@ See [API changes](api-changes.md) for how the compositor differs between 4.4 and
 - 5.2 Displace samples the input at (pixel − Displacement), in pixels. To sample higher up (a mirror below a line), the Y offset is negative. `5.x` `eclipse-glow`
 - Animated compositor effects need no keyframes: Scene Time (Seconds) → Noise Texture W (4D) → Combine XYZ → Displace. Image Coordinates › Normalized y runs bottom → top. Noise Fac sits mostly in 0.35–0.65; stretch it (× 6 around 0.5) or the wobble is a third of what you set. `5.x` `eclipse-glow`
 - Heat shimmer: one smooth noise octave with layers about 20 px tall. Fine octaves (layers under 8 px) read as video tearing. `eclipse-glow`
+- Additive grain (±g) disappears on bright subjects. Multiplying by 1 + 2·g·(noise − 0.5) reads as film grain at every brightness; g = 0.06 is light grain. `5.x` `clouds`
 - Grain from White Noise on pixel coordinates is frozen on every video frame and reads as dirt on the lens. Use 3D noise with z = Scene Time › Frame. `5.x` `eclipse-glow`
 - 5.2 Blur takes an anisotropic size as an unlinked vector (`inputs["Size"].default_value = (900, 12)`): a streak along a horizon, or a sideways blur. Only a linked vector fails (see above). `5.x` `eclipse-glow`
 - A hot core per bright shape, not the whole shape: blur the luminance key sideways and threshold near its peak. The blur peaks in the middle of each bright run, so the result is an oval core. `eclipse-glow`

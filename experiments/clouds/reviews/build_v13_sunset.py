@@ -162,27 +162,12 @@ Objects in the cloud — "Neon" node (Colour, Strength). Move the Rod or Ring an
 It lights the cloud from inside; it shows through only within ~0.3 m of the surface.
 Emitters do not cast shadows.
 
-Air (sunset, tower) — select "Air" (the long box in front of the camera), "Air" node:
-- Haze (0–2): how much air sits between you and the cloud. 0 = right next to it,
-  0.3–0.5 = a few km away. It veils the cloud toward the sky colour behind it, so the
-  sky itself never changes. Tint colours the haze (white = pure sky colour).
-  If you move the camera, the box does not follow: rebuild, or move and stretch it so
-  it still runs from just in front of the camera to past the cloud.
+Post — Compositing tab, "Post" node: Glow, Grain. After a new render (F12), set
+"Source" to Off.
 
-Camera — scale model: the cloud is 3–6 m wide. Only distance ÷ cloud size matters.
-  pink presets ~3 widths on 45–50 mm (close product shot); sunset ~17 widths on 200 mm
-  (telephoto, flattened); tower ~3 heights on 60 mm from below the cloud base, looking
-  up (a storm a few km away).
-
-Post — Compositing tab, "Post" node: Glow; Grain (± fraction of brightness, 0.06 =
-light film grain, 0 = clean). After a new render (F12), set "Source" to Off.
-
-Presets: each preset is its own file in output/: clouds.blend (pink_rod),
-clouds_pink_ring.blend, clouds_sunset.blend, clouds_tower.blend, clouds_plume.blend.
-To make one from scratch or with changes:
-  tools/blender.sh experiments/clouds/scripts/build.py --set preset='"sunset"' --save
-Built by experiments/clouds/scripts/build.py. Changes made here are lost on rebuild;
-copy good values back into P (or PRESETS) there.
+Presets: rebuild with --set preset='"pink_rod"' | '"pink_ring"' | '"sunset"' |
+'"tower"' | '"plume"'. Built by experiments/clouds/scripts/build.py. Changes made here
+are lost on rebuild; copy good values back into P.
 """
 
 
