@@ -9,7 +9,7 @@ Experiment: `clouds`. A modular volumetric cloud system: one shape node (geometr
 | pink_ring | 6.2 (v12), then two unreviewed fixes | 1 |
 | tower, plume | built, not reviewed | 0 |
 
-Research is in `experiments/clouds/RESEARCH.md`.
+Research is in `experiments/clouds/RESEARCH.md`. The shape, material and seeder now live in `library/node-groups/build_clouds.py`.
 
 ## What makes the look
 

@@ -15,6 +15,10 @@ Reusable things for any experiment. It fills as experiments produce things worth
 - `materials/tinted_plastic.blend` — translucent tinted polycarbonate; one Colour input at a reference depth drives volume absorption. Scene in metres; closed meshes. From `wonder-minidisc`.
 - `textures/imperfections/` — CC0 wear masks (scratches, fingerprints, dust) used by `tinted_plastic`.
 
+- `node-groups/cloud_shape.blend` — the "Cloud Shape" geometry-nodes group: a mesh of lobe points (each with a `radius` attribute) becomes a `density` volume with a flat-base option. It brings `cloud_material` along; append this file alone. From `clouds`.
+- `materials/cloud_material.blend` — volumetric cloud: Mie scatter plus albedo absorption. Colour means how the lit cloud looks. For any volume object.
+- `node-groups/build_clouds.py` — builds both, plus the lobe-tier seeder (`seed_points`) and a `Neon` emitter group. Experiments import it; see its docstring and `knowledge/decisions/clouds.md`.
+
 Python builders for both materials: `from build_materials import disc_group, case_group` (add `LIBRARY / "materials"` to `sys.path`).
 
 ## Rules

@@ -6,9 +6,6 @@ Every Changed entry ends with a **Check**: what the next experiment should show 
 
 ## Proposed
 
-- **Cloud system in `library/`**: the Cloud Shape GN group, the Cloud Material group and the lobe-tier seeder from `experiments/clouds/scripts/build.py`, as `library/node-groups/cloud_shape.blend` and `library/materials/cloud_material.blend` plus a builder script. Evidence: the brief asks for a reusable, modular cloud setup; objects-in-clouds scenes in other experiments would reuse it. Needs the user's OK.
-- **`tools/sweep.sh`**: run `build.py` once per `--set` combination (bash array, not zsh words) and tile the results with labels. Evidence: in `clouds` about 40 A/B test renders went through an ad-hoc scratch `run.sh` plus `strip.py`, and a zsh loop silently dropped every `--set`.
-
 - **`/sync-tweaks` skill**. A headless script opens a hand-tweaked `.blend`, reads the control-node values and updates `P` in `build.py`. Evidence: tweaks made in the GUI are lost on the next rebuild.
 - **Tidy the global plugins and MCP servers.** This repo now switches off every plugin in `~/.claude/settings.json`. Still loaded in every session: the user-scope MCP servers (chrome-devtools, figma, pencil, playwright), the claude.ai connectors, and the brand-voice, design and cowork plugins, which come from outside `~/.claude/settings.json`. They add hundreds of tool names to each blender-lab session. Only the user can change them.
 - **`tools/isolate_lights.py`**: render a scene once per light (others hidden) at 25% and tile the results with labels. Evidence: in `opal-essence` a milky veil cost several tuning rounds; ad-hoc isolation renders found it in two runs, but each needed a throwaway probe script.
@@ -25,6 +22,8 @@ Proposals with no evidence yet. Revive one when a session hits the problem it so
 - **Shared library tooling.** Append materials and node groups from `library/`, import Poly Haven assets. Candidates: `wonder-caustics/assets/monochrome_studio_01_4k.hdr`, the pop art halftone and hatch groups, the printed-plastic blur group.
 
 ## Changed
+
+- **2026-09-28 — Cloud system in the library, and a sweep tool.** Asked for by the user after the clouds retro. `library/node-groups/build_clouds.py` holds the lobe-tier seeder, the Cloud Shape GN group, and the Cloud Material and Neon groups. It writes `node-groups/cloud_shape.blend` and `materials/cloud_material.blend`. `experiments/clouds/scripts/build.py` now imports it; its render matched the pre-move one with 0.00 % of pixels changed. `tools/sweep.sh` renders one build per variant, with each `key=value` as its own `--set`, and tiles the results with `tools/tile.py`. Evidence: about 40 A/B renders in clouds went through an ad-hoc scratch helper, and a zsh loop silently dropped every `--set`. **Check:** the next experiment that needs a cloud or smoke imports `build_clouds` rather than copying it, and A/B tests use `tools/sweep.sh`.
 
 - **2026-09-28 — Relevant gotchas land in the first build.** `new-experiment` step 4 now says where each listed gotcha lands in v01 (a `P` default or code). Evidence: in `clouds` the PROGRESS setup listed "AgX desaturates pink, use PBR Neutral", but v01–v02 still used AgX. Review v02 (5.6) led with "washed-out pastel, grey sky", and switching the view transform was most of the +0.6 in v03. File: `.claude/skills/new-experiment/SKILL.md`. **Check:** the next experiment's v01 already uses every listed view, colour and light default.
 
