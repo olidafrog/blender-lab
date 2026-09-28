@@ -25,6 +25,8 @@ Every experiment gets the same folder shape and starts from what past experiment
 
 ## Conventions
 
+- A/B and value tests go through `tools/sweep.sh`, not hand-written shell loops: zsh does not word-split `$var`, so a loop silently drops every `--set`.
+
 - All tunable values go in the `P` dict. Override with `--set key=value`; never edit the `.blend` by hand.
 - Name renders `v01`, `v02`… Never overwrite a render the user liked; add `_b`.
 - Note surprises in `LEARNINGS.md` as they happen. `/capture-learnings` promotes them later.

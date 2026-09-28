@@ -35,3 +35,9 @@
 - Scratches: Voronoi distance-to-edge windows under a sparse noise mask, with a tiny bump. Above about 0.15 roughness a Voronoi edge network looks like a mesh. `caustics-v2`
 - Haze patches with any gloss reflect lamps as coloured blobs. Keep them small and low. `caustics-v2`
 - A camera-space normal gradient gives one flat colour on flat faces. Store a per-shape height (Mesh Island → Field Min & Max, grouped by island → Map Range) as a point attribute and blend it in with an Attribute node. `eclipse-glow`
+
+## Subsurface (opaque pigmented materials)
+
+- Keep the Random Walk scale well under the object's thickness. At 1.2–3 mm on a 1.4 mm wax field, light left through the bottom and the lilac went grey-green. `wax-seal`
+- SSS on an almost opaque material (sealing wax, clay) fills shadowed grooves, draws a saturated line in every concave crease, and blurs the bump detail, so the bump ends up set 3× too strong. Render scatter 0 beside the chosen value before tuning anything. For wax, 0.04–0.08 mm. `wax-seal`
+- Violet (or any saturated) shadows on a pastel: give the Subsurface Radius a coloured reach, such as (1, 0.5, 1.2). The shadow side takes the colour and the lit face stays pastel. A saturated base colour also saturates the lit face, and a coloured world fill loses to the paper bounce. Above ~0.15 mm the creases glow neon. `wax-seal`

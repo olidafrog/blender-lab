@@ -63,5 +63,6 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 - `wonder-minidisc` — logomark as a CD/MiniDisc (diffraction BSDF) in a moulded tinted case; mirror-direction studio. Built on 4.4.
 - `opal-essence` — milky opalescent resin plate over hardware, 5-stop gradient backlight (editable stops), raised Wonder type. 5.x only (light/shadow linking, Volume Coefficients). Final 6.5/10; open items in its decision record.
 - `clouds` — modular volumetric clouds (lobe tiers → GN `density` grid, Mie + albedo absorption); presets `pink_rod`, `pink_ring`, `sunset`, `tower`, `plume`; neon emitters inside the volume. 5.x only.
+- `wax-seal` — sealing-wax seal as a live GN heightfield; the emblem is any curve, text or mesh object on the modifier (Wonder logomark by default), with size and bevel controls; short violet scatter. 5.x only. Final 6.4 (calibrated), open items in its decision record.
 - `threshold-orbit` — looping orbital diagram; lines bleed where they cross (blur → threshold in the compositor). v01 predates the pipeline.
 - `wonder-printed-plastic`, `wonder-caustics`, `wonder-caustics-v2`, `wonder-popart` — Wonder look-dev. Blender 5.x, Metal only. They predate this layout: `refs/` not `references/`, finals at the folder root, and `--out` resolves against the shell's cwd.

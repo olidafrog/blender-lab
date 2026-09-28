@@ -17,6 +17,9 @@ For "recreate this image" work. Learned on eclipse-glow (93 renders, 17 judge ro
 2. Iterate on numbers with `compare.py` until the pixel profile matches.
 3. Then switch to the [review loop](review-loop.md).
 
+- Judge light size from a pixel row across a cast shadow, not the overall mood. `wax-seal` research guessed "large soft key"; the row showed a 10 px hard edge, and two rounds flipped between soft and hard until it was measured.
+- Sample each target as a region statistic (median, or 95th percentile for highlights), not one point. A single "lit rim" point (191) sat below the rim's real highlights (236). Seven reviewers then called the rim "40 too bright". `wax-seal`
+
 ## What to expect
 
 - Pixel MAE and reviewer score correlate only loosely. MAE was best around scores of 7.3–7.5 while the scores sat at 7.0–7.6.

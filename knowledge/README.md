@@ -56,4 +56,5 @@ Decisions
 - [wonder-caustics and caustics-v2](decisions/wonder-caustics.md) — dispersive glass
 - [wonder-minidisc](decisions/wonder-minidisc.md) — CD diffraction BSDF, tinted case, mirror-direction studio
 - [opal-essence](decisions/opal-essence.md) — milky opalescent resin over a gradient backlight
+- [wax-seal](decisions/wax-seal.md) — GN heightfield seal, swappable emblem (curve/text/mesh), short violet scatter
 - [clouds](decisions/clouds.md) — modular volumetric clouds: lobe tiers → density grid, Mie + albedo absorption, emitters inside

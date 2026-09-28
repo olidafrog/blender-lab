@@ -14,6 +14,7 @@ Reviewers misread render bugs as look problems (DOF blur as "noise", aliasing as
 - Any fine pattern: its pitch in pixels at the review resolution. Under ~4 px → render 2× and downsample.
 - Angles and directions of patterns and lights match the reference.
 - A flat-grey material override render, to see geometry, seams and bevels without shading. For glossy or mirror subjects, also a mirror override: diffuse clay hides smooth-shaded caps that render as domes.
+- For subsurface materials, render scatter 0 beside the chosen scale before round 1. SSS on a near-opaque material fills grooves, draws saturated crease lines and hides bump detail.
 - For reflective subjects, an isolation set before any tuning: the subject alone, each shader component alone, each light group off. One render per suspect finds a cause faster than guessing.
 - If the subject departs from the references in a way a reviewer could mistake for a defect, state it under "Design facts" in the reviewer brief now.
 - Exposure: the subject's median value against the main reference's (a few lines of PIL). Re-check it after any change that removes a veil or spill; a dim render reads to reviewers as a colour or material problem.
