@@ -23,6 +23,8 @@ Proposals with no evidence yet. Revive one when a session hits the problem it so
 
 ## Changed
 
+- **2026-09-29 — One .blend with a Scene per preset.** `experiments/clouds/scripts/build.py --all` builds every preset as its own Scene in `output/clouds.blend`. Each Scene previews its FINAL render; object and node names end in "· <preset>". Asked for by the user, so presets switch from the Scene dropdown instead of across separate files. **Check:** the next multi-look experiment hands off one file with scenes, and each scene renders only its own objects.
+
 - **2026-09-28 — Region targets, shadow profile, SSS isolation, sweep pointer.** Four small changes from the `wax-seal` retro.
   - `research-reference` step 5: measure targets as region statistics, and add a pixel row across any cast shadow.
   - `review-render` correctness pass: render scatter 0 beside the chosen SSS.

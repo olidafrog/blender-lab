@@ -177,12 +177,14 @@ Camera — scale model: the cloud is 3–6 m wide. Only distance ÷ cloud size m
 Post — Compositing tab, "Post" node: Glow; Grain (± fraction of brightness, 0.06 =
 light film grain, 0 = clean). After a new render (F12), set "Source" to Off.
 
-Presets: each preset is its own file in output/: clouds.blend (pink_rod),
-clouds_pink_ring.blend, clouds_sunset.blend, clouds_tower.blend, clouds_plume.blend.
-To make one from scratch or with changes:
-  tools/blender.sh experiments/clouds/scripts/build.py --set preset='"sunset"' --save
-Built by experiments/clouds/scripts/build.py. Changes made here are lost on rebuild;
-copy good values back into P (or PRESETS) there.
+Presets: every preset is a Scene in this file. Switch with the Scene dropdown at the top
+right of the Blender window: pink_rod, pink_ring, sunset, tower, plume. Each scene has its
+own cloud, lights, sky, camera and Post node; object and node names end in "· <preset>".
+A new cloud layout (seed, lobe counts, proportions) needs a rebuild:
+  tools/blender.sh experiments/clouds/scripts/build.py --all
+(render the finals first with --set preset=... --out FINAL_clouds_<preset> so each scene
+has its live preview). Built by experiments/clouds/scripts/build.py. Changes made here are
+lost on rebuild; copy good values back into P or PRESETS there.
 """
 
 
@@ -199,23 +201,23 @@ def add_props(scene, cloud_centre):
     if kind == "rod":
         bpy.ops.mesh.primitive_cylinder_add(radius=P["neon_radius"], depth=s * 2.2, vertices=24,
                                             location=cloud_centre + Vector(P["prop_offset"]) * s)
-        o = bpy.context.active_object
+        o = scene.view_layers[0].objects.active
         o.rotation_euler = Vector(P["rod_dir"]).to_track_quat("Z", "Y").to_euler()
     elif kind == "ring":
         bpy.ops.mesh.primitive_torus_add(major_radius=s * 0.62, minor_radius=P["neon_radius"],
                                          major_segments=256, minor_segments=16, location=cloud_centre)
-        o = bpy.context.active_object
+        o = scene.view_layers[0].objects.active
         o.rotation_euler = Vector(P["ring_normal"]).to_track_quat("Z", "Y").to_euler()
     elif kind == "lava":
         bpy.ops.mesh.primitive_uv_sphere_add(radius=s * 0.22, location=cloud_centre + Vector((0, 0, -s * 0.95)))
-        o = bpy.context.active_object
+        o = scene.view_layers[0].objects.active
         o.scale = (1.6, 1.2, 0.35)
         mat.node_tree.nodes[0].inputs["Colour"].default_value = (1.0, 0.18, 0.04, 1.0)
         mat.node_tree.nodes[0].inputs["Strength"].default_value = 25.0
     o.name = kind.capitalize()
     o.visible_shadow = False  # an emitter should light, not shade
     o.data.materials.append(mat)
-    bpy.ops.object.shade_smooth()
+    o.data.shade_smooth()
 
 
 def sky_gradient(nt):
@@ -326,7 +328,7 @@ def add_air(scene, cam_loc, aim):
     near, far = 0.05 * d, d + P["size"]
     length = far - near
     bpy.ops.mesh.primitive_cube_add(size=1.0)
-    box = bpy.context.active_object
+    box = scene.view_layers[0].objects.active
     box.name = "Air"
     box.location = cam_loc + view.normalized() * (near + far) / 2
     box.rotation_euler = view.to_track_quat("Z", "Y").to_euler()
@@ -337,11 +339,21 @@ def add_air(scene, cam_loc, aim):
     box.data.materials.append(volume_material("Air", air_group(length)))
 
 
-def build_scene():
-    bpy.ops.wm.read_factory_settings(use_empty=True)
-    scene = bpy.context.scene
+def build_scene(scene=None):
+    """Build the current P into `scene` (default: a fresh file's only scene)."""
+    if scene is None:
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     enable_gpu(scene)
+    # operators (primitive adds, shade smooth) must add to this scene, not the file's first one
+    with bpy.context.temp_override(scene=scene, view_layer=scene.view_layers[0],
+                                   collection=scene.collection):
+        _populate(scene)
+    return scene
+
+
+def _populate(scene):
 
     me = seed_points(P)
     cloud = bpy.data.objects.new("Cloud", me)
@@ -355,7 +367,7 @@ def build_scene():
 
     if P["ground"]:
         bpy.ops.mesh.primitive_plane_add(size=400, location=(0, 0, -P["size"] * 0.9))
-        g = bpy.context.active_object
+        g = scene.view_layers[0].objects.active
         g.name = "Ground"
         gm = bpy.data.materials.new("Ground")
         gm.use_nodes = True
@@ -407,7 +419,6 @@ def build_scene():
         scene.view_settings.look = P["look"]
     scene.view_settings.exposure = P["exposure"]
     how_to_tweak(HOW_TO_TWEAK)
-    return scene
 
 
 def parse_args():
@@ -418,6 +429,8 @@ def parse_args():
     ap.add_argument("--scale", type=float, default=0.5)
     ap.add_argument("--save", action="store_true")
     ap.add_argument("--norender", action="store_true")
+    ap.add_argument("--all", action="store_true",
+                    help="every preset as its own Scene in output/clouds.blend, previewing its FINAL render")
     ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE")
     a = ap.parse_args(argv)
     sets = {}
@@ -475,8 +488,56 @@ def post():
     return ng
 
 
+def build_all():
+    """One .blend, one Scene per preset. Each scene previews that preset's FINAL render
+    (output/FINAL_clouds[_preset]_raw.exr), so render the finals first."""
+    base = dict(P)
+    first = True
+    for name, preset in PRESETS.items():
+        P.clear()
+        P.update(base)
+        P.update(preset)
+        P["preset"] = name
+        if first:
+            bpy.ops.wm.read_factory_settings(use_empty=True)
+            scene = bpy.context.scene
+        else:
+            scene = bpy.data.scenes.new(name)
+        scene.name = name
+        before = {c: set(getattr(bpy.data, c)) for c in ("objects", "materials", "node_groups", "worlds",
+                                                         "lights", "cameras", "meshes")}
+        build_scene(scene)
+        stem = "FINAL_clouds" if name == "pink_rod" else f"FINAL_clouds_{name}"
+        raw = EXP["output"] / f"{stem}_raw.exr"
+        compositor(scene, post(), raw_exr=raw)
+        scene.cycles.samples = 128
+        scene.render.resolution_percentage = 100
+        scene.render.filepath = str(EXP["renders"] / f"{stem}.png")
+        if raw.exists():
+            use_saved_render(scene, raw)
+        else:
+            print(f"[out] no {raw.name}: {name} has no live preview until it is rendered")
+        # tag everything this preset made, so the Outliner and node lists say which scene owns it
+        for c, old in before.items():
+            for idb in set(getattr(bpy.data, c)) - old:
+                if not idb.name.endswith(f"· {name}"):
+                    idb.name = f"{idb.name.split('.')[0]} · {name}"
+        first = False
+        print(f"[out] scene {name}")
+    blend = EXP["output"] / f"{EXP['name']}.blend"
+    bpy.ops.wm.save_as_mainfile(filepath=str(blend))
+    bpy.ops.file.make_paths_relative()
+    bpy.ops.wm.save_as_mainfile(filepath=str(blend))
+    blend.with_suffix(".blend1").unlink(missing_ok=True)
+    print(f"[out] saved {blend}")
+
+
 if __name__ == "__main__":
     args = parse_args()
+    if args.all:
+        build_all()
+        print("BUILD OK")
+        sys.exit(0)
     scene = build_scene()
     raw = EXP["renders"] / f"{args.out}_raw.exr"
     compositor(scene, post(), raw_exr=raw)
