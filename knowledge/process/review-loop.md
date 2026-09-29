@@ -35,6 +35,8 @@ The rules live in `.claude/skills/review-render/SKILL.md`. This file keeps the e
 - **Tune numeric complaints locally** (Rules). For coverage, hue families or clipping, write a small metric script and review only the result. `minidisc/scripts/disc_metrics.py` took the disc from 3 % to 21 % saturated in two local runs.
 - **Video: contact sheet plus six consecutive 1:1 crops** (step 4). Reviewers still misjudge motion from stills ("the shimmer does not move" when it did). Before acting on a motion or "dark hole" complaint, measure against a control render. `eclipse-glow`
 
+- **A new review instrument needs a control** (Rules). Side-by-side composite reviews scored the original `wax-seal` final 5.8, against 6.4 from render-only crops. Re-score a known render with the new instrument before comparing numbers across it. `wax-seal-chaos`
+
 ## Stopping
 
 - **Budget and slope rule** (Stopping). Scores rise fast (4.6 → 7.5) and then slowly; the last 0.5 comes from crop-level detail. `printed-plastic` ran 29 versions to 8.4 and `caustics-v2` 45 to 8.3, while `caustics` v1 reached 8.6 in 22. The old rule, "three scores within 0.2", almost never fired with ±0.4 noise.

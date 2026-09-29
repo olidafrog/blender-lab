@@ -14,3 +14,10 @@
 - GN Bounding Box defaults to Use Radius = True. On curves the default 1 m point radius pads the box, so fitting a logo by its box came out at about 40 % of the size. Turn it off. `5.x` `wax-seal`
 - A flat mesh has zero z-range. A raycast height normalised by the bounding box then comes out 0, and the relief vanishes. A Text object evaluates to a flat mesh. Treat zero range as full height, and bevel from the boundary edges (Edge Neighbors face count = 1). `5.x` `wax-seal`
 - GN interface panels: use `interface.new_panel()` and `move_to_parent(item, panel, i)`. A panel can share a name with a socket, and a panel's identifier is not a string, so filter on `in_out == "INPUT"` when looking up a socket by name. `5.x` `wax-seal`
+- SDF Grid Boolean works like Mesh Boolean: UNION and INTERSECT read only the multi-input Grid 2, and anything on Grid 1 is silently dropped. Link every grid into Grid 2. DIFFERENCE is Grid 1 minus Grid 2. `5.x` `wax-seal-chaos`
+- SDF Grid Offset is unreliable for shaping:
+  - Grows fell far short (0.8 mm asked, 0.04–0.2 mm delivered, depending on band width).
+  - An erode-then-dilate opening chamfers convex corners into octagons.
+  Build solids at full size, and bevel crisp shapes by displacing the mesh with a distance profile. `5.x` `wax-seal-chaos`
+- Points to SDF Grid carries a band only ~3 voxels deep, so fillet and mean smoothing shred it into holes at fine voxel sizes. Build tubes as a Curve to Mesh and use Mesh to SDF with a wider band. `5.x` `wax-seal-chaos`
+- Grid to Mesh leaves voxel terraces that a low sun shows as concentric steps. Blur the mesh positions (Blur Attribute, vector, ~6 iterations) after meshing. `5.x` `wax-seal-chaos`

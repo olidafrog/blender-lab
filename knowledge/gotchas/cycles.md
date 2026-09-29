@@ -36,3 +36,4 @@ Refraction magnifies every flaw in a mesh. `caustics-v2`
 - Supersample fine patterns: render at 2× and downsample with Lanczos. At 1× a 0.3 mm line screen aliases, and the denoiser smears it. `printed-plastic`
 - Partial denoise: mix noisy and denoised passes about 50/50, then add grain. Full denoise looks plastic. `printed-plastic`
 - f/8 at 30 cm on a 75 mm tilted object blurs the far half into a soft white glow that looks like a lighting bug. Product shots: f/16. `minidisc`
+- To darken the shadow-side outer wall of a low relief (a seal bead), lower the key; a flag or less fill does not do it. At 38° the wall still faced the sun. At 24° the row profile matched the reference. A black flag only darkened the paper, and a bounce card lit exactly the wall that must stay dark. `wax-seal-chaos`

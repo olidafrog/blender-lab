@@ -54,6 +54,7 @@ When you stop:
 - If the same complaint survives two rounds of value changes, stop tuning. Change the mechanism, and run `/research-reference` for that effect.
 - The target is the brief and references, never an earlier version.
 - On a contradiction between rounds, the brief, the numeric targets and the measured pixels decide.
+- When the review instrument changes (composites, other crops, a changed prompt), re-score one known render with it first. Only compare scores within one instrument.
 - If the top asks contradict each other across rounds (a trade-off, not a bug), stop tuning: expose it as one control, name it in `PROGRESS.md` and `HOW_TO_TWEAK`, and hand it to the designer.
 - If a complaint is numeric (coverage, hue count, clipping), write a metrics script and tune against it locally; review only the result.
 - When the user is happy, run `/finish-experiment`.

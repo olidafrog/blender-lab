@@ -38,6 +38,7 @@ Gotchas
 - [Cycles](gotchas/cycles.md) — lighting, refraction, geometry, output quality.
 - [Colour](gotchas/colour.md) — view transforms, clipping, dark fades.
 - [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes.
+- [Fluid sim](gotchas/fluid-sim.md) — Mantaflow scale, flow volume, why a viscous press failed.
 - [Volumes](gotchas/volumes.md) — GN volume grids, albedo vs scatter colour, emitters in volumes, cloud look.
 
 Process
@@ -56,5 +57,6 @@ Decisions
 - [wonder-caustics and caustics-v2](decisions/wonder-caustics.md) — dispersive glass
 - [wonder-minidisc](decisions/wonder-minidisc.md) — CD diffraction BSDF, tinted case, mirror-direction studio
 - [opal-essence](decisions/opal-essence.md) — milky opalescent resin over a gradient backlight
+- [wax-seal-chaos](decisions/wax-seal-chaos.md) — seed-drawn fork: SDF-sculpted seal, low sun; beat the original blind 6.6 vs 5.4
 - [wax-seal](decisions/wax-seal.md) — GN heightfield seal, swappable emblem (curve/text/mesh), short violet scatter
 - [clouds](decisions/clouds.md) — modular volumetric clouds: lobe tiers → density grid, Mie + albedo absorption, emitters inside

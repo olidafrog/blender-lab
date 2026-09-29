@@ -18,5 +18,6 @@ What each session cost, so the retro can tell whether a process change made expe
 | 2026-09-27 | opal-essence | 517bfecf | 0 | - | 2 | 17k | 16 | short follow-up |
 | 2026-09-27 | tooling | edbee1e3 | 0 | - | 6 | 60k | 12 | lab audit: artifact hooks, metrics gate, cost scoreboard, round budget |
 | 2026-09-28 | tooling | 81ad5a6d | 0 | - | 1 | 15k | 4 | git: pulled wonder-minidisc, committed eclipse-glow and opal-essence, merged lab-audit, pushed |
+| 2026-09-29 | wax-seal-chaos | 5522441b | 8 | 6.4 | 68 | 156k | 220 | fork; seed-drawn approach. 5 Mantaflow bakes abandoned (~1.5 h), SDF reroll; v06 wins blind calibration 6.6 over the original's 5.4. Figures are this session's cumulative totals minus the wax-seal row |
 | 2026-09-28 | wax-seal | 5522441b | 8 | 6.6 | 53 | 133k | 42 | v01–v07 + calibration (v07 6.4 wins); slope stop; 3 rounds lost to SSS before an isolation render |
 | 2026-09-28 | clouds | 802469a6 | 11 | 7.1 | 60 | 162k | 159 | pink_rod 6.9 (v05; v08 wins calibration), sunset 7.1, pink_ring 6.2; ~20 renders lost to 4 silent GN-volume traps |

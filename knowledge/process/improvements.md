@@ -6,6 +6,8 @@ Every Changed entry ends with a **Check**: what the next experiment should show 
 
 ## Proposed
 
+- **Seed-drawn fork when a loop stalls.** When `review-render` stops on the slope rule, offer a fork whose approach per axis (geometry, material, light, process) is drawn from a written pool by a random seed. Reroll from the same stream only when a draw proves infeasible. Evidence: `wax-seal-chaos` beat the stalled `wax-seal` blind, 6.6 against 5.4. Cost: a fluid draw ate ~1.5 h before the reroll, so cap an infeasible draw at about 3 attempts.
+
 - **`/sync-tweaks` skill**. A headless script opens a hand-tweaked `.blend`, reads the control-node values and updates `P` in `build.py`. Evidence: tweaks made in the GUI are lost on the next rebuild.
 - **Tidy the global plugins and MCP servers.** This repo now switches off every plugin in `~/.claude/settings.json`. Still loaded in every session: the user-scope MCP servers (chrome-devtools, figma, pencil, playwright), the claude.ai connectors, and the brand-voice, design and cowork plugins, which come from outside `~/.claude/settings.json`. They add hundreds of tool names to each blender-lab session. Only the user can change them.
 - **`tools/isolate_lights.py`**: render a scene once per light (others hidden) at 25% and tile the results with labels. Evidence: in `opal-essence` a milky veil cost several tuning rounds; ad-hoc isolation renders found it in two runs, but each needed a throwaway probe script.
@@ -23,6 +25,13 @@ Proposals with no evidence yet. Revive one when a session hits the problem it so
 
 ## Changed
 
+- **2026-09-29 — Geometry profile tool and instrument control.**
+  - `tools/mesh_profile.py` prints an object's top height along a line, from any build.py.
+  - `review-render` Rules: when the review instrument changes (composites, new crops, a new prompt), re-score one known render with it first.
+  - Evidence: in `wax-seal-chaos` two renders were misread before a height profile showed the field 0.46 mm under the die. The side-by-side instrument scored the original final 0.6 lower than the blind render-only review.
+  - Files: `tools/mesh_profile.py`, `.claude/skills/review-render/SKILL.md`, `CLAUDE.md` (tools list).
+  - **Check:** the next geometry-driven experiment profiles its mesh before its first review, and any new review instrument has a control score.
+
 - **2026-09-29 — One .blend with a Scene per preset.** `experiments/clouds/scripts/build.py --all` builds every preset as its own Scene in `output/clouds.blend`. Each Scene previews its FINAL render; object and node names end in "· <preset>". Asked for by the user, so presets switch from the Scene dropdown instead of across separate files. **Check:** the next multi-look experiment hands off one file with scenes, and each scene renders only its own objects.
 
 - **2026-09-28 — Region targets, shadow profile, SSS isolation, sweep pointer.** Four small changes from the `wax-seal` retro.
@@ -30,7 +39,7 @@ Proposals with no evidence yet. Revive one when a session hits the problem it so
   - `review-render` correctness pass: render scatter 0 beside the chosen SSS.
   - `new-experiment` Conventions: use `tools/sweep.sh` for A/B tests.
   - Evidence: a single-point "lit rim" target drew "40 too bright" in all 7 reviews. The research guessed a "large soft key" and 2 rounds flipped between soft and hard. 3 rounds went to SSS artefacts before one isolation render found them. I hand-wrote shell loops and lost a batch to zsh not word-splitting, the same trap clouds hit.
-  - **Check:** the next matching task has region targets and a shadow profile in `RESEARCH.md`; an SSS subject has a scatter-0 render before round 1; A/B tests use `sweep.sh`.
+  - **Check:** the next matching task has region targets and a shadow profile in `RESEARCH.md`; an SSS subject has a scatter-0 render before round 1; A/B tests use `sweep.sh`. — 2026-09-29 `wax-seal-chaos`: region targets and shadow profile held; scatter-0 render **failed** (skipped, and a pink bevel glow from scatter stayed open at the end); `sweep.sh` held (the sun-elevation sweep).
 
 - **2026-09-28 — Cloud system in the library, and a sweep tool.** Asked for by the user after the clouds retro. `library/node-groups/build_clouds.py` holds the lobe-tier seeder, the Cloud Shape GN group, and the Cloud Material and Neon groups. It writes `node-groups/cloud_shape.blend` and `materials/cloud_material.blend`. `experiments/clouds/scripts/build.py` now imports it; its render matched the pre-move one with 0.00 % of pixels changed. `tools/sweep.sh` renders one build per variant, with each `key=value` as its own `--set`, and tiles the results with `tools/tile.py`. Evidence: about 40 A/B renders in clouds went through an ad-hoc scratch helper, and a zsh loop silently dropped every `--set`. **Check:** the next experiment that needs a cloud or smoke imports `build_clouds` rather than copying it, and A/B tests use `tools/sweep.sh`. — failed 2026-09-28 (`wax-seal` used hand-written loops and lost a batch to the same zsh trap; pointer added to `new-experiment`)
 
