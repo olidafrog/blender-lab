@@ -45,7 +45,7 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 ## Layout
 
 - `experiments/<name>/` — `BRIEF.md`, `RESEARCH.md`, `PROGRESS.md`, `references/`, `assets/`, `scripts/build.py`, `renders/` (not in git), `reviews/`, `output/` (FINAL PNGs; `.blend` not in git), `LEARNINGS.md`.
-- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `comp.py` (compositor with live preview), `compare.py`, `crop_compare.py`, `crops.py`, `screen_fft.py` (line-screen pitch and angle), `metrics.py` (pre-review gate: did the change reach the pixels), `mesh_profile.py` (an object's height along a line, from a build.py), `sweep.sh` (render one build per `--set` variant and tile them), `session_cost.py` (plain `python3`: what a session cost).
+- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `comp.py` (compositor with live preview), `compare.py`, `crop_compare.py`, `crops.py`, `screen_fft.py` (line-screen pitch and angle), `metrics.py` (pre-review gate: did the change reach the pixels), `silhouette.py` (subject outline vs reference: IoU, band widths, overlay), `mesh_profile.py` (an object's height along a line, from a build.py), `sweep.sh` (render one build per `--set` variant and tile them), `session_cost.py` (plain `python3`: what a session cost).
 - `knowledge/` — gotchas, process, insights, decisions.
 - `library/` — reusable models, textures, HDRIs, materials, node groups.
 
@@ -65,5 +65,6 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 - `clouds` — modular volumetric clouds (lobe tiers → GN `density` grid, Mie + albedo absorption); presets `pink_rod`, `pink_ring`, `sunset`, `tower`, `plume`; neon emitters inside the volume. 5.x only.
 - `wax-seal` — sealing-wax seal as a live GN heightfield; the emblem is any curve, text or mesh object on the modifier (Wonder logomark by default), with size and bevel controls; short violet scatter. 5.x only. Final 6.4 (calibrated), open items in its decision record.
 - `wax-seal-chaos` — seed-drawn fork of wax-seal: the seal sculpted as one SDF volume (pour ∪ bead − die), low 3° sun, matte Sheen wax; the emblem is the same swappable library field. Beat the original blind (6.6 vs 5.4). `scripts/sim.py` is the abandoned Mantaflow press. 5.x only.
+- `roman-model` — first character model: stylised low-poly legionnaire, IK-posed from `P` (head units), body as jittered planar ring lofts, hand-built armour; `look=clay` (reference) or `look=legion` (colour). `tools/silhouette.py` is the IoU gate. 5.x.
 - `threshold-orbit` — looping orbital diagram; lines bleed where they cross (blur → threshold in the compositor). v01 predates the pipeline.
 - `wonder-printed-plastic`, `wonder-caustics`, `wonder-caustics-v2`, `wonder-popart` — Wonder look-dev. Blender 5.x, Metal only. They predate this layout: `refs/` not `references/`, finals at the folder root, and `--out` resolves against the shell's cwd.

@@ -35,6 +35,8 @@ The rules live in `.claude/skills/review-render/SKILL.md`. This file keeps the e
 - **Tune numeric complaints locally** (Rules). For coverage, hue families or clipping, write a small metric script and review only the result. `minidisc/scripts/disc_metrics.py` took the disc from 3 % to 21 % saturated in two local runs.
 - **Video: contact sheet plus six consecutive 1:1 crops** (step 4). Reviewers still misjudge motion from stills ("the shimmer does not move" when it did). Before acting on a motion or "dark hole" complaint, measure against a control render. `eclipse-glow`
 
+- **A second model on mechanism when the whole form is wrong** (Proposed in `improvements.md`). In `roman-model` rounds 1–3 said "barrels", "inflatable" and "stacked barrels". A Fable advisor named the cause at once: subdivide + decimate cannot make planes. The rebuild changed the facet read in one round. The planning consult also cut SDF body fusion and set the skirt and helmet mechanisms.
+- **Trust the reviewer's landmark numbers over your own read.** In `roman-model` the helmet was lowered by eye, "to sit into the shoulders", while four reviews measured it 20–35 px too low.
 - **A new review instrument needs a control** (Rules). Side-by-side composite reviews scored the original `wax-seal` final 5.8, against 6.4 from render-only crops. Re-score a known render with the new instrument before comparing numbers across it. `wax-seal-chaos`
 
 ## Stopping

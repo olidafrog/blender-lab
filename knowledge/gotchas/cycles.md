@@ -21,6 +21,8 @@
 - A coat reflects only ~4% at normal incidence (IOR 1.49). An environment card in the coat needs strength ~40–80 to show over a backlit plate, and glossy parts behind the plate reflect it too. `Filter Glossy` 1.0 smears a thin card into a broad band. `opal-essence`
 - Flat plates cannot show the wet highlights of cast resin; those come from folds and warps. Coat bump and environment cards give nothing, or a uniform band. `opal-essence`
 
+- An evenly lit cyc behind a figure: give the backdrop a low albedo (about 0.2) plus emission in its own colour, and set its `visible_diffuse = False`. Floor and wall then match within 10 levels, the glow does not lift the figure's shadows, and the contact shadow survives. Key and world light the figure alone. `roman-model`
+
 ## Geometry under refraction
 
 Refraction magnifies every flaw in a mesh. `caustics-v2`

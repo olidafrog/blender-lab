@@ -21,3 +21,4 @@ What each session cost, so the retro can tell whether a process change made expe
 | 2026-09-29 | wax-seal-chaos | 5522441b | 8 | 6.4 | 68 | 156k | 220 | fork; seed-drawn approach. 5 Mantaflow bakes abandoned (~1.5 h), SDF reroll; v06 wins blind calibration 6.6 over the original's 5.4. Figures are this session's cumulative totals minus the wax-seal row |
 | 2026-09-28 | wax-seal | 5522441b | 8 | 6.6 | 53 | 133k | 42 | v01–v07 + calibration (v07 6.4 wins); slope stop; 3 rounds lost to SSS before an isolation render |
 | 2026-09-28 | clouds | 802469a6 | 11 | 7.1 | 60 | 162k | 159 | pink_rod 6.9 (v05; v08 wins calibration), sunset 7.1, pink_ring 6.2; ~20 renders lost to 4 silent GN-volume traps |
+| 2026-09-30 | roman-model | 7396126c | 10 | 6.8 | 100 | 277k | 79 | first character model; 9 reviews + calibration (v09 6.4 beats v08 5.8); slope stop at round 9; 2 Fable advisor consults; mechanism change at v04 (decimate → planar rings) |

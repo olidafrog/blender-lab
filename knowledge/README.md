@@ -38,6 +38,7 @@ Gotchas
 - [Cycles](gotchas/cycles.md) — lighting, refraction, geometry, output quality.
 - [Colour](gotchas/colour.md) — view transforms, clipping, dark fades.
 - [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes.
+- [Modelling](gotchas/modelling.md) — characters from code: planar-ring lofts, IK posing, straps and skirts, silhouette checks.
 - [Fluid sim](gotchas/fluid-sim.md) — Mantaflow scale, flow volume, why a viscous press failed.
 - [Volumes](gotchas/volumes.md) — GN volume grids, albedo vs scatter colour, emitters in volumes, cloud look.
 
@@ -52,6 +53,7 @@ Process
 - [Insights](insights.md) — deeper lessons.
 
 Decisions
+- [roman-model](decisions/roman-model.md) — first character model: IK-posed planar-ring lofts + jitter/triangulate, hand-built armour, silhouette IoU gate
 - [eclipse-glow](decisions/eclipse-glow.md)
 - [wonder-printed-plastic](decisions/wonder-printed-plastic.md)
 - [wonder-caustics and caustics-v2](decisions/wonder-caustics.md) — dispersive glass
