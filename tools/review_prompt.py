@@ -15,6 +15,8 @@ lines = [(exp / "reviews" / "REVIEWER_PROMPT.md").read_text(encoding="utf-8"), "
          f"Render: {p(exp / 'renders' / f'{v}.png')}", "Crops:"]
 lines += [f"- {p(f)}" for f in sorted((exp / "reviews" / f"crops_{v}").glob("*.png"))]
 lines += ["References:"] + [f"- {p(f)}" for f in sorted((exp / "references").iterdir()) if f.is_file()]
-lines += ["", f"Write your review to `{p(exp / 'reviews' / f'review_{v}.md')}`."]
+lines += ["", "Use only the files listed here and the measurement script the brief names. Do not open any other file in the "
+          "repository: no earlier reviews, progress notes, build scripts or snapshots.",
+          f"Write your review to `{p(exp / 'reviews' / f'review_{v}.md')}`."]
 sys.stdout.reconfigure(encoding="utf-8")
 print("\n".join(lines))

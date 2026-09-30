@@ -53,6 +53,7 @@ Process
 - [Insights](insights.md) — deeper lessons.
 
 Decisions
+- [cyber-deck-v2](decisions/cyber-deck-v2.md) — same radio redone: plan × section loft shells, profiled cutters, crest-only wear tag, one small key; 6.4 (Opus)
 - [cyber-model](decisions/cyber-model.md) — hard-surface radio from a rectified plan: stacked plates, flat chamfers, black by geometry, three linked lights; Sonnet reviewer + Opus advisor test, 6.7
 - [roman-model](decisions/roman-model.md) — first character model: IK-posed planar-ring lofts + jitter/triangulate, hand-built armour, silhouette IoU gate
 - [eclipse-glow](decisions/eclipse-glow.md)

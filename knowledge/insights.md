@@ -2,7 +2,7 @@
 
 Lessons deeper than one Blender feature, with the evidence. The rule each produced lives in the file after the arrow; change the rule there, not here. Add an insight when a session changes how we should approach the next project.
 
-- **Find out how the reference was really made.** In `wonder-printed-plastic` the first idea (a physical diffuser blurs the print) was wrong: the references were blurred digitally, then laser-printed. Building the real process raised the score more than any tuning. → `research-reference`
+- **Find out how the reference was really made.** In `wonder-printed-plastic` the first idea (a physical diffuser blurs the print) was wrong: the references were blurred digitally, then laser-printed. Building the real process raised the score more than any tuning. In `cyber-deck-v2` finding the original artwork (Fusion 360 + KeyShot, a 4K copy, a CAD line render) turned "flat plates" into "filleted CAD solids" as the v01 mechanism. → `research-reference`
 - **Build the research's finding first.** In `printed-plastic` the research said "blur in 2D before the print" before v01. The build modelled physical depth instead and plateaued at 6.1–6.8 until v13 used the research, about 70 minutes lost. → `research-reference` step 6
 - **Most early "look" problems are render bugs.** Out-of-focus DOF, aliasing and a flipped angle were each reviewed as texture for several rounds. → `review-render`, correctness pass
 - **A repeated complaint means the mechanism is wrong.** → `review-render` Rules

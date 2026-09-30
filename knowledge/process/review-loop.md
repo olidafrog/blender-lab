@@ -4,6 +4,7 @@ The rules live in `.claude/skills/review-render/SKILL.md`. This file keeps the e
 
 ## Reviewer setup
 
+- **Reviewers see only the listed files** (step 6, `tools/review_prompt.py`). In `cyber-deck-v2` reviewers opened `reviews/build_vNN.py` snapshots and graded the diff ("only value changes"), and four read earlier reviews and `PROGRESS.md` before scoring. A general-purpose reviewer has file access; the folder it is pointed at must hold nothing but the brief and crops.
 - **Fixed reviewer brief** (step 3). A reviewer that changed how it measured mid-run (`caustics-v2`) made the scores incomparable. The same holds for a metrics script.
 - **Fresh Opus reviewer, no history** (step 5). A reviewer that saw the builder's arguments "accepted your read of the optics" and withdrew complaints. A reviewer that sees the history grades the effort.
 - **Crops, at full scale** (steps 1 and 4). Without crops reviewers missed aliasing, seams and ink texture. The reviewer passed `caustics` v1 at 8.6 on 35–50% renders; the user then found jagged edges.
@@ -37,6 +38,7 @@ The rules live in `.claude/skills/review-render/SKILL.md`. This file keeps the e
 
 - **A second model on mechanism when the whole form is wrong** (Rules). In `roman-model` rounds 1–3 said "barrels", "inflatable" and "stacked barrels". A Fable advisor named the cause at once: subdivide + decimate cannot make planes. The rebuild changed the facet read in one round. The planning consult also cut SDF body fusion and set the skirt and helmet mechanisms.
 - **Trust the reviewer's landmark numbers over your own read.** In `roman-model` the helmet was lowered by eye, "to sit into the shoulders", while four reviews measured it 20–35 px too low.
+- **A measured target that misses three rounds is a mechanism problem too** (Rules). In `cyber-deck-v2` p5 sat at 20–23 through moats, undercuts and liners; a Fable consult (reviews withheld, test renders allowed) named the light rig and fixed it in one round (5.7 → 6.2).
 - **A new review instrument needs a control** (Rules). Side-by-side composite reviews scored the original `wax-seal` final 5.8, against 6.4 from render-only crops. Re-score a known render with the new instrument before comparing numbers across it. `wax-seal-chaos`
 
 ## A weaker reviewer and an advisor (cyber-model)

@@ -12,6 +12,7 @@ For "recreate this image" work. Learned on eclipse-glow (93 renders, 17 judge ro
 
 ## Workflow
 
+- Find the original artwork first: other views, a 4K copy and CAD line renders settle sizes and structure that no amount of guessing does. ArtStation blocks HTML fetches; `r.jina.ai/https://www.artstation.com/projects/<id>.json` returns the project JSON and the `/4k/` image URLs download directly. `cyber-model` never found it; `cyber-deck-v2` did in its first research pass.
 - Check whether another project already measured the same reference. `~/GitHub/photoshop-lab` rebuilt the Warp refs with a full numeric record that `printed-plastic` never had.
 
 1. Sample the reference first: colours along lines, edge positions, radii. Seed ramps from real values, so early renders land close.
