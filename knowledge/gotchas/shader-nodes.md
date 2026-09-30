@@ -41,3 +41,13 @@
 - Keep the Random Walk scale well under the object's thickness. At 1.2–3 mm on a 1.4 mm wax field, light left through the bottom and the lilac went grey-green. `wax-seal`
 - SSS on an almost opaque material (sealing wax, clay) fills shadowed grooves, draws a saturated line in every concave crease, and blurs the bump detail, so the bump ends up set 3× too strong. Render scatter 0 beside the chosen value before tuning anything. For wax, 0.04–0.08 mm. `wax-seal`
 - Violet (or any saturated) shadows on a pastel: give the Subsurface Radius a coloured reach, such as (1, 0.5, 1.2). The shadow side takes the colour and the lit face stays pastel. A saturated base colour also saturates the lit face, and a coloured world fill loses to the paper bounce. Above ~0.15 mm the creases glow neon. `wax-seal`
+
+## Grain, scratches and creases (opaque, dark)
+
+- Fine grain must be albedo-only and not too fine. Noise at 3000 per metre vanished after the denoiser; bump on a Perlin noise gave worm-shaped grain that reviewers read as coarse. Two albedo noises (1900 and 5200 per metre, strength about 7) matched the reference's speckle (luma std 15 at 1:1). Denoise with albedo and normal passes. `cyber-model`
+- Plates in the reference carried luma std 13–26 of fine grain and ours 1.5 (reviewer's patch estimates), so they read as flat paint. Multiply albedo by a fine noise (±28 %) and a low-frequency mottle (±10 %), and roughness by the mottle. `cyber-model`
+- Scratches: a stroke mask drawn with PIL (2048² over 250 mm, short light strokes clustered on the lid and right plate), read top-down in object space (Mapping scale 4, Non-Color, `extension = CLIP`), lifting albedo and roughness. Stretched-noise thresholds looked like brushed scribbles at any setting. `cyber-model`
+- Black creases: multiply base colour and specular by AO raised to the third power (reach 5 mm for 6 mm steps). AO on the backdrop albedo (12 mm, power 2.5) gives the dark contact halo the reference has round the object. `cyber-model`
+- Lift vertical faces without touching the tops: albedo × (1 + k·(1 − |Normal.z|)) from Geometry › Normal. `cyber-model`
+- The shader Bevel node used as an edge-wear mask sees only the creases between bevel segments on geometry that already has a real bevel. Put worn chamfers in a second material slot instead (Bevel modifier `material`), or use the flat chamfer highlight. `cyber-model`
+- LCD: draw the display with PIL at 2×, downsample, add a faint 12 px pixel grid at 2.5 % (a 6 px grid would alias when the 1536 px texture is minified 3×; not tested) and a diagonal sheen at 8 % white, then use it as Emission colour under a sharp Coat. Digits sized to the full width clipped at the bezel. `cyber-model`

@@ -39,6 +39,19 @@ The rules live in `.claude/skills/review-render/SKILL.md`. This file keeps the e
 - **Trust the reviewer's landmark numbers over your own read.** In `roman-model` the helmet was lowered by eye, "to sit into the shoulders", while four reviews measured it 20–35 px too low.
 - **A new review instrument needs a control** (Rules). Side-by-side composite reviews scored the original `wax-seal` final 5.8, against 6.4 from render-only crops. Re-score a known render with the new instrument before comparing numbers across it. `wax-seal-chaos`
 
+## A weaker reviewer and an advisor (cyber-model)
+
+The user asked for a Sonnet reviewer and an Opus advisor on a hard-surface task, to test how Sonnet performs. Scores are not comparable with Opus-reviewed experiments.
+
+- **A structured brief kept a Sonnet reviewer concrete.** Ten yes/no questions tied to places in the frame, a table measured by a script on both images (the reviewer was told to trust it over its own estimates), five weighted sub-scores, an anchor image of grey boxes as the 4, and from round 2 a blind pairwise question against the previous render. It flagged its own estimates as "my estimate". `cyber-model`
+- **Absolute scores were anchored; the pair was sensitive.** Scores over ten rounds: 5.9, 5.8, 6.0, 5.9, 6.0, 6.5, 6.6, 6.5, 6.7, 6.4. The pair picked the newer render in rounds 2 to 10, including rounds where the score did not move. The last pair (v10 over v09) was reversed by the blind calibration (v09 6.7, v10 6.5), so a pair between near-identical renders is noise; use the pair to steer and the calibration to decide. `cyber-model`
+- **A repeated top problem is a mechanism problem, and it is a usable signal.** "Blacks are grey" was the top or second problem in every round from 2 on; "edges pillowy" was flagged in rounds 3, 5 and 6. Value tuning did not move either. The changes that did were mechanisms: a device-only key (v04), a flat unhardened chamfer with flat shading (v07), and a black liner plus moats (v09). `cyber-model`
+- **Two consults with an Opus advisor found what the reviews did not.** At the plan stage and after three reviews, mechanism only, with the reviews withheld. The advisor named the softbox reflecting in every flat top (verified with a base-colour-black render), the missing real gaps, and the bead-round edges. The reviewer never named the light cause. `cyber-model`
+- **Advisor and reviewer disagreed on wall brightness** (lighter than tops against as dark as tops). A wall measured on the reference (about 13 mm tall, dark to mid) was the tie-break, in line with "the brief, the targets and the pixels decide". `cyber-model`
+- **The 12-level tolerance is wrong for small values.** Grain std and share under 12 passed every round while off by a third to 3×; the reviewer overrode the rule in its text from round 3. Give ratio tolerances for such rows. `cyber-model`
+- **Keep the calibration blind.** The A/B request carried `renders/v09.png` and `renders/v10.png`, so the reviewer could order them. Copy the two renders to neutral names first. `cyber-model`
+- **Sonnet as a research agent was good when told to test.** One agent ran seven headless tests and reported measured normal errors, timings and a coplanar-cutter failure; its untested claim, that joined cutters are fine, was wrong for overlapping cutters. Ask research agents to run small tests, and to say which advice was only read. `cyber-model`
+
 ## Stopping
 
 - **Budget and slope rule** (Stopping). Scores rise fast (4.6 → 7.5) and then slowly; the last 0.5 comes from crop-level detail. `printed-plastic` ran 29 versions to 8.4 and `caustics-v2` 45 to 8.3, while `caustics` v1 reached 8.6 in 22. The old rule, "three scores within 0.2", almost never fired with ±0.4 noise.

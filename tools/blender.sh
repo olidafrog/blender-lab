@@ -35,7 +35,14 @@ args+=(--python-exit-code 1 -P "$script")
 if [[ "${VERBOSE:-0}" == 1 ]]; then
   "$BLENDER" "${args[@]}"
 else
-  set +o pipefail
-  "$BLENDER" "${args[@]}" 2>&1 | grep -E "\[common\]|\[out\]|RENDER TIME|Saved|WROTE|OK$|Error|Traceback|^  File|Exception"
-  exit "${PIPESTATUS[0]}"
+  # Keep the raw log: the filter hides sys.exit() messages and crashes, and Blender exits 0 after sys.exit(msg),
+  # so a failed run can look like an empty success. If the run failed or matched nothing, show the raw tail.
+  pat="\[common\]|\[out\]|RENDER TIME|Saved|WROTE|OK$|Error|Traceback|^  File|Exception"
+  log="$(mktemp)"
+  set +eo pipefail                       # grep finding nothing must not end the script before the check below
+  "$BLENDER" "${args[@]}" 2>&1 | tee "$log" | grep -E "$pat"
+  rc="${PIPESTATUS[0]}"
+  if [[ "$rc" -ne 0 ]] || ! grep -qE "$pat" "$log"; then echo "[out] no result line (exit code $rc). Last lines of Blender's output:"; tail -n 12 "$log"; fi
+  rm -f "$log"
+  exit "$rc"
 fi

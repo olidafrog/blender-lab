@@ -28,7 +28,7 @@
 Refraction magnifies every flaw in a mesh. `caustics-v2`
 
 - Do not use the Displace modifier's Clouds texture on the original noise basis. Its lattice kinks read as a comb through glass. Put a crown in a shader Bump instead.
-- Do not voxel-remesh a beveled prism; voxels terrace the bevels. One angle-limited bevel with `harden_normals = True` was cleanest.
+- Do not voxel-remesh a beveled prism; voxels terrace the bevels. One angle-limited bevel with `harden_normals = True` was cleanest (a refraction subject; opaque plates with a crisp chamfer are in [modelling](modelling.md)).
 - Flat-shade large n-gon caps. Smooth shading across triangulated n-gons bands the normals. `mesh.set_sharp_from_angle()` (4.1+) sets *every* face smooth, so call it first and set `use_smooth = False` on caps after; otherwise each cap interpolates its bevel normals and renders as a dome. A diffuse clay render hides this; a mirror-material render shows it. Cost `minidisc` 3 review rounds ("crumpled foil", "lens windows").
 - Fine surface bumps must stay under about 0.2 mm on a 0.4 m object. 1 mm reads as orange peel.
 - A rounded SVG corner on a thick tilted slab can look chamfered. Check the source before you "fix" it.
@@ -39,3 +39,11 @@ Refraction magnifies every flaw in a mesh. `caustics-v2`
 - Partial denoise: mix noisy and denoised passes about 50/50, then add grain. Full denoise looks plastic. `printed-plastic`
 - f/8 at 30 cm on a 75 mm tilted object blurs the far half into a soft white glow that looks like a lighting bug. Product shots: f/16. `minidisc`
 - To darken the shadow-side outer wall of a low relief (a seal bead), lower the key; a flag or less fill does not do it. At 38° the wall still faced the sun. At 24° the row profile matched the reference. A black flag only darkened the paper, and a bounce card lit exactly the wall that must stay dark. `wax-seal-chaos`
+
+## Dark plastic, light rigs and contact shadows
+
+- Dark satin plastic under a big soft key: every flat top mirrors the softbox when the key sits in the camera's mirror direction (far side, near camera elevation). Render once with base colour black; what remains is reflection. Here it was 120–137 sRGB against about 82 wanted, so the tops read as the light, not the plastic, and no albedo change could fix it. Put the device's key on the camera side, above the camera, and give the backdrop its own key. `cyber-model`
+- Light linking as a look tool: each light gets one receiver collection: the backdrop (gradient and cast shadow), the device (plate tone, wall brightness), the steel parts only (a big card, since metal has no diffuse and needs something bright to reflect). The backdrop stayed at the same level while the device light was swept 15 to 60 W. An object can sit in two collections. `5.x` `cyber-model`
+- Camera-facing walls only lift with light from the camera side, low. The far-side key never reaches them. A fill that also lit the backdrop lifted every backdrop corner by 10–20 levels; linking it to the device fixed that. `cyber-model`
+- An emissive screen lights its neighbours (cyan on nearby metal). Set the glass object's `visible_diffuse = False`: the camera and glossy rays still see it. `cyber-model`
+- Decals (labels, logo) as flat planes 0.02 mm above the panel with `visible_shadow = False` render clean at 1600 px with no z-fighting. `cyber-model`

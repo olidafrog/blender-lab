@@ -6,6 +6,7 @@ Launch with `tools/blender.sh`. It handles most of the items below.
 
 - `--factory-startup` and `read_factory_settings()` reset preferences, and the GPU choice lives there. Call `common.enable_gpu()` after any factory reset, on every run. `scene.cycles.device = "GPU"` alone silently falls back to CPU.
 - The first OptiX render in a new Blender version prints "Loading render kernels". It is cached after that. `win`
+- The first Metal render that contains a shader Bevel node compiled kernels for about 47 s at 64 samples; the same scene took 2 s afterwards. It is not a render cost. `mac` `cyber-model`
 - Eevee renders headless. The engine id is `BLENDER_EEVEE_NEXT` in 4.x and `BLENDER_EEVEE` again in 5.x. Use Eevee for fast look-dev and Cycles for finals.
 
 ## Exit codes and output
@@ -26,7 +27,7 @@ Launch with `tools/blender.sh`. It handles most of the items below.
 - Wonder scripts resolve `--out renders/x.png` against the shell's cwd. Pass an absolute path, or `cd` into the experiment first.
 - After `save_as_mainfile`, call `bpy.ops.file.make_paths_relative()` and save again. Otherwise image paths are absolute and the file breaks on the other machine.
 - Saving over a file makes a `.blend1` backup. Delete it after the final save.
-- `tools/blender.sh` hides any line that does not match its filter. Measurement tools print with an `[out] ` prefix so their numbers get through; `compare.py`'s MAE was silently hidden before. Use `VERBOSE=1` to see everything.
+- `tools/blender.sh` prints the last 12 raw lines when a run exits non-zero or matches no filter line (added 2026-09-30). Before that, a `sys.exit("unknown P key")` (Blender exits 0) looked like a crash, and `grep` finding nothing ended the script under `set -e`. It hides any line that does not match its filter. Measurement tools print with an `[out] ` prefix so their numbers get through; `compare.py`'s MAE was silently hidden before. Use `VERBOSE=1` to see everything.
 - zsh does not word-split `$v`, so `for v in "a k=v k=v"; do tools/blender.sh … --set $v` passes one argument and the settings are ignored with no error. Build a `--set` array in a bash helper. `mac` `clouds`
 - Building several scenes in one file: `bpy.context.temp_override(scene=, view_layer=, collection=)` sends primitive-add operators to the right scene, but `bpy.context.active_object` still returns the first scene's active object. Props and boxes landed in the wrong scenes. Use `scene.view_layers[0].objects.active`, and `mesh.shade_smooth()` rather than the operator. `5.x` `clouds`
 - Overnight, every headless run slowed from seconds to minutes at ~2 % CPU (smoke test 5 s → 5 min), mostly before Blender started. It is not the scene: rerun the smoke test first when renders suddenly slow down. `mac` `clouds`

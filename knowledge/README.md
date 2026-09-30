@@ -34,11 +34,11 @@ Gotchas
 - [Platform](gotchas/platform.md) — Mac and Windows differences.
 - [API changes](gotchas/api-changes.md) — Blender 4.4 versus 5.x.
 - [Compositor](gotchas/compositor.md) — node behaviour and traps.
-- [Shader nodes](gotchas/shader-nodes.md) — node traps and shading techniques.
-- [Cycles](gotchas/cycles.md) — lighting, refraction, geometry, output quality.
+- [Shader nodes](gotchas/shader-nodes.md) — node traps and shading techniques, grain, scratches and creases.
+- [Cycles](gotchas/cycles.md) — lighting, refraction, geometry, output quality, dark plastic and light linking.
 - [Colour](gotchas/colour.md) — view transforms, clipping, dark fades.
-- [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes.
-- [Modelling](gotchas/modelling.md) — characters from code: planar-ring lofts, IK posing, straps and skirts, silhouette checks.
+- [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes, booleans and plates.
+- [Modelling](gotchas/modelling.md) — characters from code (planar-ring lofts, IK posing, straps and skirts, silhouette checks) and hard-surface plates from traced outlines (edge classes, crisp chamfer, black gaps, detail).
 - [Fluid sim](gotchas/fluid-sim.md) — Mantaflow scale, flow volume, why a viscous press failed.
 - [Volumes](gotchas/volumes.md) — GN volume grids, albedo vs scatter colour, emitters in volumes, cloud look.
 
@@ -53,6 +53,7 @@ Process
 - [Insights](insights.md) — deeper lessons.
 
 Decisions
+- [cyber-model](decisions/cyber-model.md) — hard-surface radio from a rectified plan: stacked plates, flat chamfers, black by geometry, three linked lights; Sonnet reviewer + Opus advisor test, 6.7
 - [roman-model](decisions/roman-model.md) — first character model: IK-posed planar-ring lofts + jitter/triangulate, hand-built armour, silhouette IoU gate
 - [eclipse-glow](decisions/eclipse-glow.md)
 - [wonder-printed-plastic](decisions/wonder-printed-plastic.md)

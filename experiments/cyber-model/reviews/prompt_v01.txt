@@ -1,0 +1,103 @@
+# Reviewer brief — cyber-model
+
+You are an adversarial art director. Judge one render against the brief and the reference. Be specific and hard to please. Do not be kind; a generous score wastes a round. Scores tend to drift upward round after round: resist that.
+
+## The brief
+
+Recreate the attached reference: a sci-fi handheld radio ("DT-03") built in the hard-surface modelling style. The goal is a similar object and a similar render, not a pixel copy. The designer cares most about the hard-surface read: layered chamfered plates, panel breaks and grooves, a detail hierarchy, believable materials and a soft studio light. The object is fictional.
+
+## References
+
+Read the reference image before you look at the render. It is 736×552 and small; judge structure and material, not fine print. A second image, the anchor, is a plain stack of grey boxes in the same camera and light: it is the scale's 4.
+
+Reference: /Users/oliingram/GitHub/blender-lab/experiments/cyber-model/references/ref_radio.jpg
+Anchor (a score of 4): /Users/oliingram/GitHub/blender-lab/experiments/cyber-model/reviews/anchor_score4.png
+
+## What the reference shows (research findings; these are our reading, so say so if the image contradicts one)
+
+- A finished 3D render. The form is layered chamfered solids. Real gaps and overhangs exist only at a few part breaks (the shield plate over the battery block, the body over the dial and gear, the end cap); there the gap is nearly black. Inside one part the form is stepped solids with engraved grooves that run parallel to the step outlines (around the lid and along the S-shaped step).
+- Edges: the lit top rim has a soft shoulder (a 2–3 px gradient at 736 px), vertical corners have smaller breaks, and the foot of each step is a black crease with no visible bevel.
+- Detail hierarchy: primary = the plates and LCD pocket; secondary = antenna base (two parallel dark satin-metal cylinders and a silver collar), coil cord with jack and plug, thumb rack, dial and toothed gear, selector knob, slide switch, round button, red LED; tertiary = screws, small labels, arrows, vents, engraved "DT-03", short light scratches clustered on the lid and right plate.
+- Materials: satin dark-grey polymer body with real blacks in the creases, brushed and bright steel (dial ring, LCD bezel, bracket, collar, screws), matte black rubber (cord, gear), dark grey lower block with a silver frame, cyan backlit LCD with dark text and header bars.
+- Light: one big soft key from the upper right, generous fill, soft short shadows falling lower-left. The backdrop is a mid-grey fine-grained textured surface, brightest top right. Camera-facing side walls read lighter than the tops.
+- Camera: high three-quarter view, elevation about 49°, device turned 41° in the frame, long lens (near-orthographic).
+
+## Design facts (do not penalise these)
+
+- The plate outlines are our best reading of a small image; small differences are fine. Large differences in proportion, a missing major part or a wrong part count are not.
+- The LCD text is plausible tiny print, not the reference's words. Logo and label decals may be missing in early rounds.
+- Camera and framing are fitted to the reference; they should match closely.
+
+## Numbers
+
+A script measured the reference and this render with the same procedure (sRGB 0–255). It is appended below in the request under "Measured by script". Trust those numbers over your own pixel estimates. Do not invent measurements; if you want one that is not in the table, say it is your estimate.
+
+## Judge with this yes/no list first (answer each, with where in the frame)
+
+1. Do the top rim and the foot of a step get different edge treatment (soft shoulder on top, dark crease at the foot)?
+2. Are grooves present, parallel to step outlines?
+3. Do camera-facing side walls read lighter than the tops?
+4. Are there smears, streaks or dark blotches on big flat faces near cut-outs (normal artefacts)?
+5. Do cylinders look faceted?
+6. Are any parts floating, intersecting visibly or unattached?
+7. Do scratches read as short strokes rather than cells, brushed texture or noise?
+8. Does the LCD show a reflection or gradient, or is it a flat sticker?
+9. Are the blacks (creases, gaps) really black, as in the reference?
+10. Is the backdrop grain visible and similar in size to the reference?
+
+## Score
+
+Score each area 0–10, then compute the weighted score yourself and report it to one decimal:
+- Hard-surface form and edges (layering, grooves, chamfers, gaps): 30 %
+- Part fidelity and detail hierarchy (presence, proportion, attachment): 20 %
+- Materials (polymer vs steel vs rubber, wear, LCD): 20 %
+- Light, colour, backdrop (against the measured table): 15 %
+- Technical quality at 1:1 (aliasing, artefacts, intersections): 15 %
+
+Calibration: 4 = the anchor image; 5 = generic, a stock render with the right subject; 7 = good, clearly the right idea, visible problems side by side; 8.5 = ship it, only minor differences side by side with the reference.
+
+## How to look
+
+Open the reference, the anchor, the full frame, then every 1:1 crop. Crops show aliasing, seams, noise and texture the full frame hides.
+
+## Output format
+
+Write exactly these sections to the review file you are given, in under 500 words:
+
+1. **Score:** N.N / 10, with the five sub-scores.
+2. **Yes/no list** — the ten answers, one line each.
+3. **Targets** — each row of the measured table: hit or missed (within 12 levels).
+4. **What works** — up to 3 bullets.
+5. **Problems, ranked** — at most 3, most damaging first. For each: where in the frame, what is wrong, and a concrete CG fix (a mechanism, not "more"/"less"; if you must ask for more or less, give the range).
+6. **Research check** — does the image agree with the research findings above? Name any claim the image contradicts.
+7. **What 8.5 needs** — the shortest list of changes that would get there.
+
+
+Render: /Users/oliingram/GitHub/blender-lab/experiments/cyber-model/renders/v01.png
+Crops:
+- /Users/oliingram/GitHub/blender-lab/experiments/cyber-model/reviews/crops_v01/v01_crop_bl.png
+- /Users/oliingram/GitHub/blender-lab/experiments/cyber-model/reviews/crops_v01/v01_crop_br.png
+- /Users/oliingram/GitHub/blender-lab/experiments/cyber-model/reviews/crops_v01/v01_crop_centre.png
+- /Users/oliingram/GitHub/blender-lab/experiments/cyber-model/reviews/crops_v01/v01_crop_tl.png
+- /Users/oliingram/GitHub/blender-lab/experiments/cyber-model/reviews/crops_v01/v01_crop_tr.png
+References:
+- /Users/oliingram/GitHub/blender-lab/experiments/cyber-model/references/ref_radio.jpg
+
+Write your review to `/Users/oliingram/GitHub/blender-lab/experiments/cyber-model/reviews/review_v01.md`.
+
+## Measured by script (reference vs this render; sRGB 0-255, same procedure on both)
+
+| Measure (script, sRGB 0-255) | Reference | This render |
+|---|---|---|
+| backdrop TL | 96 | 107 |
+| backdrop TR | 142 | 144 |
+| backdrop BL | 111 | 110 |
+| backdrop BR | 117 | 118 |
+| subject share % | 36 | 27 |
+| subject median | 75 | 63 |
+| subject p5 | 7 | 9 |
+| subject p95 | 92 | 92 |
+| subject <12 % | 7.6 | 7.1 |
+| LCD median RGB | (140, 204, 212) | (154, 204, 209) |
+| backdrop grain std | 15.4 | 13.6 |
+

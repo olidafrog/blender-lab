@@ -21,3 +21,10 @@
   Build solids at full size, and bevel crisp shapes by displacing the mesh with a distance profile. `5.x` `wax-seal-chaos`
 - Points to SDF Grid carries a band only ~3 voxels deep, so fillet and mean smoothing shred it into holes at fine voxel sizes. Build tubes as a Curve to Mesh and use Mesh to SDF with a wider band. `5.x` `wax-seal-chaos`
 - Grid to Mesh leaves voxel terraces that a low sun shows as concentric steps. Blur the mesh positions (Blur Attribute, vector, ~6 iterations) after meshing. `5.x` `wax-seal-chaos`
+
+## Booleans and plates (hard-surface)
+
+- Overlapping cutters joined into one operand cancel each other in an Exact boolean. The plate came back empty, or cuts were silently missing (vent slots never appeared). Set `modifier.use_self = True` (Exact only), and assert `len(mesh.polygons) > 0` after every apply. Print the sorted vertex z-levels of the result: a missing cut floor shows in one line. Retrying with MANIFOLD hid the cause. FAST is called FLOAT from 5.0. `5.x` `cyber-model`
+- After `modifier_apply` on a Boolean the target keeps an empty material slot 0, so a later `materials.append` lands in slot 1 and every face renders default grey (white under a soft key). Clear the slots, or give the cutters a material and set `material_mode = "TRANSFER"` (5.x): the new wall faces take it, which gives black vent, screw-hole and moat walls. `5.x` `cyber-model`
+- A hand-rolled miter offset of a concave outline self-intersects once the offset exceeds the corner radius, and the ring boolean built from it comes back empty. Round the outline first with a radius larger than the offset (grooves: r above inset + width; outward moats: r above the offset). A bmesh `inset_region` replacement gave empty rings on all five outlines; cause not found. `cyber-model`
+- When you lower a part, recheck every part that sat at its old height. A steel frame set to the block's new top height covered the block and looked like a wrong material. `cyber-model`

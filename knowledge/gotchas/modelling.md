@@ -1,6 +1,6 @@
-# Modelling from code: characters, parts, posing
+# Modelling from code: characters, parts, posing, hard-surface plates
 
-Learned on `roman-model`, the first character built entirely in `build.py`. The build there is the worked example. The reusable parts are `library/models/lowpoly-character/character_kit.py` and `tools/debug_views.py`.
+Characters were learned on `roman-model`, the first character built entirely in `build.py`; hard-surface plates on `cyber-model` (last section). The build there is the worked example. The reusable parts are `library/models/lowpoly-character/character_kit.py` and `tools/debug_views.py`.
 
 ## Getting the low-poly look
 
@@ -29,3 +29,15 @@ Learned on `roman-model`, the first character built entirely in `build.py`. The 
 - IoU finds gross pose and proportion errors and goes flat near 0.75–0.8. The look then improved a lot with little IoU change, so do not rank close versions by it. `roman-model`
 - Thresholding a sand-on-sand reference: separate on (R−B)/R (subject ≥ 0.45, backdrop ≈ 0.30), not on luma. Floor shadows are as dark as lit clay. `roman-model`
 - A debug sheet (ortho front, side and back, plus the hero view; random colour per object; backface culling) shows intersections, flipped normals and hidden parts the hero render hides. `roman-model`
+
+## Hard-surface plates from traced outlines
+
+Learned on `cyber-model` (a sci-fi radio; final calibrated 6.7 with a Sonnet reviewer). Code: `experiments/cyber-model/scripts/hs_kit.py` and `build.py`.
+
+- Build a stack of separate extruded 2D outlines, each with its own bevel. Height matters more than it looks: a 6 mm slab with 3–5 mm steps drew "thin tray" in two reviews. Measure a wall on the reference first (about 13 mm here), then use a 13 mm slab, 4–8 mm steps and one 12 mm block for the tallest plate. `cyber-model`
+- Bevel by edge class, not by one angle: top rim weight 1, vertical corners 0.35 only where the faces differ by more than 35°, feet and pocket floors 0. One width on every edge makes soft bricks. `cyber-model`
+- Crisp chamfer: 1 segment, 0.5–0.65 mm, Harden Normals off, flat shading on the plates, corner arcs of 8+ segments per 90°. Harden Normals plus Smooth by Angle gives a soft gradient shoulder that four reviews called "pillowy". That pair is right for big smooth faces. Unhardened smooth normals after a boolean left a dark triangle on one plate, and flat shading removed it. Weighted Normal measured worse (max normal error 0.022 against 0.000). `5.x` `cyber-model`
+- Black gaps come from geometry first: 0.7 mm gaps between same-level plates, an undercut (a slab over a narrower stem), a 3 mm moat cut round the tall plate in its neighbours, a black liner slab under the lower plates, and cutters that carry a black material. An ambient-occlusion multiply alone left creases grey for four rounds. `cyber-model`
+- A void-black base slab read as "a black tray under floating plates"; a near-black base made the walls darker than the tops and lost the blind calibration. Keep the base the plate material and get black from the gaps. `cyber-model`
+- Tertiary detail that read at 1600 px: sunk screws (a hole with the head below the surface), vent slots from joined cutters, engraved lid text and labels as decals, a steel lip round a vent window, scratch strokes from a drawn mask. Raised screw discs read as buttons. `cyber-model`
+- Coiled cord: a poly-spline helix round a path, with the coil radius ramped to 0 at both ends so the straight leads join the same tube; 21 turns for a 90 mm run. Give each free part something to sit on: a jack over the body edge and a boss with no body under it were the first "floating" complaints. `cyber-model`
