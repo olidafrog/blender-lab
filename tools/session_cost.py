@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""What a Claude Code session cost: turns, tokens, Blender runs, reviews, time.
+"""What a Claude Code session cost: turns, tokens, Blender runs, reviews, models, time.
 
 Run with plain python3 (standard library only), from the repo root:
   python3 tools/session_cost.py                 # every session of this repo, one row each
@@ -10,6 +10,8 @@ Run with plain python3 (standard library only), from the repo root:
 Reads ~/.claude/projects/<mangled repo path>/<session>.jsonl plus its subagents/*.jsonl.
 --project-dir overrides the folder (a worktree has its own).
 Tokens are summed once per API message; subagent tokens are counted apart from the main thread.
+Builder is the main thread's most-used model. Reviews counts reviewer agents on any model (the final
+calibration included); Reviewer is the model they were spawned with.
 """
 import argparse
 import json
@@ -119,8 +121,15 @@ def analyse(path):
     blender = sum(1 for n, i in uses + sub_uses
                   if n == "Bash" and "tools/blender.sh" in (i.get("command") or ""))
     agents = [i for n, i in uses if n in ("Agent", "Task")]
-    opus_reviews = sum(1 for i in agents if i.get("model") == "opus"
-                       and "review" in (i.get("description", "") + i.get("prompt", "")[:400]).lower())
+    review_agents = [i for i in agents
+                     if "review" in (i.get("description", "") + i.get("prompt", "")[:400]).lower()]
+    reviewers = sorted({i.get("model") or "inherit" for i in review_agents})
+    models = {}
+    for d in main:
+        m = d.get("message", {}).get("model") if d.get("type") == "assistant" else None
+        if m and not m.startswith("<"):
+            models[m] = models.get(m, 0) + 1
+    builder = max(models, key=models.get).replace("claude-", "") if models else "?"
     review_files = {m.group(0) for n, i in uses + sub_uses if n == "Write"
                     for m in [re.search(r"reviews/review_v[^/]*\.md$", i.get("file_path", ""))] if m}
     skills = sorted({i.get("skill") for n, i in uses if n == "Skill" and i.get("skill")})
@@ -134,7 +143,8 @@ def analyse(path):
         session=path.stem, start=datetime.fromtimestamp(min(t)).strftime("%Y-%m-%d %H:%M") if t else "?",
         experiments=exps, turns=human_turns(main), calls=m["calls"],
         out=m["out"], cache_read=m["cache_read"], sub_out=s["out"], sub_cache_read=s["cache_read"],
-        subagents=len(subs), blender=blender, opus_reviews=opus_reviews, review_files=len(review_files),
+        subagents=len(subs), blender=blender, reviews=len(review_agents), reviewer="/".join(reviewers) or "-",
+        builder=builder, review_files=len(review_files),
         web=web, skills=skills, wall_min=(max(t) - min(t)) / 60 if t else 0,
         active_min=active_seconds(times) / 60,
         best=best_score(exps[0]) if exps else None,
@@ -147,19 +157,20 @@ def k(n):
 
 def row(r):
     return (f"| {r['session'][:8]} | {r['start']} | {', '.join(r['experiments'][:2]) or '-'} | {r['turns']} "
-            f"| {r['calls']} | {r['blender']} | {r['opus_reviews']} | {r['web']} | {k(r['out'])} "
+            f"| {r['builder']} | {r['calls']} | {r['blender']} | {r['reviews']} | {r['reviewer']} | {r['web']} | {k(r['out'])} "
             f"| {k(r['cache_read'])} | {k(r['sub_out'])} | {r['active_min']:.0f} / {r['wall_min']:.0f} "
             f"| {', '.join(r['skills']) or '-'} |")
 
 
-HEADER = ("| Session | Start | Experiment | Turns | API calls | Blender runs | Opus reviews | Web | Output "
-          "| Cache read | Subagent output | Active / wall min | Skills |\n|" + "---|" * 13)
+HEADER = ("| Session | Start | Experiment | Turns | Builder | API calls | Blender runs | Reviews | Reviewer | Web "
+          "| Output | Cache read | Subagent output | Active / wall min | Skills |\n|" + "---|" * 15)
 
 
 def scoreboard(r):
     best = f"{r['best']:.1f}" if r["best"] is not None else "-"
     exp = r["experiments"][0] if r["experiments"] else "-"
-    return (f"| {r['start'][:10]} | {exp} | {r['session'][:8]} | {r['opus_reviews']} | {best} "
+    return (f"| {r['start'][:10]} | {exp} | {r['session'][:8]} | {r['builder']} | {r['reviewer']} "
+            f"| {r['reviews']} | {best} "
             f"| {r['blender']} | {k(r['out'] + r['sub_out'])} | {r['active_min']:.0f} |")
 
 

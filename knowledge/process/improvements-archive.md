@@ -1,0 +1,8 @@
+# Process improvements — archive
+
+Settled entries from [improvements.md](improvements.md): their check held twice with no failed mark. Kept verbatim for the evidence; nothing here needs checking again.
+
+- **2026-09-28 — Relevant gotchas land in the first build.** `new-experiment` step 4 now says where each listed gotcha lands in v01 (a `P` default or code). Evidence: in `clouds` the PROGRESS setup listed "AgX desaturates pink, use PBR Neutral", but v01–v02 still used AgX. Review v02 (5.6) led with "washed-out pastel, grey sky", and switching the view transform was most of the +0.6 in v03. File: `.claude/skills/new-experiment/SKILL.md`. **Check:** the next experiment's v01 already uses every listed view, colour and light default. — held 2026-09-28 (`wax-seal` v01 had PBR Neutral, paper exposure, Set Material and GN threshold from its setup list); held 2026-09-30 (`roman-model` v01: Standard view, floor lift, cyc value, flat faces). 2026-09-30 `cyber-model`: held for the view transform, the coplanar lift and no DOF from its setup table; the flat-shading gotcha listed there was only applied at v07.
+
+- **2026-09-28 — Commit at the end of every session.** `capture-learnings` step 8 commits the paths this session changed, never `git add -A`, and does not push. Evidence: two experiments sat uncommitted in the main checkout while the remote and lab-audit moved, and the merge hit 14 conflicted files. Asked for by the user. File: `.claude/skills/capture-learnings/SKILL.md`. **Check:** the next session ends with its work committed and no other session's files in its commit. 2026-09-28: held (clouds). 2026-09-30: held (`roman-model`). 2026-09-30: held (`cyber-model`, committed at step 8 of this retro, only its own paths).
+

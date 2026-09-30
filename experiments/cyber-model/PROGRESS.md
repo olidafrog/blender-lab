@@ -82,3 +82,7 @@ Blind A/B, one fresh Sonnet reviewer, same brief, random order (A = v09, B = v10
 | B = v10 | 6.5 | 6.0 / 7.5 / 6.0 / 6.0 / 7.5 | Base shell and camera-facing walls crushed to near-black; walls darker than tops |
 
 Closer to the reference: **A (v09)**. The final (v10) did not beat the best earlier version, so the hand-off ships **v09's configuration**, reproduced exactly (`chk09.png` against `v09.png`: MAE 0.00, 0.00 % changed). The one v10 change the calibration liked (vent slots and the screw, from `cut_self`) is a flag, `--set cut_self=True`, not reviewed together with the poly foot. Score trend across ten rounds: 5.9, 5.8, 6.0, 5.9, 6.0, 6.5, 6.6, 6.5, 6.7, 6.4; target 8.5 not reached.
+
+## Opus score (2026-09-30, audit session)
+
+A blind Opus pair with `cyber-deck-v2`'s prompt scored **v09 at 5.0** against cyber-deck-v2 v10 at 5.9 (`experiments/cyber-deck-v2/reviews/pair_cyber-model.md`). The Sonnet 6.7 above is 5.0 on the Opus scale; Opus called the build "flat plates with vertical walls, no sloped step, no LCD shield" and preferred its material.

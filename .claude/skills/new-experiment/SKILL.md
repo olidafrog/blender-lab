@@ -21,11 +21,11 @@ Every experiment gets the same folder shape and starts from what past experiment
    - which Blender version and machine you are on (`tools/blender.sh` prints it), and any `4.4`/`5.x` gotchas that apply,
    - the 3–8 gotchas and process notes most relevant to this brief, each with where it lands in the first build: a `P` default (view transform, light power) or a line of code. A gotcha that is only listed does not reach v01.
 5. **Research before building.** Run `/research-reference`. The `research-gate` hook blocks edits to `scripts/build*.py` until `RESEARCH.md` has a Sources section. If the user said to skip research, write `research skipped: <why>` in `PROGRESS.md`.
-6. **Smoke the template.** Run `tools/blender.sh experiments/<name>/scripts/build.py --out v00 --samples 16 --scale 0.25` to prove the scaffold renders. Then replace the placeholder scene.
+6. **Smoke the template.** Run `tools/blender.sh experiments/<name>/scripts/build.py --out v00 --samples 16 --scale 0.25` to prove the scaffold renders. Then replace the placeholder scene. Keep the `--preflight` flag working: `review-render` needs its sheet before round 1.
 
 ## Conventions
 
-- A/B and value tests go through `tools/sweep.sh`, not hand-written shell loops: zsh does not word-split `$var`, so a loop silently drops every `--set`.
+- A/B and value tests go through `tools/sweep.sh`. A hook blocks shell loops around `blender.sh --set`: zsh does not word-split `$var`, so a loop silently drops every `--set`.
 
 - All tunable values go in the `P` dict. Override with `--set key=value`; never edit the `.blend` by hand.
 - Name renders `v01`, `v02`… Never overwrite a render the user liked; add `_b`.

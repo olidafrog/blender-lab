@@ -4,6 +4,8 @@ Run from the repo root:
   tools/blender.sh experiments/__NAME__/scripts/build.py --out v01 --samples 128 --scale 0.5
   ... --set key=value      override any value in P
   ... --save               also save output/__NAME__.blend
+  ... --preflight          no render: the correctness sheet (clay, mirror, albedo 0, each light alone)
+                           to reviews/preflight_<out>.png. Read it before review round 1.
 """
 import argparse
 import ast
@@ -17,6 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
 from common import enable_gpu, experiment_paths  # noqa: E402
 from nodes import auto_layout, group, how_to_tweak, material_from_group  # noqa: E402
 from comp import LEGACY, compositor, post_group, use_saved_render  # noqa: E402
+from preflight import sheet  # noqa: E402
 
 EXP = experiment_paths(__file__)
 
@@ -81,6 +84,7 @@ def parse_args():
     ap.add_argument("--scale", type=float, default=0.5)
     ap.add_argument("--save", action="store_true")
     ap.add_argument("--norender", action="store_true")
+    ap.add_argument("--preflight", action="store_true")
     ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE")
     a = ap.parse_args(argv)
     for kv in a.set:
@@ -166,6 +170,9 @@ if __name__ == "__main__":
     compositor(scene, post(), raw_exr=raw)  # 4.4 or 5.x, see comp.LEGACY
     scene.cycles.samples = args.samples
     scene.render.resolution_percentage = round(args.scale * 100)
+    if args.preflight:
+        sheet(scene, EXP["reviews"] / f"preflight_{args.out}.png", tiles_dir=EXP["renders"] / f"preflight_{args.out}")
+        args.norender, args.save = True, False
     if not args.norender:
         scene.render.filepath = str(EXP["renders"] / f"{args.out}.png")
         bpy.ops.render.render(write_still=True)

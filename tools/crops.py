@@ -4,7 +4,10 @@ Run:
   tools/blender.sh tools/crops.py <render.png> [size] [out_dir]
   tools/blender.sh tools/crops.py <render.png> <size> <out_dir> <x,y> [<x,y> ...]
 
+  tools/blender.sh tools/crops.py <render.png> <size> <out_dir> --only-points <x,y> [<x,y> ...]
+
 Default size 512 px. Extra x,y points (pixels from top-left) add crops centred there.
+--only-points leaves out the centre and quadrant crops (later review rounds).
 Writes <out_dir>/<stem>_crop_<label>.png; out_dir defaults to the render's folder.
 """
 import sys
@@ -14,6 +17,8 @@ import bpy
 import numpy as np
 
 argv = sys.argv[sys.argv.index("--") + 1:]
+only_points = "--only-points" in argv
+argv = [a for a in argv if a != "--only-points"]
 src = Path(argv[0]).resolve()
 size = int(argv[1]) if len(argv) > 1 else 512
 out_dir = Path(argv[2]).resolve() if len(argv) > 2 else src.parent
@@ -27,6 +32,8 @@ px = px.reshape(h, w, 4)  # bottom-up rows
 
 points = {"centre": (w // 2, h // 2), "tl": (w // 4, h // 4), "tr": (3 * w // 4, h // 4),
           "bl": (w // 4, 3 * h // 4), "br": (3 * w // 4, 3 * h // 4)}
+if only_points:
+    points = {}
 for p in argv[3:]:
     x, y = map(int, p.split(","))
     points[f"{x}_{y}"] = (x, y)

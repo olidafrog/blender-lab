@@ -5,36 +5,44 @@ description: Use when a Blender experiment render needs scoring, judging or crit
 
 # Review a render
 
-One round of the adversarial review loop. The reviewer is a fresh Opus subagent that sees only the brief, the references and the render. It never sees the build history or your reasoning, so it cannot grade effort or be argued with. This file holds the rules; the evidence behind them is in `knowledge/process/review-loop.md`.
+One round of the adversarial review loop. The reviewer is a fresh Opus subagent that sees only the brief, the references and the render, so it cannot grade effort or be argued with. The evidence behind these rules is in `knowledge/process/review-loop.md`.
+
+## Models
+
+- **Reviewer: Opus, every round.** It is the measuring instrument; scores from another model do not compare. If the user names another reviewer model, use it for the whole experiment and say so in `PROGRESS.md`.
+- **Advisor: a model other than the one building.** Opus if you are Fable, Fable otherwise, or the one the user named. A fresh agent each time, given the references, the latest render and `build.py`. Ask which mechanism is wrong and what should replace it; it may run test renders. No scores, no reviews, no asking for values. Log its answer and your change in `PROGRESS.md`.
 
 ## Before round 1 only: correctness pass
 
-Reviewers misread render bugs as look problems (DOF blur as "noise", aliasing as "fabric"), and each costs rounds. Check these yourself first:
+Reviewers misread render bugs as look problems (DOF blur as "noise", aliasing as "fabric"), and each costs rounds.
+
+**Preflight sheet.** Run `build.py --out vNN --preflight` (a build without the flag: `tools/preflight.py` on its saved `.blend`). Round 1 is refused without it. Read every tile:
+- *clay*: geometry, seams, bevels, intersections.
+- *mirror*: smooth-shaded caps that render as domes, bad normals. Clay hides these.
+- *albedo0*: what is still bright is reflection or spill, such as a softbox mirrored in a flat top.
+- *scatter0*: subsurface that fills grooves, draws crease lines or hides bump detail.
+- *each light alone*: which light carries a veil or wash.
+
+For a suspect the sheet does not isolate (one shader component, an emissive mesh), render it alone before guessing.
+
+**Checks the sheet cannot make:**
 - DOF off, or focus on an empty at the area that matters.
 - Any fine pattern: its pitch in pixels at the review resolution. Under ~4 px → render 2× and downsample.
 - Angles and directions of patterns and lights match the reference.
-- A flat-grey material override render, to see geometry, seams and bevels without shading. For glossy or mirror subjects, also a mirror override: diffuse clay hides smooth-shaded caps that render as domes.
-- For subsurface materials, render scatter 0 beside the chosen scale before round 1. SSS on a near-opaque material fills grooves, draws saturated crease lines and hides bump detail.
-- For reflective subjects, an isolation set before any tuning: the subject alone, each shader component alone, each light group off. One render per suspect finds a cause faster than guessing.
-- If the subject departs from the references in a way a reviewer could mistake for a defect, state it under "Design facts" in the reviewer brief now.
-- Exposure: the subject's median value against the main reference's (a few lines of PIL). Re-check it after any change that removes a veil or spill; a dim render reads to reviewers as a colour or material problem.
-- A veil or wash you cannot explain: render one light at a time at 25% scale, 64 samples (~3 s each), before tuning anything.
-- Video: diff two consecutive frames in a static patch of sky. Grain and any noise must change; frozen grain reads as lens dirt and no reviewer caught it for eight versions.
-- Each compositor effect routed alone to the output (blurs, glows, crescent, masks): it must visibly change pixels. A 0 px blur looks like "the effect is missing" and reviewers will ask for it round after round.
+- Exposure: the subject's median against the main reference's (`tools/measure.py`). Re-check after removing a veil or spill; a dim render reads as a material problem.
+- A design fact a reviewer could take for a defect: state it under "Design facts" in the reviewer brief now.
+- Each compositor effect routed alone to the output: it must visibly change pixels. A 0 px blur reads as "the effect is missing" round after round.
+- Video: diff two consecutive frames in a static patch. Grain must change; frozen grain reads as lens dirt.
 
 ## Steps
 
-1. **Find the render and check the budget.** Default: the newest file in `experiments/<name>/renders/`. Call its version `vNN`. Under about 1200 px wide → re-render at `--scale 1` first; crops of a small render hide nothing. Count the `reviews/review_v*.md` files. If they reach the Budget in `BRIEF.md` (default 10), do not review; go to **Stopping**.
-2. **Gate: prove the change reached the pixels.** Run
-   `tools/blender.sh tools/metrics.py <previous render> <this render> <x,y[,size]>`
-   with a target crop on the area you changed. If it prints `NO CHANGE`, do not spend a review: find why the change did not show, fix it, render again. With one path it prints stats (levels, clipping, gradients); check them against the numeric targets in `RESEARCH.md`.
-3. **Reviewer brief.** If `reviews/REVIEWER_PROMPT.md` exists, use it unchanged; scores only compare when it is fixed. Otherwise fill `REVIEWER_PROMPT.template.md` from `BRIEF.md`, `references/` and `RESEARCH.md` (including its numeric targets) and save it. If the experiment has a metrics script, freeze it and name it in the prompt. Change the prompt only if the user asks; then note that scores reset.
-4. **Crops.** Round 1: `tools/blender.sh tools/crops.py <render> 512 experiments/<name>/reviews/crops_vNN` for the centre and quadrants, plus `x,y` points for any area the user flagged. Later rounds: the full frame plus only the crops of areas the last review or the user flagged, and the area you changed. Images are most of a review's cost. For "recreate this image" work, also run `tools/compare.py` against the main reference.
-   For a video: a 3×3 contact sheet of labelled frames plus six consecutive 1:1 crops of one patch (motion), e.g. `experiments/eclipse-glow/scripts/rise_sheet.sh`. Before acting on a motion complaint, measure it against a control render with the effect off.
-5. **Spawn the reviewer** with the Agent tool: `subagent_type: general-purpose`, `model: opus`. Always Opus, every round, even for a quick check; scores from other models do not compare. A new agent every round; never resume or message an old reviewer. Its prompt is exactly the output of `python tools/review_prompt.py <name> vNN` (the contents of `REVIEWER_PROMPT.md`, the absolute paths of the render, each crop and each reference, then "Write your review to ..."). Nothing else: no change list, no earlier scores, no explanations.
-6. **Snapshot** `scripts/build.py` (and any kit it imports) to `snapshots/build_vNN.py`, so any version can be diffed or rebuilt. Never into `reviews/`: reviewers have file access and graded the diff when snapshots sat there.
-7. **Update `PROGRESS.md`** in the experiment: one table row per version (version, score, the one change, cost, render path), newest first. Cost is the Blender runs and minutes since the last row. The user reads this to follow along.
-8. **Carry on.** Do not stop for approval between rounds; the user follows `PROGRESS.md`. Check **Stopping** after each review.
+1. **Render at review size.** The version is `renders/vNN.png`. Under about 1200 px wide → re-render at `--scale 1` first; crops of a small render hide nothing.
+2. **Reviewer brief.** If `reviews/REVIEWER_PROMPT.md` exists, use it unchanged; scores only compare when it is fixed. Otherwise fill `REVIEWER_PROMPT.template.md` from `BRIEF.md`, `references/` and `RESEARCH.md` (including its numeric targets) and save it. If the experiment has a metrics script, freeze it and name it in the prompt. Change the prompt only if the user asks; then note that scores reset.
+3. **Prepare the round:** `python3 tools/review_round.py <name> vNN [x,y ...]`. It checks the budget and the preflight sheet, proves the change reached the pixels, makes the crops, snapshots `build.py` to `snapshots/` and writes the prompt. The `x,y` points are the area you changed plus each area the last review or the user flagged. After round 1 they are the only crops the reviewer gets. If it stops, fix what it names (`NO CHANGE`: find why the change did not show, render again). Do not build the round by hand.
+   - Check the gate's printed stats against the numeric targets in `RESEARCH.md`. For "recreate this image" work, also run `tools/compare.py` against the main reference.
+   - Video: add a 3×3 contact sheet of labelled frames plus six consecutive 1:1 crops of one patch, e.g. `experiments/eclipse-glow/scripts/rise_sheet.sh`. Before acting on a motion complaint, measure it against a control render with the effect off.
+4. **Spawn the reviewer** with the Agent tool: `subagent_type: general-purpose`, `model: opus`, and exactly the one-line prompt the tool printed. A new agent every round; never resume an old one. Add nothing: no change list, no earlier scores.
+5. **Update `PROGRESS.md`**: one table row per version (version, score, the one change, cost, render path), newest first. Cost is the Blender runs and minutes since the last row. Then carry on without asking; check **Stopping** after each review.
 
 ## Stopping
 
@@ -44,19 +52,19 @@ Stop the loop when any of these holds:
 - **Only taste is left.** The user's flagged problems are fixed, and reviewers now contradict each other round to round.
 
 When you stop:
-1. **Calibrate.** Spawn one more fresh Opus reviewer. Give it `REVIEWER_PROMPT.md` and two renders, the final and the best earlier version, labelled A and B in random order. Ask for a score and the top problem for each, in the same format, written to `reviews/calibration.md`. Record the pair under Calibration in `PROGRESS.md`. If the final does not beat the earlier version, say so; finish from the better one.
-2. **Report:** score and trend, the plateau, the top-ranked problem, any complaint that repeated (a mechanism problem), and one to three mechanism candidates for the next version. Say the user can extend the budget.
-3. Run `/finish-experiment`.
+1. **Calibrate.** `python3 tools/review_round.py <name> --pair <final> <best earlier>` copies the two renders to neutral names in random order and writes the prompt; spawn one fresh Opus reviewer with it. Read `snapshots/calibration_key.txt` only after the review. Record the pair under Calibration in `PROGRESS.md`. The winner is the version to continue or finish from.
+2. **Fork once if the target is still far.** If the winner is more than 1.0 under the Target in `BRIEF.md`, and the experiment has not forked and the brief does not say "no fork", do not finish. Ask the advisor for the mechanism most likely at fault and two replacements. Build the best candidate as the next version in the same experiment, with the same `REVIEWER_PROMPT.md`. Raise the Budget in `BRIEF.md` by 6 and log "Fork: <old mechanism> → <new>" in `PROGRESS.md`. An infeasible candidate gets three attempts, then take the next. In the fork only the budget and the taste rule stop the loop. Then calibrate the fork's best against the pre-fork winner and finish from the better one.
+3. **Report:** score and trend, the top-ranked problem, any complaint that repeated, and one to three mechanism candidates for a next version.
+4. Run `/finish-experiment`.
 
 ## Rules
 
 - Fix one ranked problem per round. Apply research changes one lever at a time too.
 - If the same complaint survives two rounds of value changes, stop tuning. Change the mechanism, and run `/research-reference` for that effect.
-- If a review after round 1 calls the whole form wrong ("barrels", "inflatable", "a bucket", "plastic"), or a measured target misses three rounds running despite changes aimed at it, consult a second model before the next round. It may run test renders. Spawn a fresh agent on a different model from the builder (Fable, or the one the user named as advisor). Give it the references, the latest render and `build.py`, and ask which mechanism is wrong and what should replace it. Do not ask it for values, and do not give it the reviews' scores. Log what it said and what you changed in `PROGRESS.md`.
+- Consult the advisor before the next round when a review after round 1 calls the whole form wrong ("barrels", "inflatable", "a bucket", "plastic"), or when a measured target misses three rounds running despite changes aimed at it.
 - The target is the brief and references, never an earlier version.
 - On a contradiction between rounds, the brief, the numeric targets and the measured pixels decide.
 - When the review instrument changes (composites, other crops, a changed prompt), re-score one known render with it first. Only compare scores within one instrument.
 - If the top asks contradict each other across rounds (a trade-off, not a bug), stop tuning: expose it as one control, name it in `PROGRESS.md` and `HOW_TO_TWEAK`, and hand it to the designer.
 - If a complaint is numeric (coverage, hue count, clipping), write a metrics script and tune against it locally; review only the result.
-- When the user is happy, run `/finish-experiment`.
 - Log surprises in the experiment's `LEARNINGS.md`: facts under Learnings, anything that slowed the loop or a skill got wrong under Process, and why a version took many rounds under Cost.

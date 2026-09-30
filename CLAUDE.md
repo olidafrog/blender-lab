@@ -23,13 +23,15 @@ Any request to start an experiment, make a new version, match a reference, or im
 
 1. `new-experiment` (new) — or read the experiment's `BRIEF.md`, `PROGRESS.md` and `LEARNINGS.md` (existing).
 2. `research-reference` — before building. On a new version, rerun it for any effect a review said is still wrong.
-3. Build, then `review-render` in a loop until its stop rule or the round budget in `BRIEF.md`.
+3. Build, then `review-render` in a loop until its stop rule or the round budget in `BRIEF.md`; on a stall it forks once to a new mechanism.
 4. `finish-experiment` — final render plus an editable `.blend` with one control node per material.
 5. `capture-learnings` — knowledge plus the process retro.
 
 Invoke each skill with the Skill tool; do not work from memory of what it says. Skip a step only when the user says so ("no review", "just a quick test"), and note the skip in `PROGRESS.md`. Tasks that are not look work (fix a script, convert a model, set up tooling) skip steps 2–4.
 
-Hooks check the artifacts, not the skill names: edits to `build.py` wait for a `RESEARCH.md` with Sources (or `research skipped: <why>` in `PROGRESS.md`), and before stopping, the newest render needs a review and `knowledge/` or `LEARNINGS.md` needs an update.
+Hooks check the artifacts, not the skill names: edits to `build.py` (by any tool) wait for a `RESEARCH.md` with Sources and a link (or `research skipped: <why>` in `PROGRESS.md`); shell loops around `blender.sh --set` are blocked in favour of `tools/sweep.sh`; before stopping, each experiment rendered this session needs a review of its newest version and a learnings capture that names it.
+
+**Models.** The builder is the session's model (Fable by default). The reviewer is always Opus. The advisor is a model other than the builder, consulted on mechanisms at the plan stage and when a loop stalls. Web research fans out to Sonnet subagents. The rules live in `review-render` and `research-reference`; the scoreboard records the builder and reviewer per session.
 
 Read [knowledge/README.md](knowledge/README.md) and the entries that touch the task before starting.
 
@@ -45,7 +47,7 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 ## Layout
 
 - `experiments/<name>/` — `BRIEF.md`, `RESEARCH.md`, `PROGRESS.md`, `references/`, `assets/`, `scripts/build.py`, `renders/` (not in git), `reviews/`, `output/` (FINAL PNGs; `.blend` not in git), `LEARNINGS.md`.
-- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `comp.py` (compositor with live preview), `compare.py`, `crop_compare.py`, `crops.py`, `screen_fft.py` (line-screen pitch and angle), `metrics.py` (pre-review gate: did the change reach the pixels), `silhouette.py` (subject outline vs reference: IoU, band widths, overlay), `debug_views.py` (Workbench subject mask and four-view debug sheet), `mesh_profile.py` (an object's height along a line, from a build.py), `measure.py` (plain `python3`: same-procedure table for reference and render — backdrop corners, subject levels, blacks, grain), `fit_camera.py` (plain `python3`: camera from landmark pairs), `sweep.sh` (render one build per `--set` variant and tile them), `session_cost.py` (plain `python3`: what a session cost).
+- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `comp.py` (compositor with live preview), `compare.py`, `crop_compare.py`, `crops.py`, `screen_fft.py` (line-screen pitch and angle), `metrics.py` (pre-review gate: did the change reach the pixels), `review_round.py` (plain `python3`: one review round in one command: budget, preflight, gate, crops, snapshot, prompt; `--pair` for blind A/B), `preflight.py` (correctness sheet: clay, mirror, albedo 0, scatter 0, each light alone; `build.py --preflight`), `silhouette.py` (subject outline vs reference: IoU, band widths, overlay), `debug_views.py` (Workbench subject mask and four-view debug sheet), `mesh_profile.py` (an object's height along a line, from a build.py), `measure.py` (plain `python3`: same-procedure table for reference and render — backdrop corners, subject levels, blacks, grain), `fit_camera.py` (plain `python3`: camera from landmark pairs), `sweep.sh` (render one build per `--set` variant and tile them), `session_cost.py` (plain `python3`: what a session cost).
 - `knowledge/` — gotchas, process, insights, decisions.
 - `library/` — reusable models, textures, HDRIs, materials, node groups.
 

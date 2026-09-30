@@ -3,7 +3,7 @@
 Run:
   tools/blender.sh tools/smoke_test.py
 
-Also builds the new-experiment template at 10% scale, 4 samples (5.x only).
+Also builds the new-experiment template at 10% scale, 4 samples, and its --preflight sheet (5.x only).
 Outputs go to the system temp dir; nothing lands in the repo.
 """
 import math
@@ -100,6 +100,13 @@ def template_check():
     for f in (exp / "renders/smoke.png", exp / "renders/smoke_raw.exr", exp / "output/smoke.blend"):
         if not f.exists():
             sys.exit(f"TEMPLATE FAILED: missing {f}")
+    sys.argv = [argv[0], "--", "--out", "smoke", "--scale", "0.1", "--samples", "4", "--preflight"]
+    try:
+        runpy.run_path(str(script), run_name="__main__")
+    finally:
+        sys.argv = argv
+    if not (exp / "reviews/preflight_smoke.png").exists():
+        sys.exit("TEMPLATE FAILED: --preflight wrote no sheet")
     print("[out] TEMPLATE OK")
 
 

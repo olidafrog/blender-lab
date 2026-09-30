@@ -1,0 +1,2 @@
+A = experiments/cyber-deck-v2/renders/v10.png
+B = experiments/cyber-model/renders/v09.png

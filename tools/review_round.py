@@ -1,0 +1,169 @@
+#!/usr/bin/env python3
+"""One review round in one command: budget, preflight, pixel gate, crops, snapshot, prompt.
+
+Plain python3, from the repo root:
+  python3 tools/review_round.py <experiment> <vNN> [x,y ...]        # prepare the round for renders/<vNN>.png
+  python3 tools/review_round.py <experiment> --pair <A> <B> [--name calibration]   # blind pair
+
+A round does, in order, and stops at the first that fails:
+  1. Budget: counts reviews/review_v*.md against the Budget in BRIEF.md.
+  2. Round 1 only: reviews/preflight_*.png must exist (build.py --preflight), or PROGRESS.md says
+     "preflight skipped: <why>".
+  3. Gate: tools/metrics.py between the last reviewed render and this one, with the x,y points as
+     target crops. NO CHANGE stops the round.
+  4. Crops into reviews/crops_<vNN>/: round 1 gets the centre and quadrants plus the points; later
+     rounds get only the points (the area you changed and what the last review flagged), so at
+     least one point is required.
+  5. Snapshot scripts/build.py and the local modules it imports to snapshots/ (never reviews/).
+  6. Writes reviews/prompt_<vNN>.txt and prints the one line to give the reviewer.
+
+Options: --force skips the gate verdict (the change is outside the crops, or the previous review
+was of another preset). --all-crops gives a later round the full crop set.
+
+--pair copies two renders to neutral names (A.png, B.png, random order) in reviews/<name>/ and
+writes reviews/prompt_<name>.txt. The key goes to snapshots/<name>_key.txt, where the reviewer is
+told not to look. <A> and <B> are version names in this experiment, or paths to any PNG.
+"""
+import random
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import review_prompt  # noqa: E402
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def stop(msg, code=2):
+    print(f"[round] STOP: {msg}")
+    sys.exit(code)
+
+
+def budget(exp):
+    m = re.search(r"^##\s*Budget\s*\n+(.*)", (exp / "BRIEF.md").read_text(encoding="utf-8"), re.M)
+    n = re.search(r"\d+", m.group(1)) if m else None
+    return int(n.group(0)) if n else 10
+
+
+def blender(*args):
+    r = subprocess.run([str(ROOT / "tools" / "blender.sh"), *map(str, args)], cwd=ROOT,
+                       capture_output=True, text=True)
+    out = r.stdout + r.stderr
+    if r.returncode:
+        print(out)
+        stop(f"tools/blender.sh {args[0]} failed")
+    return out
+
+
+def snapshot(exp, v):
+    snaps = exp / "snapshots"
+    snaps.mkdir(exist_ok=True)
+    build = exp / "scripts" / "build.py"
+    src = build.read_text(encoding="utf-8")
+    made = []
+    for f in sorted((exp / "scripts").glob("*.py")):
+        if f == build or re.search(rf"^\s*(import|from)\s+{re.escape(f.stem)}\b", src, re.M):
+            shutil.copyfile(f, snaps / f"{f.stem}_{v}.py")
+            made.append(f"{f.stem}_{v}.py")
+    return made
+
+
+def round_(name, v, points, force, all_crops):
+    exp = ROOT / "experiments" / name
+    render = exp / "renders" / f"{v}.png"
+    if not render.exists():
+        stop(f"no render at {render}")
+    if not (exp / "reviews" / "REVIEWER_PROMPT.md").exists():
+        stop("reviews/REVIEWER_PROMPT.md is missing. Fill it from the template first (review-render step 2).")
+    reviews = sorted((exp / "reviews").glob("review_v*.md"), key=lambda f: f.stat().st_mtime)
+    done, cap = len(reviews), budget(exp)
+    if (exp / "reviews" / f"review_{v}.md").exists():
+        stop(f"{v} already has a review")
+    if done >= cap:
+        stop(f"budget spent ({done} of {cap} reviews). Go to Stopping in review-render.")
+    first = done == 0
+    print(f"[round] {name} {v}: review {done + 1} of {cap}")
+
+    if first:
+        progress = (exp / "PROGRESS.md").read_text(encoding="utf-8") if (exp / "PROGRESS.md").exists() else ""
+        if not list((exp / "reviews").glob("preflight*.png")) and not re.search(r"preflight skipped", progress, re.I):
+            stop("no preflight sheet. Run build.py --preflight and read it before round 1, "
+                 "or write 'preflight skipped: <why>' in PROGRESS.md.")
+    else:
+        if not points and not all_crops:
+            stop("a later round needs at least one x,y: the area you changed and each area the last review "
+                 "flagged (--all-crops for the full set).")
+        prev = exp / "renders" / (reviews[-1].stem.replace("review_", "") + ".png")
+        if prev.exists() and prev != render:
+            out = blender("tools/metrics.py", prev, render, *points)
+            print("\n".join(line for line in out.splitlines() if "[out]" in line))
+            if "NO CHANGE" in out and not force:
+                stop("the change did not reach the pixels. Fix that and render again (--force to override).", 3)
+
+    crops = exp / "reviews" / f"crops_{v}"
+    shutil.rmtree(crops, ignore_errors=True)
+    flag = [] if first or all_crops else ["--only-points"]
+    blender("tools/crops.py", render, 512, crops, *flag, *points)
+    print(f"[round] crops: {len(list(crops.glob('*.png')))} in {crops.relative_to(ROOT)}")
+    print(f"[round] snapshot: {', '.join(snapshot(exp, v))}")
+
+    prompt = exp / "reviews" / f"prompt_{v}.txt"
+    prompt.write_text(review_prompt.build(name, v), encoding="utf-8")
+    print(f"[round] READY. Spawn a fresh Opus reviewer (Agent, model: opus) with exactly this prompt:\n"
+          f"Your brief is in {prompt.as_posix()}. Read it and follow it exactly.")
+
+
+def pair(name, a, b, tag):
+    exp = ROOT / "experiments" / name
+
+    def find(x):
+        f = Path(x) if "/" in x else exp / "renders" / f"{x}.png"
+        f = f if f.is_absolute() else (ROOT / f if "/" in x else f)
+        if not f.exists():
+            stop(f"no render at {f}")
+        return f
+
+    srcs = [find(a), find(b)]
+    random.shuffle(srcs)
+    d = exp / "reviews" / tag
+    shutil.rmtree(d, ignore_errors=True)
+    d.mkdir(parents=True)
+    for label, f in zip("AB", srcs):
+        shutil.copyfile(f, d / f"{label}.png")  # a fresh copy: no version in the name, no telling mtime
+    (exp / "snapshots").mkdir(exist_ok=True)
+    key = exp / "snapshots" / f"{tag}_key.txt"
+    key.write_text("".join(f"{label} = {f.relative_to(ROOT).as_posix()}\n" for label, f in zip("AB", srcs)),
+                   encoding="utf-8")
+    out = exp / "reviews" / f"{tag}.md"
+    lines = [(exp / "reviews" / "REVIEWER_PROMPT.md").read_text(encoding="utf-8"), "",
+             "Two renders follow, labelled A and B. Review each against the brief and references in the format "
+             "above (score, targets, top problem), each on its own merits. Then say in two sentences which is "
+             "closer to the reference and why.",
+             f"A: {review_prompt.p(d / 'A.png')}", f"B: {review_prompt.p(d / 'B.png')}",
+             *review_prompt.references(exp), "", review_prompt.ONLY,
+             f"Write your review to `{review_prompt.p(out)}`."]
+    prompt = exp / "reviews" / f"prompt_{tag}.txt"
+    prompt.write_text("\n".join(lines), encoding="utf-8")
+    print(f"[round] pair ready; key in {key.relative_to(ROOT)} (read it only after the review).\n"
+          f"[round] READY. Spawn a fresh Opus reviewer (Agent, model: opus) with exactly this prompt:\n"
+          f"Your brief is in {prompt.as_posix()}. Read it and follow it exactly.")
+
+
+if __name__ == "__main__":
+    argv = sys.argv[1:]
+    flags = {f for f in ("--force", "--all-crops") if f in argv}
+    argv = [a for a in argv if a not in flags]
+    tag = "calibration"
+    if "--name" in argv:
+        i = argv.index("--name")
+        tag = argv[i + 1]
+        del argv[i:i + 2]
+    if len(argv) >= 4 and argv[1] == "--pair":
+        pair(argv[0], argv[2], argv[3], tag)
+    elif len(argv) >= 2 and not argv[1].startswith("--"):
+        round_(argv[0], argv[1], argv[2:], "--force" in flags, "--all-crops" in flags)
+    else:
+        sys.exit(__doc__)

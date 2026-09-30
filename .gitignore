@@ -8,6 +8,9 @@ experiments/*/exports/
 experiments/*/reviews/crops_*/
 experiments/*/reviews/*/crops_*/
 experiments/*/reviews/sbs_*/
+experiments/*/reviews/*/A.png
+experiments/*/reviews/*/B.png
+experiments/*/renders/preflight_*/
 
 __pycache__/
 *.pyc

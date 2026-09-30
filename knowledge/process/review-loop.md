@@ -41,6 +41,10 @@ The rules live in `.claude/skills/review-render/SKILL.md`. This file keeps the e
 - **A measured target that misses three rounds is a mechanism problem too** (Rules). In `cyber-deck-v2` p5 sat at 20–23 through moats, undercuts and liners; a Fable consult (reviews withheld, test renders allowed) named the light rig and fixed it in one round (5.7 → 6.2).
 - **A new review instrument needs a control** (Rules). Side-by-side composite reviews scored the original `wax-seal` final 5.8, against 6.4 from render-only crops. Re-score a known render with the new instrument before comparing numbers across it. `wax-seal-chaos`
 
+- **A blind pair needs neutral file names** (`review_round.py --pair`). In `cyber-model` the "blind" pairwise question listed `v04.png` and `v05.png`, with the newer render always second; "picked the newer render nine times in nine" was not evidence. `audit 2026-09-30`
+- **Prose steps decay, tool steps hold** (steps 3–4, `review_round.py`; the correctness pass, `preflight.py`). Across seven loops every hook and tool check held; the pixel gate ran on 4 of 11 rounds in `clouds`, the fewer-crops rule was never followed in `roman-model`, and the scatter-0 render was skipped in `wax-seal-chaos`. `audit 2026-09-30`
+- **A reviewer on another model is another instrument** (Models). One Opus pair scored `cyber-deck-v2` v10 at 5.9 and `cyber-model` v09 at 5.0; the Sonnet reviewer had given that render 6.7. Opus built and reviewed every earlier experiment, so a Fable builder with an Opus reviewer is the first real separation. `audit 2026-09-30`
+
 ## A weaker reviewer and an advisor (cyber-model)
 
 The user asked for a Sonnet reviewer and an Opus advisor on a hard-surface task, to test how Sonnet performs. Scores are not comparable with Opus-reviewed experiments.

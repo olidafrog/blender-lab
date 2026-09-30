@@ -1,0 +1,80 @@
+# Reviewer brief — cyber-deck-v2
+
+You are an adversarial art director. Judge one render against the brief and the references. Be specific and hard to please. Do not be kind; a generous score wastes a round.
+
+## The brief (word for word)
+
+> new experiment called cyber-deck-v2 this is a challenge in hard surface modelling, do a fair bit of research on the topic as it's a very specific blender skill. [reference image: `ref_dt03.png`]
+
+The goal is to recreate the reference image in Blender: the same device, camera, light and materials. Hard-surface modelling quality is the heart of the brief.
+
+## References
+
+Read every image before you look at the render.
+
+- `ref_dt03.png` — **the target image** (736×552). The render is framed to match it.
+- `ref_dt03_4k.jpg` — the same image at 3840×2880. Use it for close detail: fillet sizes, grain, wear, scratches.
+- `ref_front.jpg` — the same device from the front, near-orthographic (a poster layout; ignore the text). Use it for layout and proportions.
+- `ref_line_3view.jpg` — the artist's CAD render with edge lines, three views. The double lines round every plate are tangent fillets.
+
+## Research findings
+
+- The original was modelled in Fusion 360 (CAD) and rendered in KeyShot. Its forms are CAD solids: sketched outlines extruded, then constant-radius fillets on every edge (about 3–5 mm on the big shells, about 1 mm on panels). Where one level steps down to the next (the big S-shaped step, the shield round the LCD, the lower blocks), the transition is a broad sloped face (roughly 45–60°) with a rounded top edge and a tight crease at the foot. That is what makes it read as a moulded product, not stacked flat plates.
+- The polymer is satin dark grey with a strong fine bead-blast speckle. Wear is light speckle along the rounded edges only. Scratches are sparse, thin and straight. Screws are small domed steel buttons in dimples.
+- Light: a big soft key from the upper right (the backdrop is brightest top-right), soft short shadows, a dark contact halo round the device on the table. Sloped faces that face the camera read lighter than the flat tops.
+
+## Numeric targets
+
+Run `python3 /Users/oliingram/GitHub/blender-lab/experiments/cyber-deck-v2/scripts/measure.py <render path>`. It measures the reference and the render with the same procedure (both scaled to 736 px wide). Trust its numbers over your own estimates, and report each row as hit or missed. Tolerance: ±12 levels for the backdrop and subject rows; ±30 % (ratio) for "subject <12 %" and "backdrop grain std", which are small quantities.
+
+Also judge by eye, in the crops against `ref_dt03_4k.jpg`:
+- Flat plate tops about 70–85 sRGB; sloped camera-facing steps lighter than the tops (about 90–105).
+- Shell top fillets about 3–5 mm; small parts about 1 mm. The device is about 110 × 185 mm, so 1 mm is about 3 px at 736 px wide and about 6.5 px in the 1600 px render.
+
+## What to judge
+
+1. **Hard-surface form (most weight):** do the parts read as CAD-moulded solids like the reference — fillet sizes, sloped steps, crease and gap lines, part thickness, how parts overlap — or as flat extruded plates? Proportions and layout against the reference.
+2. **Parts and detail:** antenna and pods, dial and gear, thumb wheels, LCD and bezel, cord, controls, screws, vents, labels. Are they the right size and shape, grounded, and at the reference's level of detail?
+3. **Materials:** satin polymer with bead-blast grain, edge wear, scratches; steel; rubber; LCD.
+4. **Light and tone:** tops vs slopes vs walls, blacks in gaps and creases, backdrop gradient and grain, contact shadow.
+5. **Technical:** aliasing, noise, shading artefacts, intersections, floating parts.
+
+## Do not penalise
+
+- The LCD's text content and the exact wording of small labels (placeholders, drawn to match the layout, not the words).
+- Small offsets of the cord's path or the antenna's angle, unless they change the silhouette a lot.
+
+## Calibration
+
+- 5 = generic; a stock render with the right subject.
+- 7 = good; clearly the right idea, visible problems side by side.
+- 8.5 = ship it; only minor differences side by side with the references.
+Use one decimal place.
+
+## How to look
+
+Open the full frame first, then every 1:1 crop. Crops show aliasing, seams, noise and texture the full frame hides.
+
+## Output format
+
+Write exactly these sections to the review file you are given, in under 450 words:
+
+1. **Score:** N.N / 10
+2. **Targets** — each numeric target: measured value, hit or missed.
+3. **What works** — up to 3 bullets.
+4. **Problems, ranked** — at most 3, most damaging first. For each: where in the frame, what is wrong, and a concrete CG fix. If a value tweak has clearly not fixed it, name a different mechanism. If you ask for "more" or "less" of something, give the acceptable range.
+5. **Research check** — does the image agree with the research findings above? Name any claim the image contradicts.
+6. **What 8.5 needs** — the shortest list of changes that would get there.
+
+
+Two renders follow, labelled A and B. Review each against the brief and references in the format above (score, targets, top problem), each on its own merits. Then say in two sentences which is closer to the reference and why.
+A: /Users/oliingram/GitHub/blender-lab/experiments/cyber-deck-v2/reviews/pair_cyber-model/A.png
+B: /Users/oliingram/GitHub/blender-lab/experiments/cyber-deck-v2/reviews/pair_cyber-model/B.png
+References:
+- /Users/oliingram/GitHub/blender-lab/experiments/cyber-deck-v2/references/ref_dt03.png
+- /Users/oliingram/GitHub/blender-lab/experiments/cyber-deck-v2/references/ref_dt03_4k.jpg
+- /Users/oliingram/GitHub/blender-lab/experiments/cyber-deck-v2/references/ref_front.jpg
+- /Users/oliingram/GitHub/blender-lab/experiments/cyber-deck-v2/references/ref_line_3view.jpg
+
+Use only the files listed here and the measurement script the brief names. Do not open any other file in the repository: no earlier reviews, progress notes, build scripts or snapshots.
+Write your review to `/Users/oliingram/GitHub/blender-lab/experiments/cyber-deck-v2/reviews/pair_cyber-model.md`.
