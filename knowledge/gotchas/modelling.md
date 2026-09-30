@@ -32,7 +32,7 @@ Characters were learned on `roman-model`, the first character built entirely in 
 
 ## Hard-surface plates from traced outlines
 
-Learned on `cyber-model` (a sci-fi radio; final calibrated 6.7 with a Sonnet reviewer) and `cyber-deck-v2` (same reference, Opus, 6.4). Code: `experiments/cyber-model/scripts/hs_kit.py`; the loft kit `experiments/cyber-deck-v2/scripts/hs2.py`.
+Learned on `cyber-model` (a sci-fi radio; final calibrated 6.7 with a Sonnet reviewer) and `cyber-deck-v2` (same reference, Opus, 6.4). Code: `experiments/cyber-model/scripts/hs_kit.py`; the loft kit `library/models/hardsurface-kit/hardsurface_kit.py`.
 
 - CAD-style shells from code: loft a rounded plan outline through a designed section (foot, wall, 48–55° flat slope band, 1.2–1.4 mm top fillet, 0.4 mm crease, optional undercut stem) with flat n-gon caps. Watertight, whole device in 4 s, clean in clay and mirror at the first build; this is Fusion's sketch → extrude → fillet. Keep every section inset below the smallest convex plan radius or the offset ring crosses itself. `cyber-deck-v2`
 - Pockets from profiled cutters that carry the host's rim and floor fillets, each cutter its own object in a Collection operand (overlaps then work in both solvers). Face attributes on the host (edge-wear tags) survive the boolean. `5.x` `cyber-deck-v2`

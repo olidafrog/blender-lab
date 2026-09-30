@@ -7,7 +7,7 @@ Run from the repo root:
   ... --clay / --mirror    debug material overrides (correctness pass)
   ... --save               also save output/cyber-deck-v2.blend
 
-Every shell is a plan outline lofted through a designed section (hs2.py): wall, 55 degree slope and a
+Every shell is a plan outline lofted through a designed section (library/models/hardsurface-kit/hardsurface_kit.py): wall, 55 degree slope and a
 2-3 mm top fillet, like the Fusion 360 original. Layout is v1's plan traced on the rectified reference
 (plan px, 3.6 px per mm, origin at plan (500, 480), +x right, +y up); lengths in the kit are millimetres.
 """
@@ -22,12 +22,12 @@ import bpy
 from mathutils import Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "library" / "models" / "hardsurface-kit"))
 from common import enable_gpu, experiment_paths  # noqa: E402
 from nodes import auto_layout, group, how_to_tweak, material_from_group  # noqa: E402
 from comp import LEGACY, compositor, post_group, use_saved_render  # noqa: E402
-import hs2  # noqa: E402
-from hs2 import MM, Outline, circle, cut, loft, rod, rrect, sec_cutter, sec_rod, sec_slab, sec_step, toothed  # noqa: E402
+import hardsurface_kit as hs2  # noqa: E402
+from hardsurface_kit import MM, Outline, circle, cut, loft, rod, rrect, sec_cutter, sec_rod, sec_slab, sec_step, toothed  # noqa: E402
 
 EXP = experiment_paths(__file__)
 
@@ -153,7 +153,7 @@ Lights (Object Data tab: Power, Size)
 
 Post (Compositing tab): the "Post" node updates the saved render live. After F12, set "Source" to Off.
 
-Geometry comes from experiments/cyber-deck-v2/scripts/build.py (plan outline x designed section, hs2.py).
+Geometry comes from experiments/cyber-deck-v2/scripts/build.py (plan outline x designed section, library/models/hardsurface-kit).
 Changes made by hand here are lost on rebuild; copy good values back into P.
 """
 
@@ -273,7 +273,7 @@ def _bump(nt, height, strength, dist):
 
 def polymer_group():
     """Satin polymer, one node. Wear reads the FACE attribute "wear" that the loft writes on the convex top
-    fillets (hs2.py): speckled, lighter, a little glossier, only on the rounded edges (reference 4K crops)."""
+    fillets (hardsurface_kit.py): speckled, lighter, a little glossier, only on the rounded edges (reference 4K crops)."""
     ng, gi, go = group("Polymer", [
         ("Colour", "NodeSocketColor", P["poly_colour"], None, None),          # linear albedo
         ("Roughness", "NodeSocketFloat", P["poly_rough"], 0.0, 1.0),          # 0 gloss, 1 matte

@@ -1,4 +1,4 @@
-"""Hard-surface kit for cyber-deck-v2: CAD-style parts as a plan outline lofted through a designed section.
+"""Hard-surface kit: CAD-style parts as a plan outline lofted through a designed section.
 
 A part = plan outline (corner points + a fillet radius per corner, mm) x section (a polyline in (inset, z)
 with a fillet radius per corner, mm). Each section station becomes one offset copy of the outline; rings are
@@ -11,6 +11,9 @@ shader reads for edge wear. Profiled cutters carry the host's rim fillet, so poc
 (a Bevel after booleans clamps every edge of the mesh: RESEARCH.md).
 
 Units: mm in, metres out (MM).
+
+Use: sys.path.insert(0, str(common.LIBRARY / "models" / "hardsurface-kit")); import hardsurface_kit as hs.
+Worked example: experiments/cyber-deck-v2/scripts/build.py. Evidence: knowledge/decisions/cyber-deck-v2.md.
 """
 import math
 

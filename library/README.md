@@ -23,6 +23,8 @@ Reusable things for any experiment. It fills as experiments produce things worth
 
 - `models/lowpoly-character/character_kit.py` — low-poly character kit: IK (`two_bone`, `frame_from`), superellipse and planar torso rings, loft/grid/box bmesh builders, `jitter_triangulate` for the irregular-facet look, and `finish_mesh` (flat faces, a per-face `facet` attribute). A code module, not a `.blend`. From `roman-model`, whose `build.py` is the worked example.
 
+- `models/hardsurface-kit/hardsurface_kit.py` — CAD-style hard-surface parts from code: a rounded plan outline (`Outline`, `rrect`, `circle`, `toothed`) lofted through a designed section (`sec_slab`, `sec_step` with slope, fillets and undercut; `sec_rod`), profiled pocket cutters (`sec_cutter`), `rod` for lathe parts with an optional knurl twist, a checked `cut()` (Collection operand, Manifold then Exact, material transfer, slot clean-up), `helix_cord`. Convex top-fillet crests carry a FACE attribute `wear`. A code module. From `cyber-deck-v2`, whose `build.py` is the worked example.
+
 Python builders for both materials: `from build_materials import disc_group, case_group` (add `LIBRARY / "materials"` to `sys.path`).
 
 ## Rules
