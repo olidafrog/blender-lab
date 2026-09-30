@@ -6,10 +6,6 @@ Every Changed entry ends with a **Check**: what the next experiment should show 
 
 ## Proposed
 
-- **Mechanism consult with a second model after round 2** when a review calls the whole form wrong ("barrels", "inflatable", "bucket"). A different model (Fable here) reads the build script and renders and names the mechanism, not the values. Evidence: `roman-model` spent rounds 1–3 on a subdivide + decimate body; the Fable consult named the cause, and the rebuild fixed the facet read in one round. Put the rule in `review-render` Rules if a second experiment confirms it.
-- **`tools/debug_views.py`**: the Workbench subject mask and the four-view debug sheet from `roman-model/scripts/build.py` (`workbench()`, `sheet()`) as an importable helper, so any build gets `--mask` and `--sheet`. Evidence: the sheet found intersections, flipped parts and the pad cavity that the hero render hid.
-- **Character kit in `library/`**: the IK skeleton, `ring`/`loft`/`jitter`, `torso_ring` and the part builders from `roman-model` as a reusable module. Ask the user first; one character is thin evidence.
-
 - **Seed-drawn fork when a loop stalls.** When `review-render` stops on the slope rule, offer a fork whose approach per axis (geometry, material, light, process) is drawn from a written pool by a random seed. Reroll from the same stream only when a draw proves infeasible. Evidence: `wax-seal-chaos` beat the stalled `wax-seal` blind, 6.6 against 5.4. Cost: a fluid draw ate ~1.5 h before the reroll, so cap an infeasible draw at about 3 attempts.
 
 - **`/sync-tweaks` skill**. A headless script opens a hand-tweaked `.blend`, reads the control-node values and updates `P` in `build.py`. Evidence: tweaks made in the GUI are lost on the next rebuild.
@@ -28,6 +24,11 @@ Proposals with no evidence yet. Revive one when a session hits the problem it so
 - **Shared library tooling.** Append materials and node groups from `library/`, import Poly Haven assets. Candidates: `wonder-caustics/assets/monochrome_studio_01_4k.hdr`, the pop art halftone and hatch groups, the printed-plastic blur group.
 
 ## Changed
+
+- **2026-09-30 — Proposals from `roman-model` implemented** (asked for by the user):
+  - *Mechanism consult with a second model.* `review-render` Rules: when a review after round 1 calls the whole form wrong, consult a fresh agent on a different model about the mechanism before round 3. Evidence: in `roman-model` the Fable consult named the subdivide + decimate cause behind three rounds of "barrels". **Check:** the next loop with a whole-form complaint consults before round 3, and the mechanism change lifts the score within two rounds.
+  - *`tools/debug_views.py`*: `subject_mask()` and `debug_sheet()` (ortho front/side/back plus the camera, random colour per object, backface culling). They restore the scene settings they change. `roman-model` now imports them. Evidence: the sheet found intersections, hidden parts and a pad cavity that the hero render hid. **Check:** the next modelling experiment uses them from v01 instead of copying code.
+  - *Character kit in the library*: `library/models/lowpoly-character/character_kit.py` (IK, rings, bmesh builders, jitter + triangulate, `finish_mesh`). `roman-model` imports it; its render matched the pre-move render with 0.00 % of pixels changed. **Check:** the next character experiment imports the kit, and adds to it rather than forking it.
 
 - **2026-09-30 — Silhouette IoU gate as a shared tool.** `tools/silhouette.py` compares a render's subject mask (Workbench, alpha) with a reference mask. It prints IoU, both bounding boxes and per-band widths, and writes a red/blue overlay; `--make-ref` thresholds a reference on (R−B)/R. `research-reference` step 5 now asks for a reference mask when the subject has a clear outline. Evidence: in `roman-model` the band widths and the overlay pointed at each wrong part (arm placement, stance, pad height, shield), and IoU rose 0.58 → 0.84. The experiment's own copy needed uv and numpy, and a reviewer's system python had no numpy. Files: `tools/silhouette.py`, `.claude/skills/research-reference/SKILL.md`, `CLAUDE.md`, `knowledge/process/matching-a-reference.md`. **Check:** the next figure or object experiment has a reference mask and an IoU line per version before its first review.
 

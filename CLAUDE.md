@@ -45,7 +45,7 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 ## Layout
 
 - `experiments/<name>/` — `BRIEF.md`, `RESEARCH.md`, `PROGRESS.md`, `references/`, `assets/`, `scripts/build.py`, `renders/` (not in git), `reviews/`, `output/` (FINAL PNGs; `.blend` not in git), `LEARNINGS.md`.
-- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `comp.py` (compositor with live preview), `compare.py`, `crop_compare.py`, `crops.py`, `screen_fft.py` (line-screen pitch and angle), `metrics.py` (pre-review gate: did the change reach the pixels), `silhouette.py` (subject outline vs reference: IoU, band widths, overlay), `mesh_profile.py` (an object's height along a line, from a build.py), `sweep.sh` (render one build per `--set` variant and tile them), `session_cost.py` (plain `python3`: what a session cost).
+- `tools/` — shared helpers: `common.py` (`enable_gpu`, `experiment_paths`, `LIBRARY`), `nodes.py` (one-node materials), `comp.py` (compositor with live preview), `compare.py`, `crop_compare.py`, `crops.py`, `screen_fft.py` (line-screen pitch and angle), `metrics.py` (pre-review gate: did the change reach the pixels), `silhouette.py` (subject outline vs reference: IoU, band widths, overlay), `debug_views.py` (Workbench subject mask and four-view debug sheet), `mesh_profile.py` (an object's height along a line, from a build.py), `sweep.sh` (render one build per `--set` variant and tile them), `session_cost.py` (plain `python3`: what a session cost).
 - `knowledge/` — gotchas, process, insights, decisions.
 - `library/` — reusable models, textures, HDRIs, materials, node groups.
 

@@ -1,6 +1,6 @@
 # Modelling from code: characters, parts, posing
 
-Learned on `roman-model`, the first character built entirely in `build.py`. The build there is the worked example.
+Learned on `roman-model`, the first character built entirely in `build.py`. The build there is the worked example. The reusable parts are `library/models/lowpoly-character/character_kit.py` and `tools/debug_views.py`.
 
 ## Getting the low-poly look
 

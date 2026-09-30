@@ -52,6 +52,7 @@ When you stop:
 
 - Fix one ranked problem per round. Apply research changes one lever at a time too.
 - If the same complaint survives two rounds of value changes, stop tuning. Change the mechanism, and run `/research-reference` for that effect.
+- If a review after round 1 calls the whole form wrong ("barrels", "inflatable", "a bucket", "plastic"), consult a second model before round 3. Spawn a fresh agent on a different model from the builder (Fable, or the one the user named as advisor). Give it the references, the latest render and `build.py`, and ask which mechanism is wrong and what should replace it. Do not ask it for values, and do not give it the reviews' scores. Log what it said and what you changed in `PROGRESS.md`.
 - The target is the brief and references, never an earlier version.
 - On a contradiction between rounds, the brief, the numeric targets and the measured pixels decide.
 - When the review instrument changes (composites, other crops, a changed prompt), re-score one known render with it first. Only compare scores within one instrument.

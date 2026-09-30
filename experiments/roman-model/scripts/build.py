@@ -18,22 +18,24 @@ How it is built (see RESEARCH.md):
 import argparse
 import ast
 import math
-import random
 import sys
-import zlib
 from pathlib import Path
 
 import bmesh
 import bpy
 import numpy as np
-from mathutils import Euler, Matrix, Quaternion, Vector
+from mathutils import Matrix, Quaternion, Vector
 from mathutils.bvhtree import BVHTree
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
-from common import enable_gpu, experiment_paths  # noqa: E402
-from nodes import auto_layout, group, how_to_tweak, use
+from common import LIBRARY, enable_gpu, experiment_paths  # noqa: E402
+from debug_views import debug_sheet, subject_mask  # noqa: E402
+from nodes import auto_layout, group, how_to_tweak, use  # noqa: E402
 from nodes import math as nmath  # noqa: E402
-from comp import LEGACY, compositor, post_group, use_saved_render  # noqa: E402
+from comp import compositor, post_group, use_saved_render  # noqa: E402
+
+sys.path.insert(0, str(LIBRARY / "models" / "lowpoly-character"))
+import character_kit as ck  # noqa: E402
 
 EXP = experiment_paths(__file__)
 
@@ -153,99 +155,38 @@ def h(v):
     return v * P["H"]
 
 
-def rot(x=0.0, y=0.0, z=0.0):
-    return Euler((math.radians(x), math.radians(y), math.radians(z)), "XYZ").to_matrix()
-
-
-def frame_from(axis, front):
-    """Rotation whose local -Z runs along `axis` and local -Y leans toward `front`."""
-    zc = -axis.normalized()
-    yc = -(front - front.project(zc))
-    if yc.length < 1e-6:
-        yc = Vector((0, 1, 0)) - Vector((0, 1, 0)).project(zc)
-    yc.normalize()
-    xc = yc.cross(zc)
-    m = Matrix((xc, yc, zc)).transposed()
-    return m
-
-
-def superellipse(rx, ry, a, p=2.4):
-    """Point on a superellipse. a = 0 is local +X (left), 90° is the front (local -Y)."""
-    c, s = math.cos(a), math.sin(a)
-    x = rx * math.copysign(abs(c) ** (2 / p), c)
-    y = -ry * math.copysign(abs(s) ** (2 / p), s)
-    return x, y
-
-
-def ring(origin, R, rx, ry, n=12, p=2.4, z=0.0, bump=None):
-    """A ring of n points in the local XY plane of frame R, z along local Z (metres)."""
-    pts = []
-    for k in range(n):
-        a = 2 * math.pi * k / n
-        x, y = superellipse(rx, ry, a, p)
-        if bump:
-            f = bump(a)
-            x, y = x * f, y * f
-        pts.append(origin + R @ Vector((x, y, z)))
-    return pts
+rot, frame_from, superellipse, ring, two_bone = ck.rot, ck.frame_from, ck.superellipse, ck.ring, ck.two_bone
 
 
 def new_object(name, bm, cat, smooth=False):
-    me = bpy.data.meshes.new(name)
-    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    for f in bm.faces:
-        f.smooth = smooth
-    bm.to_mesh(me)
-    bm.free()
-    rng = random.Random(zlib.crc32(name.encode()) + 7)
-    me.attributes.new("facet", "FLOAT", "FACE").data.foreach_set("value", [rng.random() for _ in me.polygons])
-    ob = bpy.data.objects.new(name, me)
-    bpy.context.scene.collection.objects.link(ob)
-    ob.data.materials.append(MATS[cat])
+    ob = ck.finish_mesh(name, bm, MATS[cat], smooth=smooth)
     PARTS.append((ob, cat))
     return ob
 
 
+def jitter(bm, name):
+    ck.jitter_triangulate(bm, h(P["jitter"]), name, P["seed"])
+
+
 def loft(name, rings, cat, caps=True, low=False):
-    """Closed tube through rings of equal size; triangle-fan caps.
-    low=True: jitter every vertex a little and triangulate, so a coarse loft reads as
-    hand-placed irregular facets (no subdivision, no decimate)."""
-    bm = bmesh.new()
-    vs = [[bm.verts.new(p) for p in r] for r in rings]
-    n = len(rings[0])
-    for a, b in zip(vs, vs[1:]):
-        for j in range(n):
-            bm.faces.new((a[j], a[(j + 1) % n], b[(j + 1) % n], b[j]))
-    if caps:
-        for r, flip in ((vs[0], True), (vs[-1], False)):
-            c = bm.verts.new(sum((v.co for v in r), Vector()) / n)
-            for j in range(n):
-                tri = (c, r[j], r[(j + 1) % n])
-                bm.faces.new(tri[::-1] if flip else tri)
+    """Closed tube through rings; low=True jitters and triangulates it (the body facet look)."""
+    bm = ck.loft_bm(rings, caps)
     if low:
         jitter(bm, name)
     return new_object(name, bm, cat)
 
 
-def jitter(bm, name):
-    rng = random.Random(zlib.crc32(name.encode()) + P["seed"])
-    j = h(P["jitter"])
-    for v in bm.verts:
-        v.co += Vector((rng.uniform(-j, j), rng.uniform(-j, j), rng.uniform(-j, j)))
-    bmesh.ops.triangulate(bm, faces=bm.faces[:], quad_method="BEAUTY", ngon_method="BEAUTY")
+def grid_surface(name, rows, cat, keep=lambda i, j: True, cyclic=True, pole=None, low=False, close=False):
+    """Quad surface through rows of points; faces where keep(row, col) is False are left out."""
+    bm = ck.grid_bm(rows, keep, cyclic, pole, close)
+    if low:
+        jitter(bm, name)
+    return new_object(name, bm, cat)
 
 
-def facet(ob, tris):
-    """Subdivision 1 then Decimate (Collapse) to about `tris` triangles."""
-    sub = ob.modifiers.new("Smooth", "SUBSURF")
-    sub.levels = sub.render_levels = 1
-    src = sum(len(p.vertices) - 2 for p in ob.data.polygons) * 4
-    dec = ob.modifiers.new("Decimate", "DECIMATE")
-    dec.decimate_type = "COLLAPSE"
-    dec.use_collapse_triangulate = True
-    dec.ratio = min(1.0, tris / max(1, src))
-    return ob
+def box(name, M, size, cat, bevel=0.0):
+    """Box of `size` (x, y, z in metres) under 4×4 matrix M, with an optional 1-segment bevel."""
+    return new_object(name, ck.box_bm(M, size, bevel), cat)
 
 
 def solid(ob, thick, offset=-1.0):
@@ -254,50 +195,6 @@ def solid(ob, thick, offset=-1.0):
     m.offset = offset
     m.use_even_offset = True
     return ob
-
-
-def grid_surface(name, rows, cat, keep=lambda i, j: True, cyclic=True, pole=None, low=False, close=False):
-    """Quad surface through rows of points; faces where keep(row, col) is False are left out."""
-    bm = bmesh.new()
-    vs = [[bm.verts.new(p) for p in r] for r in rows]
-    n = len(rows[0])
-    for i in range(len(rows) - 1):
-        for j in range(n if cyclic else n - 1):
-            if keep(i, j):
-                bm.faces.new((vs[i][j], vs[i][(j + 1) % n], vs[i + 1][(j + 1) % n], vs[i + 1][j]))
-    if pole is not None:
-        c = bm.verts.new(pole)
-        for j in range(n):
-            bm.faces.new((c, vs[0][(j + 1) % n], vs[0][j]))
-    if close:
-        bm.faces.new(vs[-1])
-    if low:
-        jitter(bm, name)
-    return new_object(name, bm, cat)
-
-
-def box(name, M, size, cat, bevel=0.0):
-    """Box of `size` (x, y, z in metres) under 4×4 matrix M, with an optional 1-segment bevel."""
-    bm = bmesh.new()
-    bmesh.ops.create_cube(bm, size=1.0)
-    bmesh.ops.scale(bm, vec=Vector(size), verts=bm.verts)
-    if bevel:
-        bmesh.ops.bevel(bm, geom=bm.edges[:] + bm.verts[:], offset=bevel, segments=1,
-                        affect="EDGES", clamp_overlap=True)
-    bmesh.ops.transform(bm, matrix=M, verts=bm.verts)
-    return new_object(name, bm, cat)
-
-
-def two_bone(root, target, l1, l2, pole):
-    """Two-bone IK: returns the middle joint (knee or elbow)."""
-    d = target - root
-    dist = min(d.length, (l1 + l2) * 0.999)
-    u = d.normalized()
-    cos_a = (l1 * l1 + dist * dist - l2 * l2) / (2 * l1 * dist)
-    a = math.acos(max(-1.0, min(1.0, cos_a)))
-    v = pole - pole.project(u)
-    v.normalize()
-    return root + (u * math.cos(a) + v * math.sin(a)) * l1
 
 
 # ------------------------------------------------------------------ materials
@@ -486,24 +383,12 @@ def pec_bump(z):
 
 
 def torso_ring(S, z):
-    """12 points round the torso at height z (H above the hip joint), angle 0 = left, 90° = front.
-    Planes, not a tube: a pec shelf, a sternum crease, lat flare and a flatter back."""
+    """12 points round the torso at height z (H above the hip joint): planes, not a tube."""
     w, d = torso_shape(z)
     pec = P["pec"] * max(0.0, 1 - abs(z - 1.40) / 0.22)          # pecs push the front out
     lat = P["lat"] * max(0.0, 1 - abs(z - 1.15) / 0.35)           # lats flare the sides
     o, R = S["spine"](h(z))
-    pts = []
-    for k in range(12):
-        a = math.radians(30 * k)
-        c, sn = math.cos(a), math.sin(a)
-        x = w * math.copysign(abs(c) ** 0.8, c)
-        y = -(d if sn > 0 else d * 0.9) * math.copysign(abs(sn) ** 0.8, sn)
-        if sn > 0.4:
-            y -= pec * (0.6 if k == 3 else 1.0)       # k=3 is dead front: the sternum crease
-        if abs(c) > 0.8:
-            x += math.copysign(lat, c)
-        pts.append(o + R @ h((x, y, 0)))
-    return pts
+    return ck.torso_ring(o, R, w, d, pec, lat, unit=P["H"])
 
 
 def build_body(S):
@@ -951,60 +836,6 @@ def size_table():
     print(f"[out] total triangles {tris}")
 
 
-def workbench(scene, path, mode):
-    """mask: black subject on transparent; sheet: colour per object, studio light."""
-    scene.render.engine = "BLENDER_WORKBENCH"
-    scene.render.use_compositing = False
-    sh = scene.display.shading
-    scene.render.film_transparent = True
-    bpy.data.objects["Cyc"].hide_render = True
-    if mode == "mask":
-        sh.light, sh.color_type, sh.single_color = "FLAT", "SINGLE", (0, 0, 0)
-    else:
-        sh.light, sh.color_type = "STUDIO", "RANDOM"
-        sh.show_object_outline = True
-        sh.show_backface_culling = True     # flipped normals show as holes
-        scene.render.film_transparent = False
-    scene.display.render_aa = "8"
-    scene.render.filepath = str(path)
-    bpy.ops.render.render(write_still=True)
-
-
-def sheet(scene, out):
-    """Front, side, back and hero views side by side in one PNG."""
-    H = P["H"]
-    views = [("front", (0, -12, 2.8 * H), 0), ("side", (12, 0, 2.8 * H), 0), ("back", (0, 12, 2.8 * H), 0), ("hero", None, 0)]
-    cam = scene.camera
-    orig = (cam.location.copy(), cam.rotation_euler.copy(), cam.data.type)
-    tiles = []
-    res = scene.render.resolution_x
-    scene.render.resolution_x = scene.render.resolution_y = 700
-    scene.render.resolution_percentage = 100
-    for name, loc, _ in views:
-        if loc:
-            cam.data.type, cam.data.ortho_scale = "ORTHO", 6.4 * H
-            cam.location = loc
-            cam.rotation_euler = (Vector((0, 0, loc[2])) - Vector(loc)).to_track_quat("-Z", "Y").to_euler()
-        else:
-            cam.location, cam.rotation_euler, cam.data.type = orig
-        p = EXP["renders"] / f"_sheet_{name}.png"
-        workbench(scene, p, "sheet")
-        img = bpy.data.images.load(str(p))
-        a = np.array(img.pixels[:], dtype=np.float32).reshape(700, 700, 4)
-        tiles.append(a)
-        bpy.data.images.remove(img)
-        p.unlink()
-    cam.location, cam.rotation_euler, cam.data.type = orig
-    scene.render.resolution_x = scene.render.resolution_y = res
-    big = np.concatenate(tiles, axis=1)
-    im = bpy.data.images.new("sheet", big.shape[1], big.shape[0], alpha=True)
-    im.pixels = big.ravel()
-    im.filepath_raw = str(EXP["renders"] / f"{out}_sheet.png")
-    im.file_format = "PNG"
-    im.save()
-    print(f"Saved {im.filepath_raw}")
-
-
 def parse_args():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     ap = argparse.ArgumentParser()
@@ -1065,7 +896,7 @@ if __name__ == "__main__":
         bpy.ops.wm.save_as_mainfile(filepath=str(blend))
         blend.with_suffix(".blend1").unlink(missing_ok=True)
     if args.mask:
-        workbench(scene, EXP["renders"] / f"{args.out}_mask.png", "mask")
+        subject_mask(scene, EXP["renders"] / f"{args.out}_mask.png", hide=["Cyc"])
     if args.sheet:
-        sheet(scene, args.out)
+        debug_sheet(scene, EXP["renders"] / f"{args.out}_sheet.png", height=h(5.6), hide=["Cyc"])
     print("BUILD OK")
