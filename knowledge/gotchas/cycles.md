@@ -48,3 +48,12 @@ Refraction magnifies every flaw in a mesh. `caustics-v2`
 - Camera-facing walls only lift with light from the camera side, low. The far-side key never reaches them. A fill that also lit the backdrop lifted every backdrop corner by 10–20 levels; linking it to the device fixed that. `cyber-model`
 - An emissive screen lights its neighbours (cyan on nearby metal). Set the glass object's `visible_diffuse = False`: the camera and glossy rays still see it. `cyber-model`
 - Decals (labels, logo) as flat planes 0.02 mm above the panel with `visible_shadow = False` render clean at 1600 px with no z-fighting. `cyber-model`
+
+## Exteriors: sun, sky, glass, context
+
+- Physical units (agent-tested, 5.2): a Sun lamp of S W/m² gives a white surface S·cosθ/π; the multiple-scattering sky's own disc is about 135 W/m² at 4000 m. Use one sun, indirect clamp 0 (10 crushed the shade side 2.4×) and `cycles.film_exposure` (linear, before the compositor, so no glare veil). `5.x` `aztechno-building`
+- A photographer's bright sky: lift the sky for camera rays only (Light Path); for glossy rays it puts a ×4 sky into every paint, mullion and chrome highlight. Reflections of the sky need their own lift, limited by elevation (`aztechno-building` world tree). `aztechno-building`
+- Reflection-only HDRI: a world mix on Is Glossy Ray minus Is Camera Ray swaps a photographed street into every reflection. Above ~14° show the lifted sky instead, tip the equirect down ~12° when it was shot at eye height, and check what lands in the glass: a tower block or an onion dome in a reflection is the strongest tell. Modelled low houses in front of the HDRI hide its ground. `aztechno-building`
+- Camera-invisible context still blocks sky light for diffuse rays: houses across the street darken the facade's shade side. Size them to the real street. `aztechno-building`
+- Curtain glass: tinted float glass (F 0.05, sunlit rooms behind) was the physically better read and lost blind to an opaque coated dielectric (F 0.35, ±60 % per pane, tilt hashed per pane from the mullion grid): what the glass reflects mattered more than its physics. A hashed per-pane shader needs its attributes on every glass object; a missing one divides by zero and the pane renders flat grey. `aztechno-building`
+- Shift: `shift_x` positive moves the frame right (content left); `shift_y` is a fraction of the longer side. `aztechno-building`

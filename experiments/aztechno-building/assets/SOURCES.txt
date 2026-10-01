@@ -1,0 +1,21 @@
+Asset provenance (all CC0 1.0 public domain; no attribution required).
+Downloaded 2026-09-30 from the Poly Haven API (api.polyhaven.com/files/<id>) and ambientCG (ambientcg.com/get?file=...).
+Tile sizes are the real-world size Poly Haven lists. Normal maps are OpenGL (+Y up), the Blender Normal Map node default.
+Colour maps are sRGB. Roughness and normal maps load as Non-Color.
+
+textures/painted_plaster_wall      Poly Haven, Amal Kumar. 2 m tile. 2K JPG diff/rough/nor_gl.
+textures/beige_wall_001            Poly Haven, Dimitrios Savva + Rico Cilliers. 3 m tile. 2K.
+textures/large_red_bricks          Poly Haven, Rob Tuytel. 2 m tile. 2K.
+textures/concrete_pavement_02      Poly Haven, Charlotte Baglioni. 1.8 m tile. 2K.
+textures/cobblestone_03            Poly Haven, Charlotte Baglioni. 2 m tile. 2K.
+textures/cobblestone_pavement      Poly Haven, Charlotte Baglioni. 2.5 m tile. 2K.
+textures/painted_metal_shutter     Poly Haven, Dario Barresi + Rico Cilliers + Charlotte Baglioni. 2 m tile. 2K.
+textures/asphalt_04                Poly Haven, Jenelle van Heerden + Sergej Majboroda. 4.04 m tile. 1K.
+textures/acg_painted_plaster_001_red     ambientCG PaintedPlaster001 (hand-trowelled red paint). 1K JPG Color/Roughness/NormalGL/Displacement. Tile size not listed.
+textures/acg_painted_plaster_005_yellow  ambientCG PaintedPlaster005 (yellow paint). Same maps.
+hdri/kiara_5_noon_4k.hdr           Poly Haven, Greg Zaal. Clear deep-blue sky, sun at 51 deg elevation, distant mountains. Sun includes the disc.
+hdri/construction_yard_4k.hdr        Poly Haven, construction_yard (CC0). Brick apartment blocks, open yard, cirrus. Seen only by glossy rays (reflections in the glass).
+
+Used by the final build (2026-10-01): textures/large_red_bricks, cobblestone_03, painted_plaster_wall (sidewalk),
+painted_metal_shutter; hdri/construction_yard_4k.hdr (not in git: re-fetch from api.polyhaven.com/files/construction_yard).
+The other downloads above were tried and removed.

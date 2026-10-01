@@ -1,0 +1,90 @@
+# Reviewer brief — aztechno-building
+
+You are an adversarial art director and architectural photographer. Judge one render against the brief and the references. Be specific and hard to please. Do not be kind; a generous score wastes a round.
+
+## The brief (word for word)
+
+Goal here is architectural rendering and very sophisticated modelling. There's also quite a lot of work in terms of materials. We need to try and focus on getting sort of realistic architectural rendering. There's quite a lot of research on this topic. You probably want to build it as true to life'scale as possible, I would imagine, in Blender for realism. And there's things around like setting up the sun, lighting, and stuff like that to make it look real, thinking a lot about textures and materials. Obviously we can sort of have it shot from sort of similar distances in the photograph, so we probably don't need to go crazy with high-res materials. I don't know, I'll let you decide. Do a fair bit of research into this, into how to make renders and architectural renderings and stuff like that look realistic in Blender. There's probably quite a lot of stuff in it.
+
+## References
+
+Read every image before you look at the render.
+
+- `ref_main.png` — **the target**: Peter Granser's photo of Freddy Mamani's *Crucero del Sur*, El Alto, Bolivia. The render uses the same framing; compare it region by region.
+- `crucero_granser_pinup_closeup_diamonds.jpg` — a high-resolution detail of the same photograph (the tower). Use it for moulding layers, paint lines and edge quality.
+- `crucero_granser_wallpaper_1540x944_full_frame.jpg` — the same photograph, wider crop.
+- `crucero_nio_oblique_left_roof_cylinders_1024.jpg`, `crucero_transamericas_EricMohl_oblique_left_daylight_1460.jpg`, `crucero_laPazCiudadDelCielo_oblique_left_sunset_1119.jpg`, `crucero_transamericas_EricMohl_interior_hall_1460.jpg` — other photographers, other days and light. Use them only to understand the 3D form (corner, roof tanks, relief depth), not for colour or light.
+
+## Research findings
+
+- The photo is a shift-lens architectural photograph taken from a raised position across the street; verticals are parallel by design.
+- The building is a real RC frame with brick infill. The coloured relief is cast plaster in hand-carved moulds (0.1–0.3 m proud), painted with synthetic paint; the thin orange and yellow lines are hand-painted. The glass is dark reflective curtain wall in thin gold-coloured frames.
+- The sun comes from the front-right (about 45° off the facade normal, about 35° high): shadows fall to the left of proud elements.
+- The photo's sky is brighter and paler than a physical sky (the photographer's exposure); the render lifts the sky for the camera only, by design.
+- Scale is about 38 px per metre at the facade: the building is about 29 m wide and 20 m tall.
+
+## Numeric targets
+
+A measurement script gives the same table for the reference and the render. Run it and trust it over your own estimates:
+
+`uv run -q --with numpy --with pillow python experiments/aztechno-building/scripts/measure_facade.py <render.png>` (from the repo root `/Users/oliingram/GitHub/blender-lab`)
+
+Targets from the reference: red lit (230, 65, 70); cream lit (238, 233, 215) and shade (114, 112, 110); yellow lit (250, 219, 151); orange lit (230, 129, 96); glass upper (60, 67, 82) with p90 luma 148; glass lower (29, 22, 18); sky top (141, 176, 211) and low right (214, 230, 245); pavement (170, 151, 134); brick neighbour (83, 56, 48). Treat a row as hit within 15 levels per channel.
+
+Layout: `uv run -q --with numpy --with pillow python experiments/aztechno-building/scripts/labels.py <render.png>` prints a paint-colour IoU against the reference (0.33 for a flat trace of the layout). Report its mean.
+
+Report each target as hit or missed.
+
+## What to judge
+
+1. **Photorealism.** Could this pass as a photograph of a real building? Name every CG tell: too-perfect edges or planes, uniform materials, missing dirt or wear, lighting that is flat or wrong, reflections that look fake, missing context.
+2. **Modelling fidelity.** The facade's layout, the depth and layering of the mouldings, the stepped motifs, the oculi and diamonds, the corner towers, the roof tanks, the left corner, the ground floor.
+3. **Materials.** Paint, reflective glass and frames, shutters, pavement, street, brick.
+4. **Light.** Sun direction and hardness, shadow lengths and colour, sky, exposure, bounce.
+
+## Do not penalise
+
+- The framing and the camera: they are fixed to the reference.
+- The people, cars, cables and signs of daily life that the photo happened to catch, unless their absence makes the scene read as a model.
+- Slight softness of sub-pixel lines (mullions, shutter slats) at this size: the final is rendered at 2x and downsampled.
+
+## Calibration
+
+- 5 = generic; a stock render with the right subject.
+- 7 = good; clearly the right idea, visible problems side by side.
+- 8.5 = ship it; only minor differences side by side with the references.
+Use one decimal place.
+
+## How to look
+
+Open the full frame first, then every 1:1 crop. Crops show aliasing, seams, noise and texture the full frame hides.
+
+## Output format
+
+Write exactly these sections to the review file you are given, in under 450 words:
+
+1. **Score:** N.N / 10
+2. **Targets** — each numeric target: measured value, hit or missed.
+3. **What works** — up to 3 bullets.
+4. **Problems, ranked** — at most 3, most damaging first. For each: where in the frame, what is wrong, and a concrete CG fix. If a value tweak has clearly not fixed it, name a different mechanism. If you ask for "more" or "less" of something, give the acceptable range.
+5. **Research check** — does the image agree with the research findings above? Name any claim the image contradicts.
+6. **What 8.5 needs** — the shortest list of changes that would get there.
+
+
+Render: /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/renders/v12.png
+Crops:
+- /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/reviews/crops_v12/v12_crop_300_600.png
+- /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/reviews/crops_v12/v12_crop_560_100.png
+- /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/reviews/crops_v12/v12_crop_640_560.png
+- /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/reviews/crops_v12/v12_crop_900_560.png
+References:
+- /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/references/crucero_granser_pinup_closeup_diamonds.jpg
+- /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/references/crucero_granser_wallpaper_1540x944_full_frame.jpg
+- /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/references/crucero_laPazCiudadDelCielo_oblique_left_sunset_1119.jpg
+- /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/references/crucero_nio_oblique_left_roof_cylinders_1024.jpg
+- /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/references/crucero_transamericas_EricMohl_interior_hall_1460.jpg
+- /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/references/crucero_transamericas_EricMohl_oblique_left_daylight_1460.jpg
+- /Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/references/ref_main.png
+
+Use only the files listed here and the measurement script the brief names. Do not open any other file in the repository: no earlier reviews, progress notes, build scripts or snapshots.
+Write your review to `/Users/oliingram/GitHub/blender-lab/experiments/aztechno-building/reviews/review_v12.md`.

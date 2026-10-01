@@ -47,3 +47,11 @@ Learned on `cyber-model` (a sci-fi radio; final calibrated 6.7 with a Sonnet rev
 - Do not stand the plates on a visible base slab: void-black it read as "a black tray", near-black it lost the calibration (`cyber-model`), polymer its rounded rim read as a tray or "pancakes" for five rounds (`cyber-deck-v2`). Bring the outer shells down to the table on an inset foot and make the base a hidden black core.
 - Tertiary detail that read at 1600 px: sunk screws (a hole with the head below the surface), vent slots from joined cutters, engraved lid text and labels as decals, a steel lip round a vent window, scratch strokes from a drawn mask. Raised screw discs read as buttons. `cyber-model`
 - Coiled cord: a poly-spline helix round a path, with the coil radius ramped to 0 at both ends so the straight leads join the same tube; 21 turns for a 90 mm run. Give each free part something to sit on: a jack over the body edge and a boss with no body under it were the first "floating" complaints. `cyber-model`
+
+## Architecture from a straight-on photo
+
+Learned on `aztechno-building` (a facade 29 m wide at 38 px/m).
+
+- Trace every element in reference pixels into a data file and convert to metres with one px-per-metre value; a shift-lens camera with `lens = 36 · ppm · D / W` and shifts from the axis and horizon pixels then lands the facade plane on the reference at any distance D. Parts set back or forward (roof tanks, an angled wing, a sign) go through one `at_depth(u, v, y)` helper so they still land on their pixels. `aztechno-building`
+- A global relief multiplier must not scale parts with a known size: caps, oculi rings and tanks went 0.7–1 m deep and were flagged for six rounds. Give those absolute depths. `aztechno-building`
+- Outline strips stacked round a moulding read right when each outer layer sits a little (1.8 cm) behind the one inside it: they stay in the sun and the core casts the shadow. Equal depths put whole strips in shade. `aztechno-building`

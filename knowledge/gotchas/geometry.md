@@ -31,3 +31,11 @@
 - The Manifold boolean solver silently ignores a non-manifold operand (a Text mesh with 1236 open edges was not engraved, no error). `remove_doubles` first. `5.x` `cyber-deck-v2`
 - Signed Edge Angle (GN) is positive for convex edges in 5.2 (a cube reads +1.571); the manual says the opposite. `5.2` `cyber-deck-v2`
 - When you lower a part, recheck every part that sat at its old height. A steel frame set to the block's new top height covered the block and looked like a wrong material. `cyber-model`
+
+## Filled curves (facades from a traced spec)
+
+- A 2D curve with fill BOTH, extrude and a round bevel, converted with `new_from_object`, builds a whole traced facade (750 objects, 50k faces) in about 2 s with no booleans; holes fill whatever their winding. `5.x` `aztechno-building`
+- A hole that touches or crosses its outer loop breaks the fill (half a shutter and a whole strip came out solid). Keep holes 1 px inside, or build a band as pieces between the openings. Assert a simple polygon per loop: a self-crossing loop fills as stray triangles. `aztechno-building`
+- A mesh from `new_from_object` that you then transform keeps the curve's texture space, so Generated coordinates cover only part of it. Set `mesh.use_auto_texspace = True`. `5.x` `aztechno-building`
+- Two coplanar copies of one pane render as a regular triangle pattern (their fill triangulations z-fight), which reads like a reflection. Cause here: a helper popped `mirror` from kwargs and passed the default `True` on. `aztechno-building`
+- A miter offset must check its own winding: the same sign grew some shapes and shrank others, so window holes came out as slots and outline layers vanished. Offset with one sign and flip if the area moved the wrong way (`experiments/aztechno-building/scripts/facade.py` `offset`). `aztechno-building`

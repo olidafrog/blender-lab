@@ -1,0 +1,2 @@
+A = experiments/aztechno-building/renders/v16.png
+B = experiments/aztechno-building/renders/v11.png

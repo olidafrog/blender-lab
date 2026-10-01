@@ -35,10 +35,10 @@ Gotchas
 - [API changes](gotchas/api-changes.md) — Blender 4.4 versus 5.x.
 - [Compositor](gotchas/compositor.md) — node behaviour and traps.
 - [Shader nodes](gotchas/shader-nodes.md) — node traps and shading techniques, grain, scratches and creases.
-- [Cycles](gotchas/cycles.md) — lighting, refraction, geometry, output quality, dark plastic and light linking.
+- [Cycles](gotchas/cycles.md) — lighting, refraction, geometry, output quality, dark plastic and light linking, exteriors (sun, sky, glass, context).
 - [Colour](gotchas/colour.md) — view transforms, clipping, dark fades.
-- [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes, booleans and plates.
-- [Modelling](gotchas/modelling.md) — characters from code (planar-ring lofts, IK posing, straps and skirts, silhouette checks) and hard-surface plates from traced outlines (edge classes, crisp chamfer, black gaps, detail).
+- [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes, booleans and plates, filled-curve facades.
+- [Modelling](gotchas/modelling.md) — characters from code (planar-ring lofts, IK posing, straps and skirts, silhouette checks) and hard-surface plates from traced outlines (edge classes, crisp chamfer, black gaps, detail), architecture from a straight-on photo.
 - [Fluid sim](gotchas/fluid-sim.md) — Mantaflow scale, flow volume, why a viscous press failed.
 - [Volumes](gotchas/volumes.md) — GN volume grids, albedo vs scatter colour, emitters in volumes, cloud look.
 
@@ -54,6 +54,7 @@ Process
 - [Insights](insights.md) — deeper lessons.
 
 Decisions
+- [aztechno-building](decisions/aztechno-building.md) — photoreal facade at true scale from a traced pixel spec; physical sun + sky, coated glass with sky/street reflections, photographic output stage (fork); 6.4
 - [cyber-deck-v2](decisions/cyber-deck-v2.md) — same radio redone: plan × section loft shells, profiled cutters, crest-only wear tag, one small key; 6.4 (Opus)
 - [cyber-model](decisions/cyber-model.md) — hard-surface radio from a rectified plan: stacked plates, flat chamfers, black by geometry, three linked lights; Sonnet reviewer + Opus advisor test, 6.7
 - [roman-model](decisions/roman-model.md) — first character model: IK-posed planar-ring lofts + jitter/triangulate, hand-built armour, silhouette IoU gate

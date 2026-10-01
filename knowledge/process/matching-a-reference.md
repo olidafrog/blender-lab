@@ -35,3 +35,6 @@ For "recreate this image" work. Learned on eclipse-glow (93 renders, 17 judge ro
 
 - A parameter that feeds several effects moves things you did not mean to move. Keep one coordinate per purpose.
 - Narrowing a shape that also sources a glow dims the glow. Rebalance both.
+
+- **A photo reference is also a processing chain.** The reference was a sharpened JPEG (edge ratio and fine-detail energy higher than a raw render's in every region), and seven rounds of content fixes plateaued at 5.3–5.9 until a 2× render, Lanczos, light unsharp and a JPEG round trip (`tools/photo_finish.py`, gate `tools/sharpness.py`) lifted the loop to 6.0–6.5. `aztechno-building`
+- **Mask what a region metric counts.** A "cream shade share" counted grey glass reflections as shaded paint; reviewers read the row as "relief too shallow" for four rounds while the measured cast shadow was on target. Check a metric's mask on one image before trusting it. A paint-class IoU stayed at 0.33 all loop (glass and shade dominate the labels), so it never ranked versions. `aztechno-building`
