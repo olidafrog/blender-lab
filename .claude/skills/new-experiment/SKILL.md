@@ -23,6 +23,11 @@ Every experiment gets the same folder shape and starts from what past experiment
 5. **Research before building.** Run `/research-reference`. The `research-gate` hook blocks edits to `scripts/build*.py` until `RESEARCH.md` has a Sources section. If the user said to skip research, write `research skipped: <why>` in `PROGRESS.md`.
 6. **Smoke the template.** Run `tools/blender.sh experiments/<name>/scripts/build.py --out v00 --samples 16 --scale 0.25` to prove the scaffold renders. Then replace the placeholder scene. Keep the `--preflight` flag working: `review-render` needs its sheet before round 1.
 
+## Subject paths
+
+- **Hard-surface product from an oblique photo** (`cyber-model`, `cyber-deck-v2`): before `build.py`, rectify the reference to a plan (affine: rotate by the azimuth, stretch by 1/sin(elevation)), trace outlines on a gridded copy, fit the camera with `tools/fit_camera.py`, and map where the reference's extremes are (pixels under luma 25 and over 240, as red/blue overlays). Build with `library/models/hardsurface-kit/`. Skipping the extremes map cost four rounds of "blacks".
+- **Architecture from a straight-on photo** (`aztechno-building`): trace every element in reference pixels into a data file, convert with one px-per-metre value, and compute the shift-lens camera from it. Build with `library/models/arch-kit/`. Match the photo's sharpness with `tools/photo_finish.py`.
+
 ## Conventions
 
 - A/B and value tests go through `tools/sweep.sh`. A hook blocks shell loops around `blender.sh --set`: zsh does not word-split `$var`, so a loop silently drops every `--set`.

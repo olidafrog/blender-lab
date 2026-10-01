@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Encode a rendered rise sequence with its music.
 #   experiments/eclipse-glow/scripts/make_video.sh <out> [music.wav|.mp3]
+# Shared, any sequence: tools/video_encode.sh. This wrapper keeps the eclipse-glow names.
 # NAME=eclipse_sunrise for build_sunrise.py. <out> is build_rise.py's --out (frames in renders/eclipse_rise_<out>/).
 # Music defaults to output/eclipse_rise_score.wav (score.py). Pass your own licensed track to swap it.
 set -euo pipefail

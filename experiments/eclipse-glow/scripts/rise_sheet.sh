@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Shared, any sequence: tools/video_sheet.sh. This one keeps the eclipse-glow frame picks.
 # Review material for a rise sequence: a contact sheet (frames 1 24 60 96 132 168 204 228 288,
 # left to right, top to bottom; this ffmpeg has no drawtext) and 1:1 crops.
 #   experiments/eclipse-glow/scripts/rise_sheet.sh <out>   → reviews/rise/crops_<out>/

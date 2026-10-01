@@ -1,6 +1,9 @@
 """Draw the facade spec (scripts/facade.py) over the reference: flat colours or outlines (plain python3).
 
-  python3 scripts/spec_preview.py <out.png> [--flat]
+  python3 scripts/spec_preview.py <out.png> [--flat | --glass-mask]
+
+--glass-mask writes the glazing (every opening and porthole) white on black: the --exclude mask for
+tools/measure_classes.py.
 """
 import sys
 from pathlib import Path
@@ -12,6 +15,19 @@ COL = {"cream": (232, 226, 200), "orange": (235, 150, 95), "yellow": (250, 232, 
        "white": (245, 245, 240), "dark": (30, 30, 35)}
 ref = Image.open(Path(__file__).parents[1] / "references/ref_main.png").convert("RGB")
 flat = "--flat" in sys.argv
+if "--glass-mask" in sys.argv:
+    m = Image.new("L", ref.size, 0)
+    dm = ImageDraw.Draw(m)
+    for g in F.GLASS:
+        for p in [g["pts"]] + ([F.mirror_pts(g["pts"])] if g["mirror"] else []):
+            dm.polygon(p, fill=255)
+    for c in F.DISCS:
+        for cu in [c["cu"]] + ([2 * F.AXIS - c["cu"]] if c["mirror"] else []):
+            dm.ellipse((cu - c["r"], c["cv"] - c["r"], cu + c["r"], c["cv"] + c["r"]), fill=255)
+    dm.rectangle((0, 0, 191, ref.size[1]), fill=255)            # the oblique left wing's glass
+    m.save(sys.argv[1])
+    print("[out] glass mask", sys.argv[1])
+    sys.exit(0)
 im = Image.new("RGB", ref.size, (140, 180, 215)) if flat else ref.copy()
 d = ImageDraw.Draw(im)
 

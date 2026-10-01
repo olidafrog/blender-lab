@@ -17,7 +17,9 @@ A round does, in order, and stops at the first that fails:
   5. Snapshot scripts/build.py and the local modules it imports to snapshots/ (never reviews/).
   6. Writes reviews/prompt_<vNN>.txt and prints the one line to give the reviewer.
 
-Options: --force skips the gate verdict (the change is outside the crops, or the previous review
+Options: --with-prev (round 2 on) adds a blind pair: this render and the last reviewed one as P.png and
+Q.png in random order in reviews/pair_<vNN>/, key in snapshots/; the reviewer brief's Pairwise section
+asks which is closer. --force skips the gate verdict (the change is outside the crops, or the previous review
 was of another preset). --all-crops gives a later round the full crop set.
 
 --pair copies two renders to neutral names (A.png, B.png, random order) in reviews/<name>/ and
@@ -71,7 +73,7 @@ def snapshot(exp, v):
     return made
 
 
-def round_(name, v, points, force, all_crops):
+def round_(name, v, points, force, all_crops, with_prev=False):
     exp = ROOT / "experiments" / name
     render = exp / "renders" / f"{v}.png"
     if not render.exists():
@@ -110,8 +112,22 @@ def round_(name, v, points, force, all_crops):
     print(f"[round] crops: {len(list(crops.glob('*.png')))} in {crops.relative_to(ROOT)}")
     print(f"[round] snapshot: {', '.join(snapshot(exp, v))}")
 
+    text = review_prompt.build(name, v)
+    if with_prev and not first and prev.exists():
+        d = exp / "reviews" / f"pair_{v}"
+        shutil.rmtree(d, ignore_errors=True)
+        d.mkdir(parents=True)
+        srcs = [render, prev]
+        random.shuffle(srcs)
+        for label, f in zip("PQ", srcs):
+            shutil.copyfile(f, d / f"{label}.png")
+        (exp / "snapshots" / f"pair_{v}_key.txt").write_text(
+            "".join(f"{label} = {f.relative_to(ROOT).as_posix()}\n" for label, f in zip("PQ", srcs)), encoding="utf-8")
+        text = text.replace("\nReferences:", f"\nPair folder (Pairwise section): {review_prompt.p(d / 'P.png')}, "
+                                              f"{review_prompt.p(d / 'Q.png')}\nReferences:", 1)
+        print(f"[round] pair: reviews/pair_{v}/ (key in snapshots/pair_{v}_key.txt)")
     prompt = exp / "reviews" / f"prompt_{v}.txt"
-    prompt.write_text(review_prompt.build(name, v), encoding="utf-8")
+    prompt.write_text(text, encoding="utf-8")
     print(f"[round] READY. Spawn a fresh Opus reviewer (Agent, model: opus) with exactly this prompt:\n"
           f"Your brief is in {prompt.as_posix()}. Read it and follow it exactly.")
 
@@ -154,7 +170,7 @@ def pair(name, a, b, tag):
 
 if __name__ == "__main__":
     argv = sys.argv[1:]
-    flags = {f for f in ("--force", "--all-crops") if f in argv}
+    flags = {f for f in ("--force", "--all-crops", "--with-prev") if f in argv}
     argv = [a for a in argv if a not in flags]
     tag = "calibration"
     if "--name" in argv:
@@ -164,6 +180,6 @@ if __name__ == "__main__":
     if len(argv) >= 4 and argv[1] == "--pair":
         pair(argv[0], argv[2], argv[3], tag)
     elif len(argv) >= 2 and not argv[1].startswith("--"):
-        round_(argv[0], argv[1], argv[2:], "--force" in flags, "--all-crops" in flags)
+        round_(argv[0], argv[1], argv[2:], "--force" in flags, "--all-crops" in flags, "--with-prev" in flags)
     else:
         sys.exit(__doc__)

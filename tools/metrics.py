@@ -6,6 +6,8 @@ Run from the repo root:
   tools/blender.sh tools/metrics.py <prev> <cur> <x,y[,size]> ...     # plus target crops (the area you fixed)
 
 Options (after the paths): --size N  default crop size (512)   --thresh T  changed-pixel threshold (2/255)
+  --expect-same  for refactors (a clean-up, a move to the library): the goal is NO change, so the
+                 verdict passes only when every region is under 1% changed, and says not to review.
 
 Stats per region: mean and std (0-255 sRGB luma), clipped share (>=251), black share (<=4),
 lit share (>25), mean gradient on lit pixels, and the share of lit pixels with gradient >20 and >40.
@@ -84,13 +86,15 @@ def box(x, y, s, h, w):
 
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
-    size, thresh, paths, targets = 512, 2.0, [], []
+    size, thresh, paths, targets, same = 512, 2.0, [], [], False
     it = iter(argv)
     for a in it:
         if a == "--size":
             size = int(next(it))
         elif a == "--thresh":
             thresh = float(next(it))
+        elif a == "--expect-same":
+            same = True
         elif "," in a and not Path(a).exists():
             v = [int(float(t)) for t in a.split(",")]
             targets.append((v[0], v[1], v[2] if len(v) > 2 else None))
@@ -125,6 +129,13 @@ def main():
               f"clip {sp['clip']:.2f}->{sc['clip']:.2f}%  g20 {sp['g20']:.2f}->{sc['g20']:.2f}%")
         if is_target or (not targets and label == "frame"):
             verdict.append((label, changed))
+    if same:
+        moved = [f"{lab} ({pct:.2f}%)" for lab, pct in verdict if pct >= MIN_CHANGED]
+        if moved:
+            print(f"[out] VERDICT: CHANGED in {', '.join(moved)}. A refactor should not move pixels; find what changed.")
+        else:
+            print("[out] VERDICT: NO CHANGE, as expected for a refactor. Do not spend a review.")
+        return
     dead = [f"{lab} ({pct:.2f}%)" for lab, pct in verdict if pct < MIN_CHANGED]
     if dead:
         print(f"[out] VERDICT: NO CHANGE in {', '.join(dead)}. Do not spend a review; find why the change did not reach the pixels.")

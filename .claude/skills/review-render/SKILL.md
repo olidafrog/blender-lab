@@ -37,10 +37,11 @@ For a suspect the sheet does not isolate (one shader component, an emissive mesh
 ## Steps
 
 1. **Render at review size.** The version is `renders/vNN.png`. Under about 1200 px wide → re-render at `--scale 1` first; crops of a small render hide nothing.
-2. **Reviewer brief.** If `reviews/REVIEWER_PROMPT.md` exists, use it unchanged; scores only compare when it is fixed. Otherwise fill `REVIEWER_PROMPT.template.md` from `BRIEF.md`, `references/` and `RESEARCH.md` (including its numeric targets) and save it. If the experiment has a metrics script, freeze it and name it in the prompt. Change the prompt only if the user asks; then note that scores reset.
+2. **Reviewer brief.** If `reviews/REVIEWER_PROMPT.md` exists, use it unchanged; scores only compare when it is fixed. Otherwise fill `REVIEWER_PROMPT.template.md` from `BRIEF.md`, `references/` and `RESEARCH.md` (numeric targets, design facts; the checklist, sub-scores and anchor are optional) and save it. Freeze any metrics script and name it in the prompt. Change the prompt only if the user asks; scores then reset.
 3. **Prepare the round:** `python3 tools/review_round.py <name> vNN [x,y ...]`. It checks the budget and the preflight sheet, proves the change reached the pixels, makes the crops, snapshots `build.py` to `snapshots/` and writes the prompt. The `x,y` points are the area you changed plus each area the last review or the user flagged. After round 1 they are the only crops the reviewer gets. If it stops, fix what it names (`NO CHANGE`: find why the change did not show, render again). Do not build the round by hand.
    - Check the gate's printed stats against the numeric targets in `RESEARCH.md`. For "recreate this image" work, also run `tools/compare.py` against the main reference.
-   - Video: add a 3×3 contact sheet of labelled frames plus six consecutive 1:1 crops of one patch, e.g. `experiments/eclipse-glow/scripts/rise_sheet.sh`. Before acting on a motion complaint, measure it against a control render with the effect off.
+   - From round 2, `--with-prev` adds a blind pair with the last reviewed render.
+   - Video: `tools/video_sheet.sh` (contact sheet, six consecutive 1:1 crops). Before acting on a motion complaint, measure it against a control render with the effect off.
 4. **Spawn the reviewer** with the Agent tool: `subagent_type: general-purpose`, `model: opus`, and exactly the one-line prompt the tool printed. A new agent every round; never resume an old one. Add nothing: no change list, no earlier scores.
 5. **Update `PROGRESS.md`**: one table row per version (version, score, the one change, cost, render path), newest first. Cost is the Blender runs and minutes since the last row. Then carry on without asking; check **Stopping** after each review.
 

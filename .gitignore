@@ -10,6 +10,7 @@ experiments/*/reviews/*/crops_*/
 experiments/*/reviews/sbs_*/
 experiments/*/reviews/*/A.png
 experiments/*/reviews/*/B.png
+experiments/*/reviews/pair_*/
 experiments/*/renders/preflight_*/
 
 __pycache__/
