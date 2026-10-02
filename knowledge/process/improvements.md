@@ -5,6 +5,9 @@ How the system changes itself. `/capture-learnings` adds to this at the end of e
 Every Changed entry ends with a **Check**: what the next experiment should show if the change worked. The retro marks each check `held`, `failed` or `unobserved`, with the date. Two `failed` marks → rewrite or revert the change. Two `held` marks and no `failed` → the entry is settled and moves to [improvements-archive.md](improvements-archive.md). Entries from before 2026-09-27 got their checks retroactively.
 
 ## Proposed
+- **`sweep.sh` tile for wide or multi-subject frames.** Its tile of six 3200×1128 sheets came out 7720×451 and unreadable; `plotter-blend` cropped a grid by hand each time (8 sweeps). Give `sweep.sh` a `--crop x0,y0,x1,y1` (fractions) and a column count.
+- **`Isolines` and the plot forms in the library.** `experiments/plotter-blend/scripts/forms.py` (the `T` node-tree builder, `isolines`, `contour_sphere`, `funnel`) is reusable; move it to `library/node-groups/` when a second experiment wants it.
+- **A vector reviewer check.** Reviewers measured line counts and gaps by pixel scans of a raster. A `tools/plot_metrics.py` on the SVG itself (lines crossing a scan line, minimum gap between strokes, bare ends) would make those targets exact and local.
 
 (None open. All eleven were built on 2026-10-01; see Changed.)
 
@@ -16,6 +19,10 @@ Proposals with no evidence yet. Revive one when a session hits the problem it so
 - **Shared library tooling.** Append materials and node groups from `library/`, import Poly Haven assets. Candidates: `wonder-caustics/assets/monochrome_studio_01_4k.hdr`, the pop art halftone and hatch groups, the printed-plastic blur group.
 
 ## Changed
+- **2026-10-02 — Plot exporter as a shared tool; a subject path for vector output** (`plotter-blend`).
+  - *`tools/plot_svg.py`*: evaluated GN curves and point clouds → SVG strokes in mm (camera projection, stroke ordering, spiral dots, minimum-gap rule, plot-check drawing, Inkscape raster, side-by-side sheet). It runs from a text block inside a saved `.blend`. **Check:** the next line-art experiment exports through it without edits to its core.
+  - *Subject path "line art for a plotter"* in `new-experiment`: the template `build.py`, `--preflight` and Cycles settings do not apply; start from `plotter-blend`'s `build.py`. Evidence: the template was rewritten whole, and the preflight sheet had to be reinvented as a plot check. **Check:** the next vector experiment reaches its first raster without rewriting the template from scratch.
+  - Checks observed this session: *structured reviewer brief* (checklist, sub-scores, blind P/Q pair) — held 2026-10-02: every review answered the checklist and the pair picked the newer render 4 of 5 times, once against it (v03), which matched the score drop. *"Use only the listed files"* — held 2026-10-02: all six reviewers said they opened only the listed files. *Advisor at the plan stage* — held with a caveat 2026-10-02: it caught three real traps before v01 (curve-point deletion, corner clamp, doubled meridian), and its main call (open strands) was reversed by the round-1 reviewer. *Known trade-offs section* — unobserved 2026-10-02: the prompt stayed fixed, so the limb flip was never written into it.
 - **2026-10-01 — Unused MCP servers denied in this project** (the "tidy plugins" proposal). `.claude/settings.json` `permissions.deny` lists bare server names (figma, pencil, playwright, chrome-devtools, claude-in-chrome, and the claude.ai Gmail, Google Drive, Notion, Slack, Canva, Granola, Linear, Spotify and Wonder-circle connectors). Per the permissions docs a bare tool or server name removes its tools from context, so other projects keep them. Claude Docs stays (reports). Plugins that come from outside the settings files (brand-voice, design, cowork) were not touched: only the user can change those. **Check:** the next blender-lab session lists none of the denied servers' tools, and the session's tokens per turn fall against this session's.
 
 - **2026-10-01 — Every open proposal built** (asked for by the user). Each with its file and a check.

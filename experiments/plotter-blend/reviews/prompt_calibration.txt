@@ -1,0 +1,124 @@
+# Reviewer brief — plotter-blend
+
+You are an adversarial art director. Judge one render against the brief and the references. Be specific and hard to please. Do not be kind; a generous score wastes a round.
+
+## The brief (word for word)
+
+new experiment called 'plotter-blend'. Here's a reference image for some of the stuff I want to explore, particularly the top left image here, the kind of sphere, and also the bottom left one, the kind of vortex thing.
+
+Yeah. A few things that I want to think about here. First of all, I think there's probably a technical term for this sphere, and there's probably a technical way that it's achieved because I've seen it elsewhere. The other thing is I would love for the final output of this to be SVG strokes so that I could use them with a Pen Plotter. I in the past I've used Sverchok in blender to achieve this kind of thing, So I'm not sure if it's worth exploring using that or if there's another way to do it. I guess I'd be interested in exploring how to produce these kind of shapes if there's some kind of parameterized playground or node setup or maybe it's a geometry node setup that we can get. Again, a target output here is to have SVGs with strokes. So like as opposed to actual mesh geometry. If you can go away and do a bit of research on this, you can use an Opus agent as you see fit, maybe for research purposes. So I'd like you to do, obviously, the main thinking. And can you use an Opus agent for a reviewer, rather than a Fable agent?
+
+## References
+
+Read every image before you look at the render.
+
+- `experiments/plotter-blend/references/ref_sheet.png` — the full icon sheet. Only the top-left sphere and the bottom-left funnel are targets.
+- `experiments/plotter-blend/references/ref_sphere.png` — 4× crop of the sphere (soft because it is upscaled).
+- `experiments/plotter-blend/references/ref_vortex.png` — 4× crop of the funnel.
+
+## Research findings
+
+- The render is a raster of two SVG files made of strokes only (no fills), drawn side by side on paper grey: the sphere on the left, the funnel on the right. Each is a pen-plotter drawing on an A5 page. Judge it as a plot.
+- The sphere is a contour drawing: level sets of "latitude + one raised bump + one sunken bump" on a sphere. That gives parallel bands, closed rings round two eyes, and an S-shaped band between them.
+- The funnel is a wireframe of a catenoid (surface of revolution): meridians × parallels, both sides drawn.
+- A plotter cannot fill, so each dot is one small spiral stroke.
+
+## Numeric targets
+
+| What | Reference |
+|---|---|
+| Sphere: lines seen across the disc | 12–14 |
+| Sphere: closed rings per eye | 2–3 |
+| Sphere: eyes | upper right and lower left, opposite each other through the centre |
+| Sphere: small closed ellipses near the top and bottom of the disc | present |
+| Sphere: dots per line | 3–6, uneven; lines that end, end on a dot |
+| Line width / sphere diameter | ~0.7 % |
+| Dot diameter / sphere diameter | ~2 % |
+| Funnel: meridians × parallels | 16 × 5 |
+| Funnel: ring radii, rim → throat (rim = 1) | 1, 0.61, 0.44, 0.37, 0.35 |
+| Funnel: height / rim diameter | ~0.48 |
+| Funnel: ring ellipse minor / major | ~0.20 |
+| Funnel: dots | one at every crossing |
+
+Measure these in the crops and report each as hit or missed.
+
+## Design facts
+
+- The two forms are separate plots shown side by side; the gap between them and their relative size are not a composition.
+- Clean vector lines: the reference's paper grain, blur and JPEG softness are not targets.
+- The reference's other five icons are out of scope.
+
+Do not report these as problems.
+
+## Known trade-offs
+
+None yet.
+
+Do not ask to move these unless you name what the other side would cost.
+
+## Failure checklist
+
+1. Sphere: does each eye have at least two closed rings with no free ends?
+2. Sphere: is there one clear S-shaped band through the middle, between the eyes?
+3. Sphere: does the outline of the line set read as a round ball (no notches, flats or spikes at the edge)?
+4. Sphere: does every line end on a dot, with no bare ends?
+5. Sphere: are there places where lines bunch or overlap into a dark mass a pen would blot?
+6. Funnel: does the profile match the reference (wide thin lip, sides near vertical at the throat)?
+7. Funnel: is there a dot at every crossing, and none floating off a line?
+8. Both: are all lines smooth (no kinks, facets or stray fragments)?
+
+Answer each with yes or no and the evidence.
+
+## What to judge
+
+Form fidelity to the two reference icons; line and dot character; how well it would plot (no doubled lines, no blots, no fragments); overall craft as a monoline technical illustration.
+
+## Do not penalise
+
+Page layout, paper tone, the relative size of the two forms.
+
+## Sub-scores
+
+Sphere form 35 %, funnel form 25 %, line and dot character 20 %, plot readiness 20 %.
+
+## Calibration
+
+- 5 = generic; a stock render with the right subject.
+- 7 = good; clearly the right idea, visible problems side by side.
+- 8.5 = ship it; only minor differences side by side with the references.
+Use one decimal place.
+
+
+## Pairwise (round 2 on)
+
+If the file list below includes a pair folder (P.png and Q.png, in random order: the new render and the
+previous reviewed one), say which is closer to the references and why, in two lines, before scoring.
+Use it to judge direction, not to set the score.
+
+## How to look
+
+Open the full frame first, then every 1:1 crop. Crops show aliasing, seams, noise and texture the full frame hides.
+
+## Output format
+
+Write exactly these sections to the review file you are given, in under 450 words:
+
+1. **Score:** N.N / 10 (and the sub-scores, if the brief has them; the pairwise answer, if given a pair)
+2. **Targets** — each numeric target: measured value, hit or missed.
+3. **What works** — up to 3 bullets.
+4. **Problems, ranked** — at most 3, most damaging first. For each: where in the frame, what is wrong, and a concrete CG fix. If a value tweak has clearly not fixed it, name a different mechanism. If you ask for "more" or "less" of something, give the acceptable range.
+5. **Research check** — does the image agree with the research findings above? Name any claim the image contradicts.
+6. **What 8.5 needs** — the shortest list of changes that would get there.
+
+
+Two renders follow, labelled A and B. Review each against the brief and references in the format above (score, targets, top problem), each on its own merits. Then say in two sentences which is closer to the reference and why.
+A: /Users/oliingram/GitHub/blender-lab/experiments/plotter-blend/reviews/calibration/A.png
+B: /Users/oliingram/GitHub/blender-lab/experiments/plotter-blend/reviews/calibration/B.png
+References:
+- /Users/oliingram/GitHub/blender-lab/experiments/plotter-blend/references/ref_sheet.png
+- /Users/oliingram/GitHub/blender-lab/experiments/plotter-blend/references/ref_sheet.webp
+- /Users/oliingram/GitHub/blender-lab/experiments/plotter-blend/references/ref_sphere.png
+- /Users/oliingram/GitHub/blender-lab/experiments/plotter-blend/references/ref_vortex.png
+
+Use only the files listed here and the measurement script the brief names. Do not open any other file in the repository: no earlier reviews, progress notes, build scripts or snapshots.
+Write your review to `/Users/oliingram/GitHub/blender-lab/experiments/plotter-blend/reviews/calibration.md`.

@@ -1,0 +1,2 @@
+P = experiments/plotter-blend/renders/v03.png
+Q = experiments/plotter-blend/renders/v04.png
