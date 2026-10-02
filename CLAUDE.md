@@ -43,6 +43,7 @@ Read [knowledge/README.md](knowledge/README.md) and the entries that touch the t
 - `blender-docs` — how to look things up in `reference/`. Loads by itself when writing bpy code.
 - `/finish-experiment` — final PNG plus an editable `.blend` where each material is one control node.
 - `/sync-tweaks` — bring values the designer changed in a saved `.blend` back into `build.py`'s `P`.
+- `lab-watch` — a Claude Code mod (plugin), not a skill: the Lab pane (`/lab`) shows the active experiment's step, newest render, score trail and budget; its stall guard applies the `review-render` rules to each new review (a Haiku call reads the reviews) and tells the builder when one trips.
 - `/capture-learnings` — promote this session's lessons into `knowledge/`, log the session's cost in `knowledge/process/scoreboard.md`, and run the process retro.
 
 ## Layout

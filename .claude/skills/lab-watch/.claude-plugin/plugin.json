@@ -1,0 +1,6 @@
+{
+  "name": "lab-watch",
+  "version": "0.1.0",
+  "description": "blender-lab: a live experiment pane and a stall guard that fires the review-render rules when a review lands",
+  "types": "./types/index.d.ts"
+}
