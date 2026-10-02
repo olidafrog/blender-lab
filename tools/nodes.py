@@ -1,7 +1,7 @@
 """Node helpers for the hand-off pattern from wonder-popart: every material is ONE
 group node with the key controls on its inputs, so a designer tweaks one node.
 
-    from nodes import group, use, material_from_group, math, auto_layout, how_to_tweak
+    from nodes import group, use, material_from_group, math, step, auto_layout, how_to_tweak
 
     ng, gi, go = group("Look Plastic", [
         ("Colour", "NodeSocketColor", (0.9, 0.3, 0.1, 1), None, None),
@@ -64,6 +64,23 @@ def math(nt, op, a, b=None, c=None, clamp=False):
         else:
             m.inputs[i].default_value = v
     return m.outputs[0]
+
+
+def step(nt, x, position, softness):
+    """0 → 1 as x crosses `position`, over a band `softness` wide (0 = hard edge).
+    A ColorRamp's stops cannot be group inputs; this can, so a toon band, mask or
+    threshold stays a named control on the group node. Each argument: socket or number."""
+    half = math(nt, "MULTIPLY", softness, 0.5)
+    lo = math(nt, "SUBTRACT", position, half)
+    hi = math(nt, "ADD", math(nt, "ADD", position, half), 1e-4)  # never a zero-width range
+    m = nt.nodes.new("ShaderNodeMapRange")
+    m.interpolation_type, m.clamp = "SMOOTHSTEP", True
+    for sock, v in ((m.inputs["Value"], x), (m.inputs["From Min"], lo), (m.inputs["From Max"], hi)):
+        if hasattr(v, "bl_rna"):
+            nt.links.new(v, sock)
+        else:
+            sock.default_value = v
+    return m.outputs["Result"]
 
 
 def auto_layout(nt, dx=220, dy=200):

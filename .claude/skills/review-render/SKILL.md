@@ -21,7 +21,7 @@ Reviewers misread render bugs as look problems (DOF blur as "noise", aliasing as
 - *mirror*: smooth-shaded caps that render as domes, bad normals. Clay hides these.
 - *albedo0*: what is still bright is reflection or spill, such as a softbox mirrored in a flat top.
 - *scatter0*: subsurface that fills grooves, draws crease lines or hides bump detail.
-- *each light alone*: which light carries a veil or wash.
+- *each light alone*: which light carries a veil or wash. Each light should do its printed `purpose` and nothing else; one with no purpose, or one whose job another light already does, goes. A falloff under 0.5 puts attention on the near side: keep it only if that is where the eye should go.
 
 For a suspect the sheet does not isolate (one shader component, an emissive mesh), render it alone before guessing.
 

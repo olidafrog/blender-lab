@@ -6,6 +6,9 @@
 - Gate the glossy lobe with Light Path: multiply the Fresnel mix by `Transmission Depth == 0`, so lamps do not ghost off the inner surface. `caustics-v2`
 - Radiance is power over area. A strip 4× narrower at the same power is 4× brighter. Scale power with size.
 - Where a light sits sets what it does. Beside the camera gives face speculars. 15° behind gives rim hairlines. 28° behind images through the side walls. `caustics-v2`
+- Distance is an attention tool. Light falls with distance squared, so a light at half the distance gives the near side 4× the far side and the eye goes there. For even product light, move the light high and far and raise its power, rather than switching to a sun (too flat). `preflight.py` prints each light's falloff across the subject. Source: [Blender Guru, Fundamentals of Lighting](https://www.youtube.com/watch?v=ENnEYoUpFfU)
+- Light size picks which detail reads. A small light makes scratches, rivets and normal-map detail stand out; a large one hides them and shows the whole form. Choose by asking "form or surface detail?", then confirm against a reference's shadow edge (`process/matching-a-reference.md`). Source: Blender Guru, as above
+- A spot cone is a cheap light vignette. Place a point light first, then make it a spot and shrink the cone so the floor in front and behind falls dark; a rim spot can light the lid's reflection without touching the visible floor. Source: Blender Guru, as above
 - Bright softboxes and reflect cards give a milky wash. Keep reflectors dim and let gaps stay black. `caustics-v2`
 - Satin sheen that does not veil a print: a small glossy-only strip light, hidden from diffuse and transmission, placed where the camera sees its mirror reflection. `printed-plastic`
 - A camera-invisible black flag is negative fill. It darkens a face that reflects too much, where a material tint does little. Lift it off the floor, or it casts a dark wedge. `printed-plastic`

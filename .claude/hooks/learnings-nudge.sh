@@ -4,13 +4,17 @@
 #  2. its learnings were captured: its LEARNINGS.md changed this session, or a knowledge/ file
 #     changed this session names it (scoreboard row, decision record, gotcha source tag). Another
 #     session's knowledge edits do not count, because they name another experiment.
-# Runs only when Blender ran this session. A given ask blocks once; a new ask (a second
+# Runs only when this session's own commands ran blender.sh, and counts only experiments those
+# commands named. A given ask blocks once; a new ask (a second
 # experiment in the same session) blocks again.
 input="$(cat)"; source "$(dirname "$0")/lib.sh"
 [[ "$(field stop_hook_active)" == "true" ]] && exit 0
 sid="$(field session_id)"; transcript="$(field transcript_path)"
 [[ -n "$sid" && -f "$transcript" ]] || exit 0
-grep -q 'tools/blender.sh' "$transcript" || exit 0        # no Blender work this session
+# Commands this session ran (Bash tool calls only), so prose that names blender.sh does not count.
+cmds="$(grep -oE '"name":"Bash","input":\{"command":"([^"\\]|\\.)*' "$transcript" 2>/dev/null)"
+cmds="$(grep 'blender\.sh' <<<"$cmds")"                   # keep only the Blender runs
+[[ -n "$cmds" ]] || exit 0                                 # no Blender work this session
 cd "${CLAUDE_PROJECT_DIR:-.}" || exit 0
 start="$marker_dir/blender-lab-start-$sid"                # written by session-start.sh
 
@@ -23,6 +27,7 @@ if [[ -e "$start" ]]; then
   for r in experiments/*/renders; do
     [[ -d "$r" ]] || continue
     exp="${r%/renders}"; name="${exp#experiments/}"
+    grep -q "experiments/$name/" <<<"$cmds" || continue     # only experiments a Blender run named
     # Rendered this session: any top-level render that is not a final, a raw EXR or a crop.
     [[ -n "$(find "$r" -maxdepth 1 -type f -newer "$start" ! -iname '*final*' ! -name '*_raw.exr' ! -name '*crop*' 2>/dev/null | head -1)" ]] || continue
     rendered=1

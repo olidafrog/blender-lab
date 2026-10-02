@@ -38,6 +38,8 @@ P = {
     "glow_size": 0.6,
     "glow_threshold": 1.0,
     "chroma": 0.004,
+    "wb_temp": 6500.0,      # grade before the compositor: white balance in kelvin (6500, 10 = neutral)
+    "wb_tint": 10.0,        # negative = greener; match materials to true colour, put the shift here
     "clay": False,          # debug: flat grey override for the correctness pass
 }
 
@@ -49,6 +51,8 @@ the inputs on its group node. Hover an input for its range.
 
 - Look: Colour, Gloss (0 matte → 1 mirror).
 - Key light: select "Key", change Power and Size in Object Data.
+- Grade: Render Properties > Color Management > White Balance (temperature, tint)
+  and Curves. It sits before the Post node and changes no material.
 - Post: open the Compositing tab. The backdrop shows the saved render. Change the
   inputs on the "Post" node and it updates at once, no re-render. Tab into it to see the
   nodes inside. After a new render (F12), set "Source" to Off to use it.
@@ -139,6 +143,7 @@ def build_scene():
     bpy.ops.object.light_add(type="AREA", location=(3, -3, 5))
     key = bpy.context.active_object
     key.name = "Key"
+    key["purpose"] = "show the subject's form from upper right"  # one job per light; preflight prints it
     key.data.energy = P["key_power"]
     key.data.size = P["key_size"]
     key.rotation_euler = (math.radians(40), 0, math.radians(45))
@@ -155,6 +160,9 @@ def build_scene():
 
     scene.render.resolution_x = P["res_x"]
     scene.render.resolution_y = P["res_y"]
+    vs = scene.view_settings
+    vs.use_white_balance = (P["wb_temp"], P["wb_tint"]) != (6500.0, 10.0)
+    vs.white_balance_temperature, vs.white_balance_tint = P["wb_temp"], P["wb_tint"]
     if P["clay"]:
         clay = bpy.data.materials.new("Clay")
         clay.use_nodes = True

@@ -19,6 +19,13 @@ four to a row. Each tile is also saved alone in tiles_dir. The legend prints row
   <light>      one light alone, world off (up to `max_lights`, strongest first): veils, spill,
                a softbox mirrored in a flat top
 
+Before rendering it prints, per light, its purpose (a `purpose` custom property set in build.py;
+NO PURPOSE if missing) and its falloff across the subject: (nearest ÷ farthest distance)² over the
+subject's bounding-box corners. Under 0.5 the near side gets over twice the light of the far side,
+which pulls the eye there; that is a choice, so check it was meant. Subjects are the visible meshes
+minus any that spill past both sides of the frame or behind the camera (floors, backdrops); pass
+`subjects` to override, e.g. for a close-up the frame crops.
+
 What to look for is in review-render, "Before round 1". Emissive meshes cannot be isolated here;
 give them a --set switch in build.py. Everything changed is put back, so the scene can still be
 rendered or saved afterwards. Cycles only.
@@ -29,6 +36,7 @@ from pathlib import Path
 
 import bpy
 import numpy as np
+from mathutils import Vector
 
 
 def _principled_inputs(name):
@@ -99,7 +107,44 @@ def _uses_subsurface():
     return any(s.is_linked or s.default_value > 0 for _, s in _principled_inputs("Subsurface Weight"))
 
 
-def sheet(scene, out, tiles_dir=None, scale=0.25, samples=48, max_lights=8, columns=4):
+def _corners(objects):
+    return [o.matrix_world @ Vector(c) for o in objects for c in o.bound_box]
+
+
+def _subjects(scene):
+    """Visible meshes, minus any that spill past both sides of the frame (floors, backdrops)."""
+    from bpy_extras.object_utils import world_to_camera_view
+    meshes = [o for o in scene.objects if o.type == "MESH" and not o.hide_render]
+    if not scene.camera:
+        return meshes
+    keep = []
+    for o in meshes:
+        uv = [world_to_camera_view(scene, scene.camera, p) for p in _corners([o])]
+        xs = [p.x for p in uv]
+        if min(p.z for p in uv) > 0 and not (min(xs) < 0 and max(xs) > 1):
+            keep.append(o)
+    return keep or meshes
+
+
+def light_report(scene, lights, subjects=None):
+    """Print each light's purpose and falloff across the subject. Returns {name: ratio}."""
+    scene.view_layers[0].update()  # objects added in this build still have stale matrix_world
+    pts = _corners(subjects if subjects is not None else _subjects(scene))
+    ratios = {}
+    for o in lights:
+        purpose = o.get("purpose") or o.data.get("purpose") or "NO PURPOSE: set light['purpose'] in build.py, or delete it"
+        if o.data.type == "SUN" or not pts:
+            ratio = 1.0
+        else:
+            d = [(p - o.matrix_world.translation).length for p in pts]
+            ratio = (min(d) / max(d)) ** 2
+        ratios[o.name] = ratio
+        note = "  strong: the near side draws the eye" if ratio < 0.5 else ""
+        print(f"[out] light {o.name}: falloff {ratio:.2f}{note} | {purpose}")
+    return ratios
+
+
+def sheet(scene, out, tiles_dir=None, scale=0.25, samples=48, max_lights=8, columns=4, subjects=None):
     """Render every variant and write the tiled sheet to `out`. Returns the list of labels."""
     out = Path(out)
     tiles_dir = Path(tiles_dir) if tiles_dir else out.with_suffix("")
@@ -110,6 +155,7 @@ def sheet(scene, out, tiles_dir=None, scale=0.25, samples=48, max_lights=8, colu
     grey, black = (0.6, 0.6, 0.6, 1.0), (0.0, 0.0, 0.0, 1.0)
     lights = [o for o in scene.objects if o.type == "LIGHT" and not o.hide_render]
     lights.sort(key=lambda o: -o.data.energy)
+    light_report(scene, lights, subjects)
 
     variants = [("beauty", _plain()),
                 ("clay", _override(scene, **{"Base Color": grey, "Roughness": 1.0})),

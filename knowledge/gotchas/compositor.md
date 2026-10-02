@@ -25,3 +25,4 @@ See [API changes](api-changes.md) for how the compositor differs between 4.4 and
 - A hot core per bright shape, not the whole shape: blur the luminance key sideways and threshold near its peak. The blur peaks in the middle of each bright run, so the result is an oval core. `eclipse-glow`
 - A displacement that magnifies near a mask edge (a stretch that samples closer to a line) magnifies the edge's 1 px anti-aliased seam into a stripe. Clamp the sample to ≥ 2 px from the edge. `eclipse-glow`
 - To fade a reflection as the object lifts, with no keyframes: multiply it by the object's coverage within N px above the line, blurred down over the reflection. Each column fades on its own. `eclipse-glow`
+- Glare on many small lights: Streaks at about 0.02 and Bloom at about 0.1. Stronger, distant lights merge into one blur. Source: [Blender Guru, Backrooms](https://www.youtube.com/watch?v=kBsVJSETydU)

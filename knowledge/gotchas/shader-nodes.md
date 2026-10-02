@@ -27,6 +27,11 @@
 - A Rayleigh-weighted scatter volume (Volume Coefficients, R:G:B ≈ 1:2.3:5.7) is true opalescence, but it shifts all transmitted light warm: a teal gradient stop comes out olive and dark parts brown. Keep it weak (Opal Blue ~0.35) when a designer palette matters. `opal-essence`
 - Raised type as a separate object in a frosted material is a second diffuser that greys and re-blurs what is under it. Give it clear faces (the same group node with Frost 0). Without a volume it can also overlap the plate; with one it renders dark. `opal-essence`
 
+- Use Map Range, not ColorRamp, for any band a designer should tune. A ColorRamp's stops cannot be group inputs; a Map Range's From Min and From Max can, as position and softness. `tools/nodes.py` `step()` builds it in shader and GN trees. Source: [BCON26, 2D comic style in 3D](https://www.youtube.com/watch?v=AFmyCt3MR4M)
+- Toon shading per light (EEVEE only): give each light a pure red, green or blue colour, Shader to RGB, Separate Color, then a `step()` per channel. Each channel is one light's mask, with its own band and colour. Source: [BCON26, 2D comic style in 3D](https://www.youtube.com/watch?v=AFmyCt3MR4M)
+- Image textures on a procedural mesh with no UVs: Texture Coordinate › Object into each Image Texture set to Box projection (blend about 0.2). Every map in the set needs both changes, or that map reads wrong. Source: [Blender Guru, Backrooms](https://www.youtube.com/watch?v=kBsVJSETydU)
+- A share-of-lights-on dial for emissive panels: Brick Texture (mortar 0) → Math Less Than → Factor of a Mix between black and the emission map. Bias sweeps from all off to all on; Scale sets how many panels switch together. Unlit patches give an interior its shadow and mood; even light reads as a convention centre. Source: [Blender Guru, Backrooms](https://www.youtube.com/watch?v=kBsVJSETydU)
+
 ## Imperfections on glass
 
 - Dust must occlude: mix a black Diffuse in by a mask. Emissive or white dust reads as sparkle. `caustics-v2`
