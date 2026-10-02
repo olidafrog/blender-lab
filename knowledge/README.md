@@ -37,7 +37,7 @@ Gotchas
 - [Shader nodes](gotchas/shader-nodes.md) — node traps and shading techniques, grain, scratches and creases.
 - [Cycles](gotchas/cycles.md) — lighting, refraction, geometry, output quality, dark plastic and light linking, exteriors (sun, sky, glass, context).
 - [Colour](gotchas/colour.md) — view transforms, clipping, dark fades.
-- [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes, booleans and plates, filled-curve facades, GN contours and SVG strokes for plotting.
+- [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes, booleans and plates, filled-curve facades, GN contours and SVG strokes for plotting, formula-driven forms, hidden lines, outlines and blots.
 - [Modelling](gotchas/modelling.md) — characters from code (planar-ring lofts, IK posing, straps and skirts, silhouette checks) and hard-surface plates from traced outlines (edge classes, crisp chamfer, black gaps, detail), architecture from a straight-on photo.
 - [Fluid sim](gotchas/fluid-sim.md) — Mantaflow scale, flow volume, why a viscous press failed.
 - [Volumes](gotchas/volumes.md) — GN volume grids, albedo vs scatter colour, emitters in volumes, cloud look.
@@ -54,6 +54,7 @@ Process
 - [Insights](insights.md) — deeper lessons.
 
 Decisions
+- [plotter-forms](decisions/plotter-forms.md) — a catalogue of 50 formula-driven line-art forms with hidden-line removal: formula strings → GN, camera-side visibility test, anti-blot cut; 7.1 calibrated
 - [plotter-blend](decisions/plotter-blend.md) — line art as GN curves → SVG strokes for a pen plotter: contour sphere (marching triangles in GN), flared-catenoid funnel, own exporter; ~6.4 calibrated
 - [aztechno-building](decisions/aztechno-building.md) — photoreal facade at true scale from a traced pixel spec; physical sun + sky, coated glass with sky/street reflections, photographic output stage (fork); 6.4
 - [cyber-deck-v2](decisions/cyber-deck-v2.md) — same radio redone: plan × section loft shells, profiled cutters, crest-only wear tag, one small key; 6.4 (Opus)

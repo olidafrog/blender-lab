@@ -28,7 +28,7 @@ Every experiment gets the same folder shape and starts from what past experiment
 - **Hard-surface product from an oblique photo** (`cyber-model`, `cyber-deck-v2`): before `build.py`, rectify the reference to a plan (affine: rotate by the azimuth, stretch by 1/sin(elevation)), trace outlines on a gridded copy, fit the camera with `tools/fit_camera.py`, and map where the reference's extremes are (pixels under luma 25 and over 240, as red/blue overlays). Build with `library/models/hardsurface-kit/`. Skipping the extremes map cost four rounds of "blacks".
 - **Architecture from a straight-on photo** (`aztechno-building`): trace every element in reference pixels into a data file, convert with one px-per-metre value, and compute the shift-lens camera from it. Build with `library/models/arch-kit/`. Match the photo's sharpness with `tools/photo_finish.py`.
 
-- **Line art for a pen plotter** (`plotter-blend`): the output is SVG strokes, not a render. Start from `experiments/plotter-blend/scripts/build.py` rather than the template: forms are Geometry Nodes curves, `tools/plot_svg.py` exports and rasters them, and `--preflight` is its plot-check drawing. Decide early whether lines are drawn through or cut at the silhouette.
+- **Line art for a pen plotter** (`plotter-blend`): the output is SVG strokes, not a render. Start from `experiments/plotter-blend/scripts/build.py` rather than the template: forms are Geometry Nodes curves, `tools/plot_svg.py` exports and rasters them, and `--preflight` is its plot-check drawing. Decide early whether lines are drawn through or cut at the silhouette (`plot_hidden`). For many forms, start from `plotter-forms` (a catalogue of formula strings built with `library/node-groups/plot_kit.py`).
 
 ## Conventions
 

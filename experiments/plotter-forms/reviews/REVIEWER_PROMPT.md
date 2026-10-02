@@ -1,0 +1,103 @@
+# Reviewer brief — plotter-forms
+
+You are an adversarial art director. Judge one render against the brief and the criteria below. Be specific and hard to please. Do not be kind; a generous score wastes a round.
+
+## The brief (word for word)
+
+I want you to explore creating some other kind of shapes or art that kind of uses the same principles that you explored here. Like kind of interesting 3D volumetric shapes expressed in wireframe-esque graphics. I assume like what we did was based off some kind of algorithmic mathematical S-band funnel stuff. So what other similar things could we explore and make and turn into cool SVGs?
+
+(Agreed scope: Hopf fibration, a sphere with new fields, sliced solids, minimal surfaces, ridgeline terrain, with hidden-line removal.) build 1-5 with hidden line removal, use your judgement if you need to pick anything, Quite just keen to see a wide range of variety. So I noticed, for some of the forms you mentioned a few different ways of doing it, like two has a few different formulas. I'd love to see all of them. And the same goes for any other experiment where there's kind of variations. If we could sort of get a load of them just so I can understand what we can do.
+
+## References
+
+There are no reference images for these forms. One image sets the line character only (thin monoline technical illustration; the first series copied its top-left sphere and bottom-left funnel):
+
+- `experiments/plotter-forms/references/ref_sheet.png`
+
+## Research findings
+
+- The render is a contact sheet: one cell per form, each cell a raster of one SVG made of strokes only (no fills), for a pen plotter on a 150 mm page with a 0.35 mm pen. Judge each cell as a plot. The labels under the cells are not part of the plots.
+- Each form is drawn from a formula: circles of the Hopf fibration; contour lines of a field on a sphere; parallel cuts through a solid; the two sets of parameter lines of a surface; stacked profiles of a height field.
+- Hidden-line removal: where a form is an opaque surface, the parts of lines behind it are cut away. The Hopf forms are see-through by nature (circles in space). `klein-ghost` keeps its hidden lines on purpose, in light grey, as a second pen layer.
+- Canonical looks: Hopf fibres over a circle of latitude form a torus of linked circles, several latitudes give nested tori; a spherical harmonic gives a regular pattern of closed rings in cells; "Unknown Pleasures" ridgelines are flat at the sides with peaks in the middle, each line hiding those behind it; Enneper's surface is a saddle whose rim curls over itself.
+
+## Numeric targets
+
+| What | Target |
+|---|---|
+| Forms in the sheet | at least 40, in 5 families |
+| Lines showing through an opaque surface | none |
+| Stray fragments (visible strokes under about 1 mm, dashes at silhouettes) | none visible at 1:1 |
+| Blots (areas where lines merge into solid ink) | none wider than about 3 mm on the page (15 px) |
+| Lines leaving the cell | none, except `hopf-tumble`, which is cut at the margin by design |
+
+Measure these in the crops and report each as hit or missed.
+
+## Design facts
+
+- A catalogue, not a composition: cells are independent plots; their order, labels, and relative sizes are not design choices.
+- `hopf-tumble` runs off to the margin (its circles pass through infinity). `klein-ghost` shows hidden lines in grey.
+- `helicoid-catenoid` is six steps of one surface bending, in one plot.
+- Self-intersecting surfaces (Enneper, Henneberg, Catalan, Richmond, Kuen, Klein) pass through themselves; lines end where one sheet goes behind another.
+- Dots appear only on `monkey-saddle` (a demo of the dot option).
+
+Do not report these as problems.
+
+## Known trade-offs
+
+None yet.
+
+Do not ask to move these unless you name what the other side would cost.
+
+## Failure checklist
+
+1. Does every form read as a 3D volume or surface, not as a flat pattern or a tangle?
+2. Is the hidden-line removal correct everywhere (no line through a surface, no line wrongly missing)?
+3. Are silhouettes clean (no dashes, doubled outlines or gaps at the edge of a form)?
+4. Is any form a blot at its centre or pole where lines converge?
+5. Are all lines smooth (no facets, zigzags or kinks that the formula does not have)?
+6. Is each family's set of variations really varied (not five near-copies)?
+7. Would each cell work as a finished plot on its own page?
+8. Is any form mathematically wrong for its label?
+
+Answer each with yes or no and the evidence (name the forms).
+
+## What to judge
+
+How well each form reads as a 3D shape in line; line craft and plot readiness (no fragments, blots, doubled lines); correctness of hidden lines; the range and interest of the variations against the brief's "wide range of variety".
+
+## Do not penalise
+
+The sheet layout and labels, paper tone, the lack of reference images, forms being abstract or unfamiliar.
+
+## Sub-scores
+
+3D read and form quality 35 %, hidden lines and silhouettes 25 %, plot readiness 20 %, variety 20 %.
+
+## Calibration
+
+- 5 = generic; stock wireframes with the right subjects.
+- 7 = good; clearly the right idea, visible problems in several cells.
+- 8.5 = ship it; only minor flaws at 1:1.
+Use one decimal place.
+
+## Pairwise (round 2 on)
+
+If the file list below includes a pair folder (P.png and Q.png, in random order: the new render and the
+previous reviewed one), say which is better against the brief and why, in two lines, before scoring.
+Use it to judge direction, not to set the score.
+
+## How to look
+
+Open the full frame first, then every 1:1 crop. Crops show aliasing, seams, fragments and blots the full frame hides. Name forms by the label under their cell.
+
+## Output format
+
+Write exactly these sections to the review file you are given, in under 500 words:
+
+1. **Score:** N.N / 10 (and the sub-scores; the pairwise answer, if given a pair)
+2. **Targets** — each numeric target: measured value, hit or missed.
+3. **What works** — up to 3 bullets.
+4. **Problems, ranked** — at most 5, most damaging first. For each: which form, where in its cell, what is wrong, and a concrete fix. If a value tweak has clearly not fixed it, name a different mechanism.
+5. **Checklist** — the eight answers.
+6. **What 8.5 needs** — the shortest list of changes that would get there.
