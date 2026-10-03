@@ -13,7 +13,8 @@ Stats per region: mean and std (0-255 sRGB luma), clipped share (>=251), black s
 lit share (>25), mean gradient on lit pixels, and the share of lit pixels with gradient >20 and >40.
 Diff per region: MAE, max diff, changed-pixel share (any channel differs by more than --thresh).
 
-Verdict: if target crops are given, each must have >= 1% changed pixels; with none, the whole
+Verdict: if target crops are given, each must have >= 1% changed pixels (or >= 0.05% moved by more
+than 64 levels: a thin-line geometry change); with none, the whole
 frame must. "NO CHANGE" means do not spend a review on this version. EXR input is converted
 from linear to sRGB first. Images of different sizes: cur is resampled to prev's size.
 """
@@ -123,24 +124,26 @@ def main():
         p, c = prev[y0:y1, x0:x1], cur[y0:y1, x0:x1]
         d = np.abs(c - p)
         changed = 100 * (d.max(axis=2) > thresh).mean()
+        strong = 100 * (d.max(axis=2) > 64).mean()   # hard edges moved: thin-line geometry (an arch outline, a bar)
         sp, sc = stats(p), stats(c)
         print(f"[out]   {label:>16}  MAE {d.mean():6.2f}  max {d.max():5.0f}  changed {changed:6.2f}%  "
               f"mean {sp['mean']:.1f}->{sc['mean']:.1f}  std {sp['std']:.1f}->{sc['std']:.1f}  "
               f"clip {sp['clip']:.2f}->{sc['clip']:.2f}%  g20 {sp['g20']:.2f}->{sc['g20']:.2f}%")
         if is_target or (not targets and label == "frame"):
-            verdict.append((label, changed))
+            verdict.append((label, changed, strong))
     if same:
-        moved = [f"{lab} ({pct:.2f}%)" for lab, pct in verdict if pct >= MIN_CHANGED]
+        moved = [f"{lab} ({pct:.2f}%)" for lab, pct, _ in verdict if pct >= MIN_CHANGED]
         if moved:
             print(f"[out] VERDICT: CHANGED in {', '.join(moved)}. A refactor should not move pixels; find what changed.")
         else:
             print("[out] VERDICT: NO CHANGE, as expected for a refactor. Do not spend a review.")
         return
-    dead = [f"{lab} ({pct:.2f}%)" for lab, pct in verdict if pct < MIN_CHANGED]
+    # a thin-line geometry change moves few pixels but moves them hard; GPU noise never does
+    dead = [f"{lab} ({pct:.2f}%)" for lab, pct, st in verdict if pct < MIN_CHANGED and st < 0.05]
     if dead:
         print(f"[out] VERDICT: NO CHANGE in {', '.join(dead)}. Do not spend a review; find why the change did not reach the pixels.")
     else:
-        print(f"[out] VERDICT: changed ({', '.join(f'{lab} {pct:.1f}%' for lab, pct in verdict)}). OK to review.")
+        print(f"[out] VERDICT: changed ({', '.join(f'{lab} {pct:.1f}%' for lab, pct, _ in verdict)}). OK to review.")
 
 
 main()

@@ -70,3 +70,10 @@ The user asked for a Sonnet reviewer and an Opus advisor on a hard-surface task,
 - **A repeated "fragments" complaint needs the stage, not a threshold.** In `plotter-forms` three reviews reported stray short strokes while the minimum length went 1.5 → 2 → 3 mm. The advisor tagged every stroke with the export stage that cut it and found most were remnants of the anti-blot cut, not of hidden-line removal. Instrument the pipeline at the second report. `plotter-forms`
 - **A catalogue scores flat.** Fifty independent forms on one sheet scored 6.8, 7.0, 7.0, 7.1, 6.8 while the blind pair preferred each new version: the reviewer finds five new weakest cells every round. For catalogue work, track defect counts per form (strokes under 8 mm fell 1043 → 521 from v04 to v06) and use the pair for direction. `plotter-forms`
 - **Numeric asks tuned by local sweeps, one review per sweep** kept a six-round loop rising (6.0, 6.5, 6.4, 6.7, 6.8, 7.2) at about 10 minutes a round. Each round was: reviewer names a count or ratio → a six-variant sweep → pick by eye → review. `plotter-blend`
+
+## Multi-camera review (apartment-model)
+
+- **One sheet per version: photo | render | photo with model edges in red, one row per camera.** Reviewers measured offsets in px per element and separated camera faults (a whole row drifting) from model faults (one element off). Label the rows by photo number in the brief. Seven reviews lost words to "rows 2 and 3" pointing at the wrong photos. `apartment-model`
+- **Draw folds, not only object boundaries.** An object-colour id pass missed the girder's front arris (a fold inside one object), and a reviewer called the girder flush. Add a studio-shaded pass for folds. `apartment-model`
+- **A user fact is a brief change.** The secondary-glazing fact changed the design facts at v10; the scores reset (8.1 → 7.4 on the stricter brief), and the blind pairs carried direction across the change. `apartment-model`
+- **A reviewer can stall after writing its file.** Check for the review file before re-spawning; a second reviewer on the same prompt overwrites it. `apartment-model`

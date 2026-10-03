@@ -55,3 +55,12 @@ Learned on `aztechno-building` (a facade 29 m wide at 38 px/m).
 - Trace every element in reference pixels into a data file and convert to metres with one px-per-metre value; a shift-lens camera with `lens = 36 · ppm · D / W` and shifts from the axis and horizon pixels then lands the facade plane on the reference at any distance D. Parts set back or forward (roof tanks, an angled wing, a sign) go through one `at_depth(u, v, y)` helper so they still land on their pixels. `aztechno-building`
 - A global relief multiplier must not scale parts with a known size: caps, oculi rings and tanks went 0.7–1 m deep and were flagged for six rounds. Give those absolute depths. `aztechno-building`
 - Outline strips stacked round a moulding read right when each outer layer sits a little (1.8 cm) behind the one inside it: they stay in the sun and the core casts the shadow. Equal depths put whole strips in shade. `aztechno-building`
+
+## Interiors from a LiDAR scan and phone photos
+
+Learned on `apartment-model` (the user's flat: a Polycam scan plus 8 iPhone photos; final 7.9, all pixel targets hit). Code: `experiments/apartment-model/scripts/` (`scan_tools.py`, `scan_render.py`, `shell_kit.py`, `fit_cam.py`, `refine_cam.py`, `joint_fit.py`, `review_sheet.py`).
+
+- Measure the scan, never render it. Align by an area-weighted 4-fold wall-normal histogram, take the floor from up-facing faces, and read each plane as a peak in an area-weighted histogram of face positions by normal family. Textured ortho elevations with a metric grid read openings fast. Polycam's own plan (9.00 × 5.82) disagreed with the plane fits (8.74 × 5.63). `apartment-model`
+- LiDAR rounds every edge by 5–15 cm and fills small steps. Coves, pilaster heads, reveal splays and frame depths come from the photos, checked against the scan's transitions. The scan read a 0.20 m pilaster (photos: 0.10) and no step at the wall tops (photos: a cove that meets the ceiling about 5 cm in). `apartment-model`
+- Window reveals can splay asymmetrically: here toward the central pier. Symmetric splays fitted the head-on photo and missed the oblique ones by 24 px. An oblique view is the test for reveal geometry. `apartment-model`
+- Model only what the user wants kept, and ask what a moving part is. Six rounds treated open secondary glazing as factory casements. `apartment-model`

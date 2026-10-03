@@ -31,3 +31,10 @@ experiments/*/assets/cache/
 
 # 164 MB, over the GitHub 100 MB file limit
 experiments/eclipse-glow/output/FINAL_eclipse_sunrise.mp4
+
+# LiDAR scans: too big for git, kept locally
+experiments/*/references/scans/
+# Regenerable measuring images
+experiments/*/assets/grid/
+experiments/*/assets/scan_views/
+experiments/*/assets/cams/*.png

@@ -60,3 +60,9 @@ Refraction magnifies every flaw in a mesh. `caustics-v2`
 - Camera-invisible context still blocks sky light for diffuse rays: houses across the street darken the facade's shade side. Size them to the real street. `aztechno-building`
 - Curtain glass: tinted float glass (F 0.05, sunlit rooms behind) was the physically better read and lost blind to an opaque coated dielectric (F 0.35, ±60 % per pane, tilt hashed per pane from the mullion grid): what the glass reflects mattered more than its physics. A hashed per-pane shader needs its attributes on every glass object; a missing one divides by zero and the pane renders flat grey. `aztechno-building`
 - Shift: `shift_x` positive moves the frame right (content left); `shift_y` is a fraction of the longer side. `aztechno-building`
+
+## Interiors: daylight through windows
+
+- Overcast interior (agent-tested, 5.2 Metal): a CIE overcast world, Strength = Lz·(1 + 2 sin el)/3 with Lz about 10 (horizontal irradiance 7π/9·Lz ≈ 24 W/m²), and film exposure +2.5 EV put white walls at a photo's level. The Sky texture is a poor overcast (blue dome, warm halo). `apartment-model`
+- Portals still exist (`light.cycles.is_portal`, emitting into the room): they cut noise 34 % under overcast and gave nothing under direct sun. Use diffuse bounces 12 (4 gave 84 % of the light in a white room) and indirect clamp 0 with physical units. `apartment-model`
+- Thin window glass: Mix(Transparent, Glossy) by Fresnel IOR 1.45 is 3 % below an open hole with the same noise. Mixing in Transparent by Is Shadow Ray double-counts light (+14–25 %). Show the sky dimmer to camera rays (Light Path Is Camera Ray), so glazing bars stay visible against it. `apartment-model`

@@ -34,3 +34,6 @@ Launch with `tools/blender.sh`. It handles most of the items below.
 - Blender 5.2 on Metal sometimes exits mid-sweep with no traceback and no output (`no result line`); the same command passes on rerun. Rerun once before debugging. `mac` `aztechno-building`
 - `bpy.ops.wm.grease_pencil_export_svg` returns FINISHED in background mode and writes garbage (0 px height, y of 1e12): it projects from the largest 3D viewport, which a headless run does not have. Freestyle draws mesh faces only (0 px for curves and loose edges) and its SVG exporter is no longer bundled. Write SVG yourself: `tools/plot_svg.py`. `5.x` `plotter-blend`
 - Inkscape (`inkscape in.svg --export-type=png --export-filename=out.png --export-width=N --export-background=#efefef`) rasterises an SVG in about 2 s from inside a Blender run. `mac` `plotter-blend`
+
+- A Polycam OBJ holds one object per texture atlas: `wm.obj_import` selects all of them, so parent them to an empty before transforming, or two thirds of the scan stays put. `apartment-model`
+- Module-level caches of datablocks (a collection dict in a kit) go stale after `read_factory_settings`, and the next build raises "StructRNA … has been removed". Clear them at the start of every build that resets. `apartment-model`

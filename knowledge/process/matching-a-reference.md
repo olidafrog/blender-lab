@@ -39,3 +39,12 @@ For "recreate this image" work. Learned on eclipse-glow (93 renders, 17 judge ro
 
 - **A photo reference is also a processing chain.** The reference was a sharpened JPEG (edge ratio and fine-detail energy higher than a raw render's in every region), and seven rounds of content fixes plateaued at 5.3–5.9 until a 2× render, Lanczos, light unsharp and a JPEG round trip (`tools/photo_finish.py`, gate `tools/sharpness.py`) lifted the loop to 6.0–6.5. `aztechno-building`
 - **Mask what a region metric counts.** A "cream shade share" counted grey glass reflections as shaded paint; reviewers read the row as "relief too shallow" for four rounds while the measured cast shadow was on target. Check a metric's mask on one image before trusting it. A paint-class IoU stayed at 0.33 all loop (glass and shade dominate the labels), so it never ranked versions. `aztechno-building`
+
+## Many photos of one space
+
+Learned on `apartment-model` (7 cameras on one room).
+
+- **Fit each camera to a textured scan first.** A Workbench FLAT/TEXTURE render of the scan at 512 px takes about 0.3 s. Nelder–Mead on blurred edge correlation against the photo locks a plan-position start in 1–2 min. Furniture in the scan matches the photo, which helps. It stalls where clutter dominates; landmark PnP on clean architectural corners plus line constraints fixed those cameras (4–6 px rms).
+- **Then solve cameras and dimensions together.** Per-round single-value nudges traded off between photos: one cove depth fitted photo 3 and missed photos 1, 5 and 6 by 10–20 px. A joint coordinate search over P and the poses fixed this (`joint_fit.py`): Workbench object-colour renders, truncated distance from model edges to photo edges, furniture edges masked, scan priors at σ 3 cm. It runs in 2.5 min; 7.6 → 8.1 in one round.
+- **Residuals that grow toward the frame edge are not always lens distortion.** A constant geometric offset d projects as f·d/depth, so it is largest at the nearest (frame-edge) points. k1 fitted against the scan or the model stayed at 0. The edge-beam drift was a 5–8 cm cove. Before adding distortion, check whether the error scales with 1/depth or with radius.
+- iPhone EXIF beats memory for the lens (the user's 0.5x/1x notes were wrong for 3 of 8 photos). Use a 34.6 mm sensor width for 35 mm-equivalent focal lengths at 4:3. A photo edited in Photos (cropped or straightened) fits no pinhole: leave it out.
