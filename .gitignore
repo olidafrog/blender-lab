@@ -38,3 +38,4 @@ experiments/*/references/scans/
 experiments/*/assets/grid/
 experiments/*/assets/scan_views/
 experiments/*/assets/cams/*.png
+experiments/*/assets/mat/*.npy
