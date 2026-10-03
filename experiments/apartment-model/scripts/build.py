@@ -28,6 +28,7 @@ from nodes import auto_layout, group, how_to_tweak, material_from_group  # noqa:
 from comp import LEGACY, compositor, post_group, use_saved_render  # noqa: E402
 from preflight import sheet  # noqa: E402
 import shell_kit as K  # noqa: E402
+import mat_kit  # noqa: E402
 
 EXP = experiment_paths(__file__)
 
@@ -37,7 +38,7 @@ P = {
     "exposure": 2.5,                       # film exposure, stops
     "view": "AgX",                         # AgX | Khronos PBR Neutral | Standard
     "look": "None",
-    "wb_temp": 6500.0, "wb_tint": 10.0,
+    "wb_temp": 13000.0, "wb_tint": 10.0,    # warm like the phone: paint R/B 1.24 in photo 2 (round two)
     "clay": False,
     # ---- sky (bright overcast, CIE-like: zenith 3x horizon)
     "sky_strength": 9.8,         # zenith radiance; horizontal irradiance = 7/9 pi x this (~24 W/m2)
@@ -105,8 +106,26 @@ P = {
     "upper_ceil_z": 4.08,
     # ---- looks
     "paint": (0.80, 0.79, 0.76, 1.0),
-    "brick": (0.20, 0.075, 0.05, 1.0), "brick_dark": (0.11, 0.045, 0.035, 1.0), "mortar": (0.38, 0.34, 0.29, 1.0),
-    "oak": (0.33, 0.19, 0.10, 1.0),
+    "oak": (0.33, 0.19, 0.10, 1.0),           # kitchen shelves
+    # ---- brick (round two; levels from scripts/mat_measure.py: brick/paint luma 0.21-0.25 in photos 2, 5)
+    "brick": (0.08, 0.05, 0.07, 1.0), "brick_dark": (0.042, 0.031, 0.04, 1.0),        # plum-maroon (v14-v16 reviews; photo 2 hue)
+    "brick_pale": (0.15, 0.115, 0.125, 1.0), "mortar": (0.10, 0.085, 0.085, 1.0),   # pale = the grey-violet bloom; mortar a touch lighter
+    "brick_var": 1.0, "brick_dust": 0.5, "mortar_depth": 0.3,
+    # brick scan (Poly Haven factory_brick, CC0, 1.5 m tile, 16 courses): scaled to 1.36 m so a course is 85 mm
+    "brick_tex_dir": EXP["root"].parents[1] / "library/textures/brick/factory_brick",
+    "brick_tex_size": 1.36, "brick_tex_z0": 0.0,
+    "brick_joint_t": 0.635,       # height below which the scan is joint (its 20th percentile)
+    # ---- herringbone floor (rectified photos 2, 3, 8: spine along the room; photo 2 read 700 x 140, photo 8 and two reviews ~20 % smaller: 600 x 120, the common size)
+    # rustic oak scan (Poly Haven oak_wood_planks, CC0, 1.2 m; v16 review: the clean veneer read as fresh-cut):
+    # scaled 1.6x so a 140 mm plank fits inside one of its ~90 mm source planks; centres of the clean ones (V)
+    "oak_tex": EXP["root"].parents[1] / "library/textures/wood/oak_wood_planks/oak_wood_planks_diff_2k.jpg",
+    "oak_rough_tex": EXP["root"].parents[1] / "library/textures/wood/oak_wood_planks/oak_wood_planks_rough_2k.jpg",
+    "oak_tex_size": 1.64,       # 1.37x: a 120 mm plank fits inside one ~92 mm source plank
+    "oak_tex_strips": tuple(round(1 - r / 2048, 4) for r in (710, 871, 1040, 1210, 1648, 1818)),
+    "oak_tint": (1.0, 1.0, 1.0, 1.0), "oak_bright": 1.25, "oak_sat": 0.45, "oak_grain": 2.0,
+    "oak_var": 0.6, "oak_seams": 0.9, "oak_rough": 0.3, "oak_aniso": 0.3, "oak_spec": 0.4,
+    "plank_ratio": 5, "plank_w": 0.12, "plank_bevel": 0.001, "ring_sp": 0.014,
+    "plank_x0": 0.0, "plank_y0": -0.09,       # pattern origin: puts a tip line at y 0.80 (rectified photo 2)
     "steel_white": (0.72, 0.71, 0.66, 1.0),
     "steel_black": (0.025, 0.025, 0.025, 1.0),
     "grey": (0.45, 0.45, 0.45, 1.0),
@@ -136,8 +155,17 @@ Collections
 - Outside: ground and the building opposite; Portals help the sky light through the windows.
 
 Materials: each is one group node. Select an object, open the Shader Editor, change the inputs:
-Paint, Oak, Steel_White, Steel_Black, Units, Worktop, Bookcase, Grey (Colour, Roughness);
-Brick (Brick, Brick Dark, Mortar, Roughness); Glass (IOR).
+Paint, Oak (shelves), Steel_White, Steel_Black, Units, Worktop, Bookcase, Grey (Colour, Roughness);
+Brick (Brick, Brick Dark, Brick Pale, Mortar, Variation, Dust, Relief, Roughness): a scanned brick wall
+(library/textures/brick/factory_brick) at true scale; its faces take Brick (darker toward Brick Dark, paler
+toward Brick Pale by the scan's own tone x Variation), its joints take Mortar. Dust = soot and grey bloom over
+the wall, Relief = joint and pitting depth.
+Oak_Floor (Tint, Brightness, Saturation, Grain, Variation, Seams, Roughness, Anisotropy): 600 x 120
+herringbone, spine along the room, each plank cut from a scanned rustic oak (library/textures/wood/
+oak_wood_planks). Grain = figure contrast, Variation = plank-to-plank tone, Anisotropy = how far window
+reflections streak along each plank. Plank size and pattern position are in P (plank_w, plank_ratio, plank_y0).
+Glass (IOR).
+White balance: Color Management > White Balance (13000 K warms the image like the phone photos).
 Daylight: World > Sky node (Strength, Sky Colour, Ground Colour, Camera View = how bright the
 sky looks through the glass). Exposure: Render > Film > Exposure, or the Post node.
 Post: Compositing tab, the "Post" node (Exposure); it previews the saved render. After a new
@@ -159,48 +187,6 @@ def simple_group(name, colour, rough, metal=0.0):
     b.inputs["Metallic"].default_value = metal
     ng.links.new(gi.outputs["Colour"], b.inputs["Base Color"])
     ng.links.new(gi.outputs["Roughness"], b.inputs["Roughness"])
-    ng.links.new(b.outputs[0], go.inputs["Shader"])
-    auto_layout(ng)
-    return ng
-
-
-def brick_group():
-    """Brick on walls in plane x: the pattern runs in (y, z)."""
-    ng, gi, go = group("Brick", [
-        ("Brick", "NodeSocketColor", P["brick"], None, None),
-        ("Brick Dark", "NodeSocketColor", P["brick_dark"], None, None),
-        ("Mortar", "NodeSocketColor", P["mortar"], None, None),
-        ("Roughness", "NodeSocketFloat", 0.85, 0.0, 1.0),
-    ], [("Shader", "NodeSocketShader")])
-    n = ng.nodes
-    tc = n.new("ShaderNodeTexCoord")
-    sep = n.new("ShaderNodeSeparateXYZ")
-    comb = n.new("ShaderNodeCombineXYZ")
-    ng.links.new(tc.outputs["Object"], sep.inputs[0])
-    # use y+x as the running direction so side faces of piers still get courses
-    add = n.new("ShaderNodeMath"); add.operation = "ADD"
-    ng.links.new(sep.outputs["Y"], add.inputs[0]); ng.links.new(sep.outputs["X"], add.inputs[1])
-    ng.links.new(add.outputs[0], comb.inputs["X"])
-    ng.links.new(sep.outputs["Z"], comb.inputs["Y"])
-    bt = n.new("ShaderNodeTexBrick")
-    bt.inputs["Scale"].default_value = 1.0
-    bt.inputs["Brick Width"].default_value = 0.225
-    bt.inputs["Row Height"].default_value = 0.076
-    bt.inputs["Mortar Size"].default_value = 0.010
-    bt.offset = 0.5
-    ng.links.new(comb.outputs[0], bt.inputs["Vector"])
-    ng.links.new(gi.outputs["Brick"], bt.inputs["Color1"])
-    ng.links.new(gi.outputs["Brick Dark"], bt.inputs["Color2"])
-    ng.links.new(gi.outputs["Mortar"], bt.inputs["Mortar"])
-    b = n.new("ShaderNodeBsdfPrincipled")
-    ng.links.new(bt.outputs["Color"], b.inputs["Base Color"])
-    ng.links.new(gi.outputs["Roughness"], b.inputs["Roughness"])
-    bump = n.new("ShaderNodeBump"); bump.inputs["Strength"].default_value = 0.4
-    bump.inputs["Distance"].default_value = 0.004
-    inv = n.new("ShaderNodeMath"); inv.operation = "SUBTRACT"; inv.inputs[0].default_value = 1.0
-    ng.links.new(bt.outputs["Fac"], inv.inputs[1])
-    ng.links.new(inv.outputs[0], bump.inputs["Height"])
-    ng.links.new(bump.outputs[0], b.inputs["Normal"])
     ng.links.new(b.outputs[0], go.inputs["Shader"])
     auto_layout(ng)
     return ng
@@ -228,7 +214,8 @@ def make_materials():
                         ("steel_black", P["steel_black"], 0.35), ("grey", P["grey"], 0.8), ("units", P["units"], 0.5),
                         ("bookcase", P["bookcase_col"], 0.6), ("ground", P["ground_colour"], 1.0)):
         M[key] = material_from_group(key.title(), simple_group(key.title(), col, r))
-    M["brick"] = material_from_group("Brick", brick_group())
+    M["brick"] = material_from_group("Brick", mat_kit.brick_group(P))
+    M["floor"] = material_from_group("Oak_Floor", mat_kit.herringbone_group(P))
     M["glass"] = material_from_group("Glass", glass_group())
     M["worktop"] = material_from_group("Worktop", simple_group("Worktop", (0.82, 0.82, 0.8, 1), 0.25))
     return M
@@ -253,7 +240,7 @@ def build_shell(M):
     st, back = P["side_t"], PX(980)
     ext = back + P["side_t"]
     # floor and roof slabs over the whole flat
-    K.box("Floor", wx - P["win_t"], ext, W - st, E + st, -P["slab_t"], 0, M["oak"])
+    K.box("Floor", wx - P["win_t"], ext, W - st, E + st, -P["slab_t"], 0, M["floor"])
     K.box("Roof", wx - P["win_t"], ext, W - st, E + st, C, C + P["slab_t"], M["paint"])
     # party walls (west, east) and the back wall
     K.box("Wall_W", wx, ext, W - st, W, 0, C, M["paint"])

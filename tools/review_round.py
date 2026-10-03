@@ -178,6 +178,8 @@ if __name__ == "__main__":
         tag = argv[i + 1]
         del argv[i:i + 2]
     if len(argv) >= 4 and argv[1] == "--pair":
+        if (ROOT / "experiments" / argv[0] / "reviews" / f"{tag}.md").exists():
+            tag = f"{tag}_{argv[2]}"         # a second calibration (a new brief or series) keeps the first one
         pair(argv[0], argv[2], argv[3], tag)
     elif len(argv) >= 2 and not argv[1].startswith("--"):
         round_(argv[0], argv[1], argv[2:], "--force" in flags, "--all-crops" in flags, "--with-prev" in flags)

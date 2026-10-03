@@ -25,3 +25,26 @@ The user's own flat (Flat 233, Manhattan Building, Bow Quarter; a 1909 RC-framed
 - Lower-tier glazing rail and right-window mullion spacing (photo 2); the radiator 10–15 cm too high and ~15 cm too far from the window wall; the central beam 18 px low in photo 5 only (beam west face or camera 5).
 - Cove/ceiling lines drift up to 10–20 px at the frame corners of photos 3 and 5.
 - Upper floor, hallway, stairs (10 steps, two flights) and shower room are grey boxes from the plan; materials are placeholders (round two: brick, herringbone, paint).
+
+## Round two: brick and floor materials (v13–v18)
+
+User: "Fix the brick and floor materials." New reviewer brief (materials only; scores restart at v13): sheet = photo | render | 1:1 photo and render crops at the same pixels (`review_sheet.py <v> mat`), plus luma relative to the white paint in fixed regions (`scripts/mat_measure.py`). Six rounds, then the slope rule: 5.2, 5.3, 6.1, 6.0, 6.2, 5.8. Calibration: **v18 5.9 beat v17 5.7** blind. No second fork (the experiment forked at v08). Final **v18**: all four luma targets hit (brick/paint 0.22, 0.25 vs 0.21, 0.25; floor/paint 0.93, 0.95 vs 0.89, 0.99).
+
+### Chosen
+- **Brick: a whole-wall CC0 scan at true scale, regraded through its height mask** (Poly Haven factory_brick, 1.5 m → 1.36 m so a course is 85 mm; `library/textures/brick/factory_brick`). Faces take the measured brick colour, shifted by the scan's own tone; joints take the mortar colour; wall-scale soot and bloom noises on top. Advisor (Fable): the scan carries arris wear and bloom correlated with the joints, which independent noises cannot fake.
+- **Floor: herringbone from integer cells (c = (i − j) mod 2n) with a scanned rustic oak per plank** (Poly Haven oak_wood_planks, `library/textures/wood/oak_wood_planks`): each plank samples one randomly chosen source plank, centred, so no source seam crosses it; 600 × 120, spine along the room; satin roughness 0.3, anisotropy along the plank, 1 mm dark bevel.
+- **Grade: view white balance 13000 K** (paint R/B 1.22 vs the phone's 1.24). Material hue judged relative to the white paint.
+- **Measuring: photos rectified onto the model planes with the fitted cameras** (`scripts/rectify.py`): spine direction, plank pitch, course height.
+
+### Rejected
+- Procedural per-brick grid (v13–v16): "CG tile" three rounds running; the mortar grid was the pattern instead of the tone spread.
+- Procedural flat-sawn ring grain (v13–v14): pinstripes, then zebrano. Clean veneer scan (v15–v16): read as fresh-cut top-grade oak.
+- Per-brick sampling of a scan (ghost joints inside bricks); a stone detail layer over the grid (keeps the straight grid).
+- Khronos PBR Neutral to keep the floor saturated: oversaturated the brick. AgX stays; saturation goes into the albedo and white balance.
+- One gain on the whole brick scan: turns grey mortar violet.
+
+### Open items
+- Texture contrast is about half the photos' (floor 6–7 vs 8.5–13, brick 4 vs 7.6). The photos' floor is a rustic print with cracks, knots and straight dark streaks: a higher-contrast rustic scan, or a second scan blended per plank.
+- Lit window reveals read mauve-grey; in the photos they glow orange-red. The brick in daylight is redder than the plum it reads in shade: a lit-vs-shade trade-off in the albedo, or the phone's processing.
+- Plank size: photo 2's rectification read 700 × 140, photo 8 and two reviewers ~20 % smaller; 600 × 120 chosen. A tape measure on one plank settles it.
+- Mortar: reviewers split between "paler net" and "dark, flush"; the scan's joints still catch a lit top edge at Relief 0.3.

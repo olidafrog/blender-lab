@@ -20,10 +20,40 @@ Applies to v01, and where it lands:
 
 **Review instrument:** `renders/vNN.png` is a sheet built by `scripts/review_sheet.py`: per photo a row of photo | render | photo with model edges in red. Cameras: `assets/cams/<n>.json`, fitted by `scripts/fit_cam.py` (landmarks) and `scripts/refine_cam.py` (edge match against the textured scan).
 
+## Round two: materials (from v13)
+
+User: "Fix the brick and floor materials". New reviewer brief (`reviews/REVIEWER_PROMPT.md`; the shell brief is `REVIEWER_PROMPT_shell.md`), so scores restart at v13 and compare only within this round. Budget 8 rounds. Instrument: `review_sheet.py <v> mat` (photo | render | 1:1 photo and render crops of brick and floor, rows 2, 5, 1, 8, renders at 2048 px) and `scripts/mat_measure.py` (brick and floor luma relative to the white paint in the same regions of photo and render).
+
+Measured from the photos (rectified onto the model planes with the fitted cameras, `scripts/rectify.py`): herringbone spine along the room in the living room and kitchen; tip lines 0.50 m apart, seam pitch 0.19 m along the spine → 700 × 140 mm planks; brick courses 85–95 mm; brick/paint luma 0.21–0.25, floor/paint 0.89–0.99 (v12: 0.30 and 0.78–0.84). Research: two Sonnet agents (brick, herringbone), both verified their node math in 5.2.
+
+**Process guess:** old cleaned brick lit only by room bounce; a 700 × 140 engineered-oak or LVT herringbone with a satin finish.
+
+Pre-review tests (t13): brick and floor as shader-math groups in `scripts/mat_kit.py`. Brick/paint 1.02–1.07 of the photo ratio; floor/paint 0.82–0.97 of it; texture std brick 5.4–6.5 (photo 3–8), floor 5.8–6.8 (photo 8–13).
+
+Advisor (Fable) on the plan, after t13: (1) the floor's brightness near the windows is window and wall reflection on a satin finish, not albedo → roughness 0.3 with per-plank spread, anisotropy 0.5 along each plank (tangent from the plank orientation); (2) brick: the tone spread between bricks is the pattern, the joints nearly vanish → categorical burnt/common/pale bricks, per-brick gradient, low-frequency smear, mortar near the brick tone, soft-edged and missing in stretches, faint relief, a few mm of warp; (3) grain read as pinstripes → sparse thin latewood faded over plain stretches, bigger taper for arches; (4) match the phone's white balance on the paint before judging hue. → All applied in v13; white balance 13000 K gives paint R/B 1.22 (photo 1.24). AgX desaturated the floor (Khronos PBR Neutral oversaturated the brick), so the view transform stays AgX.
+
+Stall guard after v13 (slope flat v11–v13, "floor appearance" three reviews): v11–v12 were scored on the shell brief; round two restarted the instrument at v13, so the slope and repeat rules count from v13 only. Not acted on.
+
+Stall guard after v14 (floor grain two rounds: "faint lines" v13, "zebrano, not oak" v14): mechanism change for the grain, procedural ring model → a scanned CC0 oak texture sampled in each plank's local coordinates with a random offset and flip per plank (the herringbone math, seams and sheen stay).
+
+Stall guard after v15 ("brick reads as tile" v13–v15): v16 was already rendered as a value round (plum-maroon albedo, bloom across the joints, stronger mottling); the advisor is consulted on a brick mechanism change for v17. The "floor/paint missed" flag is stale (v15 hit 0.90 and 0.95).
+
+Advisor (Fable) after v16, brick mechanism: a whole-wall CC0 scan (Poly Haven factory_brick) at true scale for structure, regraded through its height mask (faces and joints coloured separately from the measured values; one gain on the whole scan turns the mortar violet). Per-brick sampling of a scan would leave ghost joints; a detail layer keeps the straight grid. → v17 brick. Floor in v17: rustic oak scan (oak_wood_planks), each plank inside one randomly chosen source plank (v16: the clean veneer read as fresh-cut).
+
+Stall guard after v17 ("floor too uniform and pale" v15–v17): the floor mechanism changed twice in those rounds (procedural → veneer scan v15 → rustic scan v17); v18 is a scale and contrast round on the same mechanism: planks 700 x 140 → 600 x 120 (photo 8 and two reviewers read them ~20 % smaller than photo 2's rectification), grain contrast 1.4 → 2.0, plank spread 0.4 → 0.6, roughness 0.22 → 0.3.
+
+Stopped after v18 (slope flat: best of v16–v18 6.2 vs v13–v15 6.1). Calibration (round two, `reviews/calibration.md`; round one's is `calibration_shell.md`): v18 5.9 beat v17 5.7 blind (more plank variation and grain contrast; v17's planks evener and glossier). The winner is 2.6 under the target, but the experiment forked once already (v08), so no second fork: finish from v18.
+
 Newest first. Updated after every review. Cost is what the version took: Blender runs and minutes since the last row.
 
 | Version | Score | The one change | Cost | Render |
 |---|---|---|---|---|
+| v18 | 5.8 (BC 5.8, BP 5.5, FC 6.3, FP 5.8); pair preferred v18 over v17; all luma targets hit | planks 600 x 120, grain contrast 2.0, plank spread 0.6, roughness 0.3 | 1 run, 10 min | renders/v18.png |
+| v17 | 6.2 (BC 6.0, BP 6.0, FC 6.5, FP 6.3); pair preferred v17; all luma targets hit | mechanisms: brick from a whole-wall scan regraded by its height mask (advisor); floor from a rustic oak scan per source plank | 3 runs + advisor, 40 min | renders/v17.png |
+| v16 | 6.0 (BC 6.2, BP 6.0, FC 6.0, FP 5.8); pair preferred v16; all luma targets hit | brick: plum-maroon albedo, bloom across joints, stronger mottling | 2 runs, 15 min | renders/v16.png |
+| v15 | 6.1 (BC 6.0, BP 5.8, FC 6.2, FP 6.3); pair preferred v15; all four luma targets hit | floor grain: scanned CC0 oak veneer per plank (mechanism change) | 3 runs, 25 min | renders/v15.png |
+| v14 | 5.3 (BC 5.5, BP 5.5, FC 5.5, FP 5.0); pair preferred v14; brick/paint hit, floor/paint 0.83 (missed) | floor: broad soft latewood bands, 1 mm dark seams, specular 0.3, greyer and lighter oak | 6 runs, 30 min | renders/v14.png |
+| v13 | 5.2 (materials brief; BC 5.8, BP 5.5, FC 5.0, FP 4.8); brick/paint hit, floor/paint missed (0.78 vs 0.89–0.99) | round two start: brick and herringbone shader groups (mat_kit.py), white balance 13000 K | ~20 test renders + 2 agents + advisor, 2.5 h | renders/v13.png |
 | v12 | 7.9 (L 8.3, W 7.6, S 7.9, B 7.4); pair preferred v12 over v11; all four targets hit | scalloped bookcase bays over a cupboard base; slimmer steel (40/20 mm); door east jamb 0.78 | 2 runs, 15 min | renders/v12.png |
 | v11 | 7.7 (L 8.0, W 8.0, S 7.8, B 6.5); pair preferred v11 | reveals shifted 0.09 toward the central pier (asymmetric splay); overlay draws folds | 2 runs, 15 min | renders/v11.png |
 | v10 | 7.4 (new brief; L 7.9, W 7.2, S 6.9, B 7.0); pair preferred v10 | windows closed, no secondary glazing (user); pilaster_x0 0.86→0.77; column depth 0.07; brief: rows by photo number | 3 runs, 15 min | renders/v10.png |

@@ -30,9 +30,13 @@ Source plan: `~/My Drive/4-Personal/Property/Air vent works/Planning permission/
 
 Score 8.5 from the reviewer, judged on spatial and dimensional accuracy and on architectural detailing, against the photos. Not judged on furniture or materials realism this round.
 
+## Round two: materials (2026-10-03)
+
+The user's words: "Fix the brick and floor materials". From v13 the reviewer judges the brick window wall and the herringbone floor against the photos (`reviews/REVIEWER_PROMPT.md`; the shell brief is kept as `REVIEWER_PROMPT_shell.md`). Target 8.5. Geometry is frozen at v12.
+
 ## Budget
 
-16 review rounds (10 + 6 after the fork at v08). When they are spent or the scores go flat, `review-render` calibrates and, if the best is still more than 1.0 under the target, forks once to a new mechanism with 6 more rounds.
+24 review rounds (16 for the shell: 10 + 6 after the fork at v08; then 8 for round two, materials, from v13). When they are spent or the scores go flat, `review-render` calibrates and, if the best is still more than 1.0 under the target, forks once to a new mechanism with 6 more rounds.
 
 ## Deliverables
 

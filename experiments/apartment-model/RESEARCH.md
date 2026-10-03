@@ -66,6 +66,34 @@ Cameras: `assets/cams/<n>.json` "refined" (loc, rot_deg XYZ, lens at sensor 34.6
 - Beam width (scan 0.19, photo estimate 0.22–0.3).
 - Whether the side "edge beams" are beams or a plaster line.
 
+## Round two: brick and floor materials (2026-10-03)
+
+**Read of the reference** (photos 2, 4, 5, 8; 1:1 crops; floor and wall rectified onto the model planes with the fitted cameras, `scripts/rectify.py`):
+- Brick: soft red-brown factory brick, worn faces, strong brick-to-brick tone spread with dusty pale patches and the odd pale or burnt brick. Mortar is thin, near flush, and slightly paler than the brick (photo 5). Mostly stretcher courses with scattered headers, read as English garden wall bond (uncertain). Courses 85–95 mm (rectified photo 2), consistent with an imperial brick plus a 10 mm joint.
+- Floor: herringbone, oak-look (engineered or LVT), mid warm brown with a grey cast, flat-sawn figure (flame arcs and straight grain), dark thin bevelled seams, satin sheen. Spine along the room (x) in the living room and the kitchen (rectified photos 2, 3, 8). Tip lines 0.50 m apart, seam pitch 0.19 m along the spine: 700 × 140 mm planks (5:1).
+- The photos are warm-balanced (paint reads sRGB 151, 146, 127 in photo 2): floor and brick hue relative to the paint matches the render already, so the rest is white balance, not albedo.
+
+**Most likely process:** an old brick wall cleaned and left bare, lit only by bounce from the room (backlit by the windows); a 2020s engineered-oak or LVT herringbone in a 700 × 140 format.
+
+**Techniques to use**
+- Brick: shader math on Object coordinates (u = y + x along the course, v = z): course row, English garden wall bond (header course every 4th), per-brick random from White Noise on (column, row); face tone, pale and burnt bricks, dust patches; height in mm into Bump Distance 0.001 (joint 2 mm back, 1.6 mm S-curve arris, ±0.5 mm per-brick set, pitting). Brick research agent (Sonnet), verified in 5.2.
+- Floor: herringbone from integer cells (c = (i − j) mod 2n), checked to tile numerically; plank-local coordinates and per-plank random; flat-sawn grain f = √(h² + (b − v_c)²) + taper·a into Wave BANDS SAW at Scale = 0.3142 / ring spacing; pore streaks; 1.5 mm bevelled seam. Floor research agent (Sonnet), verified in 5.2.
+
+**Rejected approaches**
+- The built-in Brick Texture: reads only X and Y of its vector, gives no per-brick ID for roughness and height, and cannot do garden wall bond.
+- Image textures (Poly Haven red_brick_03, herringbone_parquet): fixed plank size and colour, tiling repeats over 5.6 m, and no single control node.
+- Clearcoat on the floor: only widened the glare (floor agent).
+- Displacement: bump is enough at 2–8 m.
+
+**Numeric targets** (`scripts/mat_measure.py`, same regions in photo and render):
+- Brick-to-paint luma: 0.21 (photo 2), 0.25 (photo 5). Floor-to-paint luma: 0.89 (photo 2), 0.99 (photo 5).
+- Texture (high-pass luma std, 1024 px): brick 3–8, floor 8–13.
+- Reference albedo: physicallybased.info brick linear (0.262, 0.095, 0.061); Poly Haven red_brick_03 mean (0.152, 0.097, 0.080). This brick is darker and greyer: matched to the photos by ratio, not to these.
+
+**Open questions**
+- The bond (garden wall vs English) and the course height to ±5 mm need a close, square-on photo of the brick.
+- The floor's true colour under neutral light (a photo with a white card would settle it).
+
 ## Sources
 
 - Polycam floor plan pipeline: https://poly.cam/blog/how-we-turn-raw-spatial-data-into-a-floor-plan-you-can-build-from-inside-polycams-floor-plan-pipeline
@@ -77,3 +105,5 @@ Cameras: `assets/cams/<n>.json` "refined" (loc, rot_deg XYZ, lens at sensor 34.6
 - Textures: https://polyhaven.com/a/red_brick_03 ; https://ambientcg.com/view?id=Bricks097 ; https://polyhaven.com/a/herringbone_parquet
 - Herringbone in GN: https://blenderartists.org/t/herringbone-weave-geometry-nodes/1456326
 - Pages that failed: learn.poly.cam (403), historicengland.org.uk (403), several Rightmove pages (410), YouTube.
+- Round two (materials): https://physicallybased.info ; https://api.polyhaven.com ; https://en.wikipedia.org/wiki/Brickwork ; https://en.wikipedia.org/wiki/London_stock_brick ; https://www.buildingconservation.com/books/bcd2022/85/ ; https://www.designingbuildings.co.uk/wiki/Brick_sizes ; https://blenderartists.org/t/randomizing-brick-texture/1356217 ; https://blenderartists.org/t/should-bump-node-distance-ever-really-be-higher-than-0-001/1418023 ; https://blenderartists.org/t/how-to-make-a-herringbone-map-quick-written-tutorial/1255109 ; https://google.github.io/filament/notes/material_properties.html ; https://www.alpinefloor.com/news/which-direction-should-you-lay-herringbone-flooring.html ; https://www.meister.com/en/inspiration/Herringbone-a-classic-laying-pattern-for-parquet-flooring.html ; https://trade.ukflooringdirect.co.uk/products/karndean-art-select-glacier-oak-gluedown-herringbone-lvt
+- Round two failed: poliigon old English bond (403), projects.blender.org issue 83184 (403), Karndean brochure PDF (certificate), floorwarehouse and flooringsurgeons (403). No Stack Exchange or shadertoy herringbone source found.

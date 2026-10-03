@@ -54,7 +54,7 @@ Process
 - [Insights](insights.md) — deeper lessons.
 
 Decisions
-- [apartment-model](decisions/apartment-model.md) — the user's flat from a LiDAR scan + 7 phone photos: scan plane fits, per-photo cameras, joint fit of dimensions + cameras (fork), cove/asymmetric splays from photos; 7.9 with all pixel targets hit
+- [apartment-model](decisions/apartment-model.md) — the user's flat from a LiDAR scan + 7 phone photos: scan plane fits, per-photo cameras, joint fit of dimensions + cameras (fork), cove/asymmetric splays from photos; 7.9 with all pixel targets hit. Round two: brick and herringbone oak from regraded CC0 scans, 6.2 (calibrated 5.9)
 - [plotter-forms](decisions/plotter-forms.md) — a catalogue of 50 formula-driven line-art forms with hidden-line removal: formula strings → GN, camera-side visibility test, anti-blot cut; 7.1 calibrated
 - [plotter-blend](decisions/plotter-blend.md) — line art as GN curves → SVG strokes for a pen plotter: contour sphere (marching triangles in GN), flared-catenoid funnel, own exporter; ~6.4 calibrated
 - [aztechno-building](decisions/aztechno-building.md) — photoreal facade at true scale from a traced pixel spec; physical sun + sky, coated glass with sky/street reflections, photographic output stage (fork); 6.4

@@ -37,3 +37,5 @@ Launch with `tools/blender.sh`. It handles most of the items below.
 
 - A Polycam OBJ holds one object per texture atlas: `wm.obj_import` selects all of them, so parent them to an empty before transforming, or two thirds of the scan stays put. `apartment-model`
 - Module-level caches of datablocks (a collection dict in a kit) go stale after `read_factory_settings`, and the next build raises "StructRNA … has been removed". Clear them at the start of every build that resets. `apartment-model`
+- `tools/blender.sh` adds its own `--`. A script that reads its arguments after `--` must be called without one; with one, argv[0] is "--" and the first real argument shifts. `apartment-model` (rectify.py, review_sheet.py)
+- A 16-bit PNG (Poly Haven displacement) opened with Pillow `.convert("L")` clips to 255 everywhere; read its JPG twin or load it in Blender as Non-Color. `apartment-model`

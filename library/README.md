@@ -13,6 +13,8 @@ Reusable things for any experiment. It fills as experiments produce things worth
 - `models/wonder-logos/` — the Wonder logomark and logotype as curves with a live Extrude modifier.
 - `materials/cd_diffraction.blend` — CD/MiniDisc data surface: a diffraction grating as a BSDF. Tracks circle the object origin. Needs a dark reflection with small lights beside it to show colour (see `knowledge/decisions/wonder-minidisc.md`). From `wonder-minidisc`.
 - `materials/tinted_plastic.blend` — translucent tinted polycarbonate; one Colour input at a reference depth drives volume absorption. Scene in metres; closed meshes. From `wonder-minidisc`.
+- `textures/brick/factory_brick/` — Poly Haven factory_brick (CC0, 1.5 m tile, 16 courses): colour, 16-bit displacement, roughness. Regraded through its height mask by `experiments/apartment-model/scripts/mat_kit.py` (`brick_group`).
+- `textures/wood/oak_wood_planks/` — Poly Haven oak_wood_planks (CC0, 1.2 m, rustic oak in ~90 mm planks, grain along U): colour and roughness; sampled one source plank per herringbone plank by `mat_kit.py` (`herringbone_group`).
 - `textures/imperfections/` — CC0 wear masks (scratches, fingerprints, dust) used by `tinted_plastic`.
 
 - `node-groups/cloud_shape.blend` — the "Cloud Shape" geometry-nodes group: a mesh of lobe points (each with a `radius` attribute) becomes a `density` volume with a flat-base option. It brings `cloud_material` along; append this file alone. From `clouds`.
