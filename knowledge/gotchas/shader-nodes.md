@@ -65,6 +65,6 @@
 ## Fabric at room distance
 
 - Size texture features to the pixel footprint, not the thread: at 3–4 m with a 14 mm phone lens a pixel is ~4 mm, so a 1 mm weave and 1.5 mm slubs average to flat paint ("painted MDF"). What reads is ~5 mm × 1.5–3 cm slub streaks along the weft and a per-3 mm tone fleck; 3 cm streaks at high contrast read as "brushed felt". `apartment-model`
-- A material from the real thing: a flat, evenly lit patch of the maker's close-up, high-passed (divide by a 30 px blur), made seamless (half offset, sine-window blend), tile size from its FFT weave period; colour stays a measured input. Keep such a texture with the experiment (not CC0). `apartment-model`
+- A material from the real thing: a flat, evenly lit patch of the maker's close-up, high-passed (divide by a 30 px blur), made seamless (half offset, sine-window blend), tile size from its FFT weave period (`tools/seamless_patch.py`); colour stays a measured input. Keep such a texture with the experiment (not CC0). `apartment-model`
 - Principled Sheen on a light fabric moves nothing measurable: 0.5 → 1.0, roughness 0.3–0.7 changed fabric/paint ratios by ≤ 0.03. `5.x` `apartment-model`
 - The Attribute node's float output is `Fac` (not `Fact`). `5.x`

@@ -115,7 +115,7 @@ Cameras: `assets/cams/<n>.json` "refined" (loc, rot_deg XYZ, lens at sensor 34.6
 **Most likely process:** a factory-made modular sofa photographed in the room under the same overcast window light as the shell. Every dimension is published; only the placement and the fabric under this light come from the user's photos.
 
 **Techniques to use**
-- Geometry from code (`scripts/furniture/upholstery.py`): each block is a lattice packed toward its edges, pushed onto a rounded box (r 2.5 cm), and each face puffed along its normal by a cushion profile (1 − |2t − 1|ⁿ)², zero at the seams; the seat dome only over the exposed seat. A flange strip (solidified, subdivided, with a slow wave) stands out of every seam along its 45° direction. Dimensions in `P` (`sofa_*`).
+- Geometry from code (`library/models/upholstery-kit/upholstery.py`): each block is a lattice packed toward its edges, pushed onto a rounded box (r 2.5 cm), and each face puffed along its normal by a cushion profile (1 − |2t − 1|ⁿ)², zero at the seams; the seat dome only over the exposed seat. A flange strip (solidified, subdivided, with a slow wave) stands out of every seam along its 45° direction. Dimensions in `P` (`sofa_*`).
 - Placement: the room-end arm and the seat seams from the scan (x −0.87, seams −1.79 / −2.49), the seat front from the scan sections (y −1.70); depth 0.92 from Swyft (the scan bridges the gap to the wall behind). The ottoman from 8 corner pixels in photos 1 and 2 through the fitted cameras: centre (−3.03, −1.33), 11 px rms.
 
 **Rejected approaches**

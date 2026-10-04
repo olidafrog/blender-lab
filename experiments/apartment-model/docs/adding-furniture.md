@@ -21,17 +21,17 @@ Put them in `references/furniture/<piece>/`. Copy the user's words and numbers i
 
 ## Building it
 
-- **Model at true size, with bevels.** Real edges are never sharp. For upholstery, the edge roll radius is what reads as a cushion under this room's even light (the sofa: 4.5 cm on seats, 3 cm on arms and backs); face puff alone barely shades. `scripts/furniture/upholstery.py` has the blocks, flanges and deformation fields. Profiled or lofted hard shapes can use `library/models/hardsurface-kit/`. Research soft goods (cushions, upholstery, throws) per piece.
+- **Model at true size, with bevels.** Real edges are never sharp. For upholstery, the edge roll radius is what reads as a cushion under this room's even light (the sofa: 4.5 cm on seats, 3 cm on arms and backs); face puff alone barely shades. `library/models/upholstery-kit/upholstery.py` has the blocks, flanges and deformation fields. Profiled or lofted hard shapes can use `library/models/hardsurface-kit/`. Research soft goods (cushions, upholstery, throws) per piece.
 - **Materials start from a scanned texture** (Poly Haven or ambientCG, CC0), not a procedural pattern. Round two lost four rounds to procedural brick and grain. New textures go in `library/textures/` and get a line in `library/README.md`.
 - **One group node per material** (`tools/nodes.py`), with designer-named inputs and ranges. Add the piece to `HOW_TO_TWEAK`.
 - **Judge colour against the white paint**, as `mat_measure.py` does. The phone's warmth is in the grade, one white balance per photo (`wb_view`), so do not paint it into the albedo.
-- **A texture from the real thing** beats a generic scan: a flat, evenly lit patch of a product close-up, high-passed and made seamless (the sofa's `pumice_weave.png`). Size texture features to the pixel footprint: at 3–4 m a pixel is ~4 mm, so a 1 mm weave vanishes.
+- **A texture from the real thing** beats a generic scan: a flat, evenly lit patch of a product close-up, high-passed and made seamless (the sofa's `pumice_weave.png`; `tools/seamless_patch.py` makes one). Size texture features to the pixel footprint: at 3–4 m a pixel is ~4 mm, so a 1 mm weave vanishes.
 
 ## Reviewing it
 
 - Write a new `reviews/REVIEWER_PROMPT.md` for the piece: shape and proportion against the photos, then materials.
 - **Views:** use the fitted cameras whose photos show the piece, plus 1:1 crops of it. Add a mode to `review_sheet.py` for the round, like `mat`.
-- **New photos** get a camera from `fit_cam.py` only if architectural corners show in the frame. A close-up of the piece alone cannot be fitted. Compare those against a render of the piece from a matching angle instead.
+- **New photos** get a camera from `library/models/interior-kit/fit_cam.py` only if architectural corners show in the frame. A close-up of the piece alone cannot be fitted. Compare those against a render of the piece from a matching angle instead.
 - Render with `--scale 2 --finish`: the photos are sharpened phone JPEGs, and a soft render reads as "painted" at 1:1.
 - Check every measuring region in both photo and render: a box that lands on a stand-in block in the render cost three rounds in round three.
 - After each round, check that the shell, brick and floor have not moved. Rerun `mat_measure.py`; if the piece now covers one of its regions, choose a new region.

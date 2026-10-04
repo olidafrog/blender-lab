@@ -13,6 +13,7 @@ import bpy
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "library/models/interior-kit"))  # shell_kit, cam_util, fit_cam
 from scan_render import load_scan  # noqa: E402
 from cam_util import undistort  # noqa: E402
 

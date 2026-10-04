@@ -28,4 +28,4 @@ See [API changes](api-changes.md) for how the compositor differs between 4.4 and
 - Glare on many small lights: Streaks at about 0.02 and Bloom at about 0.1. Stronger, distant lights merge into one blur. Source: [Blender Guru, Backrooms](https://www.youtube.com/watch?v=kBsVJSETydU)
 
 - A compositor File Output (a raw EXR) runs on every render, including Workbench overlay passes rendered after the beauty: the saved "raw" was a grey studio pass. Turn `scene.render.use_compositing` off for helper passes. `5.x` `apartment-model`
-- A 2× render's multilayer EXR is ~100 MB, over GitHub's limit. Blender 5.2 bundles OpenImageIO: re-encode as half float with `dwaa:45` (100 → ~1 MB, same pixel stats). `5.x` `mac`
+- A 2× render's multilayer EXR is ~100 MB, over GitHub's limit. Blender 5.2 bundles OpenImageIO: re-encode as half float with `dwaa:45` (100 → ~1 MB, same pixel stats): `comp.shrink_exr(path)`. `5.x` `mac`

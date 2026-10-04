@@ -1,6 +1,6 @@
 """Fit a Blender camera to a photo from 2D-3D landmarks (numpy, Levenberg-Marquardt).
 
-  <blender python> fit_cam.py ../assets/cams/2.json
+  <blender python> library/models/interior-kit/fit_cam.py experiments/<name>/assets/cams/2.json
 JSON: {"size": [2048,1536], "equiv_mm": 14, "init": {"loc": [x,y,z], "rot_deg": [rx,ry,rz]},
        "points": {"name": [[X,Y,Z], [u,v]]},
        "lines":  {"name": [[[X,Y,Z],[X,Y,Z]], [[u,v], ...]]}}      # pixels on the image of a 3D line

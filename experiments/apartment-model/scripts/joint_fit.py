@@ -17,6 +17,7 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parents[2] / "library/models/interior-kit"))  # cam_util
 import build as B  # noqa: E402
 from cam_util import undistort  # noqa: E402
 

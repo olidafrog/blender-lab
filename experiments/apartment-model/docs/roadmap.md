@@ -49,4 +49,3 @@ Details and reasons are in the [decision record](../../../knowledge/decisions/ap
 - A close, straight-on photo of the brick wall.
 - Stair photos.
 - Was photo 4 edited after it was taken? (It fits no camera.)
-- Can the interior tools move to `library/` so other projects can use them? These are `shell_kit.py` (walls in metres) and `fit_cam.py` (camera from landmarks). It is a proposal in `knowledge/process/improvements.md`.

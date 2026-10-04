@@ -12,8 +12,6 @@ Every Changed entry ends with a **Check**: what the next experiment should show 
 
 (None open. All eleven were built on 2026-10-01; see Changed.)
 
-- **Upholstery kit in the library.** `experiments/apartment-model/scripts/furniture/upholstery.py` (rounded puffed blocks, seam flanges with ears, sag/roll/tuck/ripple fields) is generic. Ask the user before moving it to `library/models/upholstery-kit/`.
-- **Interior kit in the library.** Move `experiments/apartment-model/scripts/{scan_tools,scan_render,shell_kit,fit_cam,refine_cam,joint_fit,review_sheet,cam_util}.py` to `library/models/interior-kit/` (and `fit_cam.py` to `tools/`, replacing `fit_camera.py`'s no-roll model). Ask the user first. Evidence: the arch-kit and fit_camera checks failed for this kind of work.
 
 ## Parked
 
@@ -25,6 +23,7 @@ Proposals with no evidence yet. Revive one when a session hits the problem it so
 ## Changed
 
 - **2026-10-04 — From `apartment-model` round three (the sofa).**
+  - *Library moves* (user: "move anything useful into the shared library"): `library/models/interior-kit/` (`shell_kit.py`, `fit_cam.py`, `cam_util.py`; the earlier "interior kit" proposal, minus the scan and joint-fit scripts, which read this experiment's files), `library/models/upholstery-kit/upholstery.py`, `comp.shrink_exr` in `tools/comp.py`, and a new `tools/seamless_patch.py` (tileable detail map from a product close-up, with its FFT period). Gated with `metrics.py --expect-same`: views 1 and 2 unchanged (0.32 % and 0.00 % of pixels). `tools/fit_camera.py` stays for single-subject orbit fits; `fit_cam.py` is the one for handheld photos with roll. **Check:** the next interior or furniture experiment imports the kits and adds to them rather than copying.
   - *`tools/review_round.py`*: snapshots follow imports transitively into subfolders of `scripts/` (round three's `scripts/furniture/*.py` were missed and copied by hand each round); the round-1 checks run on the first review of each round ("## Round … (from vNN)" in PROGRESS.md), not only the experiment's first; and round 1 of an experiment with photo references stops unless RESEARCH.md or PROGRESS.md mentions sharpness (or "sharpness skipped: <why>"). Evidence: three rounds and 20 reviews of `apartment-model` rendered at a third of the photos' fine detail; `research-reference` step 5 asked for it in prose and was skipped twice in two experiments. **Check:** the next photo-matching experiment logs a sharpness line before its first review, and no snapshot misses a local module.
   - *lab-watch stall guard* (`.claude/skills/lab-watch/hooks/lab.ts` `roundStart`, `register.tsx`): reads only the reviews from the newest round's first version on. Evidence: after every review of round three it compared the sofa's scores with round two's v15–v18 and asked for a stop or fork (slope "6.2 → 5.8") on a different brief; 14 tests pass. **Check:** the next multi-round experiment's first three reviews of a round trip no slope or repeat rule from the round before.
   - *Skill budgets*: `review-render` 1,341 → 1,296 words, `research-reference` 845 → 798 (cut examples and restated reasons; added one line: a product still on sale → the maker's photos and drawings first). This check had failed twice. **Check:** no skill over budget at the next retro.

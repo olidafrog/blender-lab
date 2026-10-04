@@ -131,6 +131,21 @@ def _source_group(chans):
     return ng
 
 
+def shrink_exr(path):
+    """Re-encode an EXR in place as half float with DWAA compression, keeping every layer (from apartment-model:
+    a 2x render's raw EXR was 100 MB, over GitHub's limit; after this ~1-4 MB with the same pixel stats).
+    Uses the OpenImageIO bindings bundled with Blender 5.x."""
+    import OpenImageIO as oiio
+    path = Path(path)
+    buf = oiio.ImageBuf(str(path))
+    buf.set_write_format(oiio.HALF)
+    buf.specmod().attribute("compression", "dwaa:45")
+    tmp = path.with_suffix(".tmp.exr")
+    assert buf.write(str(tmp)), buf.geterror()
+    tmp.replace(path)
+    print(f"[out] {path.name}: {path.stat().st_size / 1e6:.1f} MB")
+
+
 def use_saved_render(scene, exr_path, store_dir=None):
     """Point the Saved Render node at an EXR, switch the source to it, and turn on the
     compositor backdrop, so the .blend opens ready to tweak on the Compositing tab.

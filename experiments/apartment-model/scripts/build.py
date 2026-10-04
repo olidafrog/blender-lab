@@ -25,9 +25,11 @@ import bpy
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[2] / "tools"))
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parents[2] / "library/models/interior-kit"))      # shell_kit
+sys.path.insert(0, str(HERE.parents[2] / "library/models/upholstery-kit"))    # upholstery (used by furniture/sofa.py)
 from common import enable_gpu, experiment_paths  # noqa: E402
 from nodes import auto_layout, group, how_to_tweak, material_from_group  # noqa: E402
-from comp import LEGACY, compositor, post_group, use_saved_render  # noqa: E402
+from comp import LEGACY, compositor, post_group, shrink_exr, use_saved_render  # noqa: E402
 from preflight import sheet  # noqa: E402
 import shell_kit as K  # noqa: E402
 import mat_kit  # noqa: E402
@@ -668,18 +670,6 @@ def post():
     ng.links.new(ex.outputs["Image"], go.inputs["Image"])
     auto_layout(ng)
     return ng
-
-
-def shrink_exr(path):
-    """Re-encode an EXR in place as half float with DWAA compression (100 MB -> ~2 MB; same pixel stats)."""
-    import OpenImageIO as oiio
-    buf = oiio.ImageBuf(str(path))
-    buf.set_write_format(oiio.HALF)
-    buf.specmod().attribute("compression", "dwaa:45")
-    tmp = path.with_suffix(".tmp.exr")
-    assert buf.write(str(tmp)), buf.geterror()
-    tmp.replace(path)
-    print(f"[out] {path.name}: {path.stat().st_size / 1e6:.1f} MB")
 
 
 def build_scene():

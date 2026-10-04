@@ -1,6 +1,6 @@
 # Navigation
 
-Pointers only. Each script's docstring has its usage. Run Blender scripts through `tools/blender.sh` from the repo root, without a `--` (the wrapper adds its own). Plain-Python scripts that need numpy use Blender's bundled Python.
+Pointers only. Each script's docstring has its usage. Paths in `scripts/` unless given; `library/` paths are from the repo root. Run Blender scripts through `tools/blender.sh` from the repo root, without a `--` (the wrapper adds its own). Plain-Python scripts that need numpy use Blender's bundled Python.
 
 ## Folders
 
@@ -24,17 +24,17 @@ Pointers only. Each script's docstring has its usage. Run Blender scripts throug
 | Script | Role |
 |---|---|
 | `build.py` | **The entry point.** Builds the whole scene from `P`, renders the chosen views, saves the `.blend` |
-| `shell_kit.py` | Geometry helpers in metres: boxes, walls with holes, prisms, lofted rings, arches, glazing bars |
+| `library/models/interior-kit/shell_kit.py` | Geometry helpers in metres: boxes, walls with holes, prisms, lofted rings, arches, glazing bars (shared) |
 | `mat_kit.py` | The `Brick`, `Oak_Floor` and `Sofa_Fabric` group nodes |
-| `furniture/upholstery.py` | Upholstered blocks: rounded, puffed boxes with seam flanges and deformation fields (sag, roll, tuck, ripples) |
+| `library/models/upholstery-kit/upholstery.py` | Upholstered blocks: rounded, puffed boxes with seam flanges and deformation fields (sag, roll, tuck, ripples) |
 | `furniture/sofa.py` | The sofa and ottoman from `P`'s `sofa_*` keys |
 | `review_sheet.py` | Makes the review image `renders/vNN.png` from the per-view renders. `mat` mode for material rounds |
 | `mat_measure.py` | Brick and floor luma relative to the white paint, photo against render |
 | `rectify.py` | Projects a photo onto the floor or window wall through its camera, to measure patterns in metres |
-| `fit_cam.py` | Fits a camera to a photo from landmark points and lines |
+| `library/models/interior-kit/fit_cam.py` | Fits a camera to a photo from landmark points and lines (shared) |
 | `refine_cam.py` | Refines a camera by matching the textured scan's edges to the photo |
 | `joint_fit.py` | Fits `P` and all cameras together against every photo's edges |
-| `cam_util.py` | Lens distortion (k1). It stayed about 0 for every photo |
+| `library/models/interior-kit/cam_util.py` | Lens distortion (k1). It stayed about 0 for every photo (shared) |
 | `scan_tools.py`, `scan_views.py`, `scan_render.py` | Load, align, slice and render the scan for measuring |
 | `grid_photos.py` | Writes `assets/grid/` |
 
