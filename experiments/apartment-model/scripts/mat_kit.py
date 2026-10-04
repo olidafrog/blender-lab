@@ -1,4 +1,4 @@
-"""Procedural brick and herringbone floor as one-node designer materials (shader math, no image textures).
+"""Brick and herringbone floor as one-node designer materials, from scanned CC0 textures in library/textures.
 
 Both work in Object coordinates, which equal world metres for every shell object (built at the origin).
 brick_group(P):      walls in plane x (the window wall); u = y + x runs along a course on any face that turns.

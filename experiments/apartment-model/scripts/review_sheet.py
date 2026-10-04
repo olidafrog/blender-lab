@@ -1,7 +1,7 @@
 """Review sheet for one version: per view a row of photo | render | overlay (model edges on the photo).
 
-  tools/blender.sh experiments/apartment-model/scripts/review_sheet.py -- v01 [views=1,2,3,...]
-  tools/blender.sh experiments/apartment-model/scripts/review_sheet.py -- v13 mat
+  tools/blender.sh experiments/apartment-model/scripts/review_sheet.py v01 [views=1,2,3,...]
+  tools/blender.sh experiments/apartment-model/scripts/review_sheet.py v13 mat
       materials round: photo | render | 1:1 details (top: photo crops, bottom: render crops at the same
       pixels; left and right as in DETAIL). Needs the renders at full size (--scale 1).
 Writes renders/<v>.png (the image review_round.py expects). Rows are 1024 x 768 per panel.

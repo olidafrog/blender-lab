@@ -1,6 +1,6 @@
 """Refine a fitted camera by matching edges of the textured scan render to the photo (Nelder-Mead).
 
-  tools/blender.sh experiments/apartment-model/scripts/refine_cam.py -- <n> [--iters 250]
+  tools/blender.sh experiments/apartment-model/scripts/refine_cam.py <n> [--iters 250]
 Reads assets/cams/<n>.json ("fit" from fit_cam.py), writes "refined" back, and saves
 assets/cams/<n>_overlay.png: the photo in grey with scan edges in red (before: blue).
 """

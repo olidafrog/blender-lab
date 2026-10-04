@@ -1,6 +1,6 @@
 """Joint fit: model dimensions (P) and camera poses against all reference photos at once.
 
-  tools/blender.sh experiments/apartment-model/scripts/joint_fit.py -- [--stage cams|model|all] [--sweeps 3]
+  tools/blender.sh experiments/apartment-model/scripts/joint_fit.py [--stage cams|model|all] [--sweeps 3]
 
 Residual: for each photo, the model's edges (Workbench object-colour render, furniture edges masked) are
 scored by their truncated distance to edges in the photo (an L1 distance transform). Coordinate search,
