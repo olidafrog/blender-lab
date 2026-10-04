@@ -5,7 +5,7 @@ description: Use when a Blender experiment render needs scoring, judging or crit
 
 # Review a render
 
-One round of the adversarial review loop. The reviewer is a fresh Opus subagent that sees only the brief, the references and the render, so it cannot grade effort or be argued with. The evidence behind these rules is in `knowledge/process/review-loop.md`.
+One round of the adversarial review loop. The reviewer is a fresh Opus subagent that sees only the brief, the references and the render. The evidence behind these rules is in `knowledge/process/review-loop.md`.
 
 ## Models
 
@@ -14,14 +14,14 @@ One round of the adversarial review loop. The reviewer is a fresh Opus subagent 
 
 ## Before round 1 only: correctness pass
 
-Reviewers misread render bugs as look problems (DOF blur as "noise", aliasing as "fabric"), and each costs rounds.
+Reviewers misread render bugs as look problems, and each costs rounds.
 
 **Preflight sheet.** Run `build.py --out vNN --preflight` (a build without the flag: `tools/preflight.py` on its saved `.blend`). Round 1 is refused without it. Read every tile:
 - *clay*: geometry, seams, bevels, intersections.
 - *mirror*: smooth-shaded caps that render as domes, bad normals. Clay hides these.
 - *albedo0*: what is still bright is reflection or spill, such as a softbox mirrored in a flat top.
 - *scatter0*: subsurface that fills grooves, draws crease lines or hides bump detail.
-- *each light alone*: which light carries a veil or wash. Each light should do its printed `purpose` and nothing else; one with no purpose, or one whose job another light already does, goes. A falloff under 0.5 puts attention on the near side: keep it only if that is where the eye should go.
+- *each light alone*: which light carries a veil or wash. Each light does its printed `purpose` and nothing else; one with no purpose, or a duplicate job, goes. A falloff under 0.5 puts attention on the near side: keep it only if the eye should go there.
 
 For a suspect the sheet does not isolate (one shader component, an emissive mesh), render it alone before guessing.
 
@@ -29,14 +29,14 @@ For a suspect the sheet does not isolate (one shader component, an emissive mesh
 - DOF off, or focus on an empty at the area that matters.
 - Any fine pattern: its pitch in pixels at the review resolution. Under ~4 px → render 2× and downsample.
 - Angles and directions of patterns and lights match the reference.
-- Exposure: the subject's median against the main reference's (`tools/measure.py`). Re-check after removing a veil or spill; a dim render reads as a material problem.
+- Exposure: the subject's median against the reference's (`tools/measure.py`); a dim render reads as a material problem.
 - A design fact a reviewer could take for a defect: state it under "Design facts" in the reviewer brief now.
 - Each compositor effect routed alone to the output: it must visibly change pixels. A 0 px blur reads as "the effect is missing" round after round.
-- Video: diff two consecutive frames in a static patch. Grain must change; frozen grain reads as lens dirt.
+- Video: grain must change between consecutive frames; frozen grain reads as lens dirt.
 
 ## Steps
 
-1. **Render at review size.** The version is `renders/vNN.png`. Under about 1200 px wide → re-render at `--scale 1` first; crops of a small render hide nothing.
+1. **Render at review size.** `renders/vNN.png`, at least ~1200 px wide; crops of a small render hide nothing.
 2. **Reviewer brief.** If `reviews/REVIEWER_PROMPT.md` exists, use it unchanged; scores only compare when it is fixed. Otherwise fill `REVIEWER_PROMPT.template.md` from `BRIEF.md`, `references/` and `RESEARCH.md` (numeric targets, design facts; the checklist, sub-scores and anchor are optional) and save it. Freeze any metrics script and name it in the prompt. Change the prompt only if the user asks; scores then reset.
 3. **Prepare the round:** `python3 tools/review_round.py <name> vNN [x,y ...]`. It checks the budget and the preflight sheet, proves the change reached the pixels, makes the crops, snapshots `build.py` to `snapshots/` and writes the prompt. The `x,y` points are the area you changed plus each area the last review or the user flagged. After round 1 they are the only crops the reviewer gets. If it stops, fix what it names (`NO CHANGE`: find why the change did not show, render again). Do not build the round by hand.
    - Check the gate's printed stats against the numeric targets in `RESEARCH.md`. For "recreate this image" work, also run `tools/compare.py` against the main reference.

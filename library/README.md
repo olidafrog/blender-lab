@@ -15,6 +15,7 @@ Reusable things for any experiment. It fills as experiments produce things worth
 - `materials/tinted_plastic.blend` — translucent tinted polycarbonate; one Colour input at a reference depth drives volume absorption. Scene in metres; closed meshes. From `wonder-minidisc`.
 - `textures/brick/factory_brick/` — Poly Haven factory_brick (CC0, 1.5 m tile, 16 courses): colour, 16-bit displacement, roughness. Regraded through its height mask by `experiments/apartment-model/scripts/mat_kit.py` (`brick_group`).
 - `textures/wood/oak_wood_planks/` — Poly Haven oak_wood_planks (CC0, 1.2 m, rustic oak in ~90 mm planks, grain along U): colour and roughness; sampled one source plank per herringbone plank by `mat_kit.py` (`herringbone_group`).
+- `textures/fabric/rough_linen/` — Poly Haven rough_linen (CC0, 270.7 mm tile, 0.74 mm thread pitch): roughness only (the colour, normal and displacement maps are at polyhaven.com/a/rough_linen). Used for the roughness variation of the sofa's `Sofa_Fabric` in `experiments/apartment-model/scripts/mat_kit.py`.
 - `textures/imperfections/` — CC0 wear masks (scratches, fingerprints, dust) used by `tinted_plastic`.
 
 - `node-groups/cloud_shape.blend` — the "Cloud Shape" geometry-nodes group: a mesh of lobe points (each with a `radius` attribute) becomes a `density` volume with a flat-base option. It brings `cloud_material` along; append this file alone. From `clouds`.

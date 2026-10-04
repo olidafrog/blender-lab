@@ -6,6 +6,8 @@ Run from the repo root:
   ... --set key=value      override any value in P
   ... --save               also save output/apartment-model.blend
   ... --preflight          no render: the correctness sheet (clay, mirror, albedo 0, each light alone)
+  ... --scale 2 --finish   photographic output stage (round three): render 2x, keep it as <out>_<view>_2x.png, and
+                           write <out>_<view>.png at the photo size through tools/photo_finish.py (Lanczos, unsharp, JPEG)
 
 Frame: the aligned LiDAR scan (metres). x runs along the room from the window wall (x = -4.40) to the
 back of the flat; y across, west (-) to east (+); z up, floor 0. Windows face 142 deg (SE).
@@ -29,6 +31,8 @@ from comp import LEGACY, compositor, post_group, use_saved_render  # noqa: E402
 from preflight import sheet  # noqa: E402
 import shell_kit as K  # noqa: E402
 import mat_kit  # noqa: E402
+sys.path.insert(0, str(HERE / "furniture"))
+import sofa  # noqa: E402
 
 EXP = experiment_paths(__file__)
 
@@ -39,7 +43,9 @@ P = {
     "view": "AgX",                         # AgX | Khronos PBR Neutral | Standard
     "look": "None",
     "wb_temp": 13000.0, "wb_tint": 10.0,    # warm like the phone: paint R/B 1.24 in photo 2 (round two)
+    "wb_view": {"1": 9000.0, "3": 8500.0},   # paint R/B: photo 1 1.165 (9000 K: 1.162), photo 3 1.13; photo 2 keeps wb_temp (each phone photo has its own; round three)
     "clay": False,
+    "finish": (1.0, 80, 85),       # --finish: unsharp radius px, percent, JPEG quality (photo 2 edge ratio 1.36; this 1.41)
     # ---- sky (bright overcast, CIE-like: zenith 3x horizon)
     "sky_strength": 9.8,         # zenith radiance; horizontal irradiance = 7/9 pi x this (~24 W/m2)
     "sky_camera": 0.3,           # what the camera sees directly through the glass, x the lighting sky
@@ -133,6 +139,42 @@ P = {
     "bookcase_col": (0.045, 0.05, 0.055, 1.0),
     # ---- furniture blocks
     "furniture": True,
+    # ---- furniture: sofa (Swyft Model 03 three-seater + ottoman, Pumice; sizes from Swyft, placement from the scan)
+    "sofa": True,
+    "sofa_x_end": -0.87,          # outer face of the room-end arm (scan: arm end, seat seams at -1.79 and -2.49)
+    "sofa_y_front": -1.70,        # seat fronts (scan section); the back is 0.92 behind, ~0.25 off the wall
+    "sofa_d": 0.92, "sofa_seat_w": 0.70, "sofa_arm_w": 0.22,
+    "sofa_arm_h": 0.56, "sofa_arm_setback": 0.12,       # arm top (Swyft, scan 0.56); seats proud of the arms (scan)
+    "sofa_seat_h": 0.45, "sofa_back_h": 0.71, "sofa_back_t": 0.23,
+    "sofa_seat_edge": 0.39,       # front seam height; the dome rises to sofa_seat_h (Swyft drawing: 0.39 / 0.45)
+    "sofa_back_t_top": 0.21,      # back block thickness at its top: near upright (v22 at 0.115 leaned back ~15 deg; the drawing's ~0.11 line is the crown of a rounded top)
+    "sofa_back_crown": 0.03,      # the top of the back bows up this much in the middle (drawing: ~0.03)
+    "sofa_foot_h": 0.04, "sofa_foot_d": 0.07, "sofa_foot_inset": 0.065,   # Swyft drawing: 7 x 4 cm pucks, 3 cm in
+    "sofa_r": 0.045,              # edge roll of the seats and ottoman: under this even light the roll band reads as the cushion (advisor after v24)
+    "sofa_r_square": 0.03,        # edge roll of the arms and back blocks (v25 at 0.055: bolsters and loaves; v24 at 0.025: slabs)
+    "sofa_flange": 0.008, "sofa_flange_t": 0.004,       # self-fabric flange on every seam
+    "sofa_ear": 0.012,            # flange runs carry past the corners into small ears
+    "sofa_flange_lift": 1.0,      # flange colour x the fabric colour
+    "sofa_gap": 0.003,            # half the gap between modules
+    "sofa_puff_side": 0.022, "sofa_puff_front": 0.03,   # seat fronts bulge so the gaps between seats open into a V (v23 review)
+    "sofa_puff_back": 0.035, "sofa_puff_shape": 2.0,  # pillow, not plateau (advisor, v21)
+    "sofa_puff_ottoman": 0.025,   # the ottoman sides bow out (drawing: 1.8-3.5 cm)
+    "sofa_sag": 0.02, "sofa_sag_at": 0.30,      # sat in: dip depth, and how far behind the seat front
+    "sofa_roll": 0.035, "sofa_back_roll": 0.04, "sofa_tuck": 0.04,  # seat tops overhang their fronts, which lean under (advisor after v21)
+    "sofa_wobble": 0.008, "sofa_wobble_len": 0.35,   # low-frequency deformation so the seams bow
+    "sofa_back_wobble": 0.3,      # x the wobble on the back blocks (v24: full wobble dented their tops)
+    "sofa_ripple": 0.003, "sofa_ripple_len": 0.07,      # vertical compression folds low on the back fronts (photo 2; v24 review)
+    "sofa_mesh_step": 0.03,
+    "sofa_ottoman_xy": (-3.03, -1.33), "sofa_ottoman_w": 0.70,   # in front of the window-end seat: corners fitted in photos 1, 2 (11 px rms)
+    "sofa_colour": (0.445, 0.44, 0.44, 1.0),   # linear; with each photo's own white balance (wb_view) the walls match, and this matches the fabric R/B in photos 1-3
+    "sofa_tex_dir": EXP["root"].parents[1] / "library/textures/fabric/rough_linen",
+    "sofa_tex_size": 0.40,        # rough_linen (270.7 mm tile) at 1.5x: roughness variation only (its tone was the fabric until v22)
+    "sofa_slub": 0.45, "sofa_slub_len": 0.02, "sofa_slub_w": 0.0045, "sofa_fleck": 0.1,   # short, at least a pixel wide (v20-v22: 3 cm streaks read as brushed felt)
+    "sofa_weave_img": EXP["root"] / "assets/mat/pumice_weave.png",   # high-passed seamless patch of Swyft's Pumice close-up
+    "sofa_weave": 2.0, "sofa_weave_tile": 0.11,       # its weave period is ~5 px: 512 px = ~11 cm at a ~1.1 mm thread
+    "sofa_weave_relief": 0.3, "sofa_rough": 0.85, "sofa_sheen": 0.5, "sofa_sheen_rough": 0.7,
+    "sofa_puckers": 0.4, "sofa_pucker_w": 0.05,
+    "feet_colour": (0.05, 0.03, 0.02, 1.0),     # dark stained beech
 }
 
 HOW_TO_TWEAK = """\
@@ -150,7 +192,8 @@ Collections
 - Kitchen: counter runs, island, open shelves (blocks).
 - Flat: grey boxes for rooms the scan did not reach (shower room, stores, hallway, upper floor).
   The stair is a placeholder; it is 10 steps in two flights (to be modelled from photos).
-- Furniture: rough grey blocks from the scan, for occlusion only.
+- Furniture: the sofa (Swyft Model 03 three-seater + ottoman, Pumice; Sofa_*), and rough grey blocks from the
+  scan for everything else (occlusion only).
 - Cameras: Cam_<n> matches the user's photo <n>.jpeg (set one active and compare).
 - Outside: ground and the building opposite; Portals help the sky light through the windows.
 
@@ -165,7 +208,17 @@ herringbone, spine along the room, each plank cut from a scanned rustic oak (lib
 oak_wood_planks). Grain = figure contrast, Variation = plank-to-plank tone, Anisotropy = how far window
 reflections streak along each plank. Plank size and pattern position are in P (plank_w, plank_ratio, plank_y0).
 Glass (IOR).
-White balance: Color Management > White Balance (13000 K warms the image like the phone photos).
+Sofa_Fabric (on every Sofa_* block; Sofa_Flange is the same node on the flanges, its Colour a touch paler):
+  Colour = the fabric's linear albedo; Weave = contrast of the real weave and heather (cut from Swyft's own
+  close-up of Pumice); Weave Relief = its bump; Slub = short streaks of thick yarn; Fleck = per-3 mm heathering;
+  Roughness; Sheen = soft glow at grazing angles; Puckers = ripples where the fabric is sewn to the flanges.
+  Colour and Slub are a trade-off between the photos: photo 1 wants the fabric a little warmer than photo 2,
+  and reviewers split between "smooth felt" and "brushed streaks".
+Sofa shape: rebuild with --set (P in build.py): sofa_r (edge roll of seats and ottoman, 4.5 cm), sofa_r_square
+  (arms and backs, 3 cm), sofa_seat_edge / sofa_seat_h (seam 39 cm, crown 45), sofa_sag, sofa_roll, sofa_tuck,
+  sofa_ripple, sofa_ottoman_xy (where the ottoman stands). The sofa is built by scripts/furniture/sofa.py.
+White balance: Color Management > White Balance. Each phone photo has its own: 9000 K for Cam_1, 13000 K for
+Cam_2, 8500 K for Cam_3 (P wb_view; the saved file is set for Cam_1).
 Daylight: World > Sky node (Strength, Sky Colour, Ground Colour, Camera View = how bright the
 sky looks through the glass). Exposure: Render > Film > Exposure, or the Post node.
 Post: Compositing tab, the "Post" node (Exposure); it previews the saved render. After a new
@@ -217,6 +270,12 @@ def make_materials():
     M["brick"] = material_from_group("Brick", mat_kit.brick_group(P))
     M["floor"] = material_from_group("Oak_Floor", mat_kit.herringbone_group(P))
     M["glass"] = material_from_group("Glass", glass_group())
+    M["sofa"] = material_from_group("Sofa_Fabric", mat_kit.fabric_group(P))
+    # the flanges: the same fabric, a touch paler (photos 1-3: the lip reads as a pale line where it catches light)
+    M["sofa_flange"] = material_from_group("Sofa_Flange", M["sofa"].node_tree.nodes[0].node_tree)
+    fg = next(n for n in M["sofa_flange"].node_tree.nodes if n.type == "GROUP")
+    fg.inputs["Colour"].default_value = tuple(min(1.0, c * P["sofa_flange_lift"]) for c in P["sofa_colour"][:3]) + (1.0,)
+    M["feet"] = material_from_group("Sofa_Feet", simple_group("Sofa_Feet", P["feet_colour"], 0.5))
     M["worktop"] = material_from_group("Worktop", simple_group("Worktop", (0.82, 0.82, 0.8, 1), 0.25))
     return M
 
@@ -465,8 +524,6 @@ def build_furniture(M):
     g = M["grey"]
     # footprints and tops from connected components of the scan's up-facing faces (z 0.12-1.3)
     for name, x0, x1, y0, y1, z1 in (
-        ("Sofa_Seat", -3.30, -0.95, -2.75, -1.90, 0.42), ("Sofa_Back", -3.30, -0.95, -2.75, -2.50, 0.70),
-        ("Sofa_Arm", -1.15, -0.95, -2.75, -1.90, 0.58), ("Pouf", -4.00, -3.20, -0.45, 0.50, 0.45),
         ("Coffee_Table", -2.40, -1.10, -1.45, -0.95, 0.48), ("Rug", -4.0, -0.6, -1.90, -0.20, 0.03),
         ("Chair_1", -0.75, 0.15, -1.45, -0.45, 0.50), ("Chair_1_Back", -0.10, 0.15, -1.45, -0.65, 0.81),
         ("Chair_2", -0.75, 0.05, -0.20, 0.55, 0.50), ("Chair_2_Back", -0.20, 0.05, -0.15, 0.50, 0.83),
@@ -476,6 +533,8 @@ def build_furniture(M):
         ("Trolley", 0.70, 1.20, -1.30, -0.05, 0.80), ("Dining_Table", 1.9, 3.3, 1.35, 2.25, 0.75),
     ):
         K.box(name, x0, x1, y0, y1, 0.0 if name != "Rug" else 0.0, z1, g, "Furniture")
+    if P["sofa"]:            # replaces the scan's Sofa_* blocks and the Pouf (the ottoman, moved in the photos)
+        sofa.build(P, M["sofa"], M["feet"], K.coll("Furniture"), M["sofa_flange"])
 
 
 # --------------------------------------------------------------------------- light, world, cameras
@@ -587,6 +646,7 @@ def parse_args():
     ap.add_argument("--save", action="store_true")
     ap.add_argument("--norender", action="store_true")
     ap.add_argument("--preflight", action="store_true")
+    ap.add_argument("--finish", action="store_true")
     ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE")
     a = ap.parse_args(argv)
     for kv in a.set:
@@ -608,6 +668,18 @@ def post():
     ng.links.new(ex.outputs["Image"], go.inputs["Image"])
     auto_layout(ng)
     return ng
+
+
+def shrink_exr(path):
+    """Re-encode an EXR in place as half float with DWAA compression (100 MB -> ~2 MB; same pixel stats)."""
+    import OpenImageIO as oiio
+    buf = oiio.ImageBuf(str(path))
+    buf.set_write_format(oiio.HALF)
+    buf.specmod().attribute("compression", "dwaa:45")
+    tmp = path.with_suffix(".tmp.exr")
+    assert buf.write(str(tmp)), buf.geterror()
+    tmp.replace(path)
+    print(f"[out] {path.name}: {path.stat().st_size / 1e6:.1f} MB")
 
 
 def build_scene():
@@ -670,9 +742,17 @@ if __name__ == "__main__":
     if not args.norender:
         for v in views:
             scene.camera = cams[v]
-            scene.render.filepath = str(EXP["renders"] / f"{args.out}_{v}.png")
+            scene.view_settings.white_balance_temperature = P["wb_view"].get(v, P["wb_temp"])
+            out = EXP["renders"] / f"{args.out}_{v}.png"
+            scene.render.filepath = str(out.with_name(f"{args.out}_{v}_2x.png") if args.finish else out)
             bpy.ops.render.render(write_still=True)
-        # crisp object-id pass (Workbench, flat random colours) for the edge overlay on the photos
+            if args.finish:                    # the phone's processing: a sharpened JPEG at the photo's size
+                import subprocess
+                subprocess.run(["python3", str(HERE.parents[2] / "tools/photo_finish.py"), scene.render.filepath, str(out),
+                                str(P["res_x"]), str(P["res_y"]), *[str(x) for x in P["finish"]]], check=True)
+        # crisp object-id pass (Workbench, flat random colours) for the edge overlay on the photos;
+        # compositing off, or these passes overwrite the raw EXR the .blend previews (round three found it)
+        scene.render.use_compositing = False
         scene.render.engine = "BLENDER_WORKBENCH"
         sh = scene.display.shading
         sh.light, sh.color_type = "FLAT", "RANDOM"
@@ -692,6 +772,7 @@ if __name__ == "__main__":
             scene.render.filepath = str(EXP["renders"] / f"{args.out}_{v}_shade.png")
             bpy.ops.render.render(write_still=True)
         scene.render.engine = "CYCLES"
+        scene.render.use_compositing = True
         scene.view_settings.view_transform = P["view"]
         for o in hidden:
             o.hide_render = False
@@ -699,6 +780,7 @@ if __name__ == "__main__":
         scene.camera = cams[views[-1]]
         if not args.norender:
             use_saved_render(scene, raw, EXP["output"])   # Compositing tab previews the final raw EXR
+            shrink_exr(EXP["output"] / raw.name)            # a 2x raw EXR is ~100 MB: over GitHub's limit
         blend = EXP["output"] / f"{EXP['name']}.blend"
         bpy.ops.wm.save_as_mainfile(filepath=str(blend))
         bpy.ops.file.make_paths_relative()

@@ -1,6 +1,7 @@
 """Material levels: the same clean regions measured in each photo and in the render from its fitted camera.
 
   python3 experiments/apartment-model/scripts/mat_measure.py vNN [--md]
+  python3 experiments/apartment-model/scripts/mat_measure.py vNN --sofa     # the sofa round's regions (photos 1, 2)
 
 Regions are boxes in the photos' 2048 x 1536 pixels, chosen clear of furniture, art and windows in both the
 photo and the render. Prints median sRGB per region, the render/photo luma ratio, and the brick-to-paint and
@@ -21,6 +22,17 @@ REGIONS = {
     "5": {"paint": [(714, 459, 1428, 816)],
           "brick": [(31, 122, 235, 459)],
           "floor": [(918, 1377, 1326, 1510)]},
+}
+
+# sofa round: fabric faces clear of cushions, throws and the coffee table; paint = the west wall behind
+# (photo 2 seat_front stops at y 1415: below it the render has the 0.48 m coffee-table stand-in; advisor after v21)
+SOFA_REGIONS = {
+    "1": {"paint": [(714, 357, 1000, 663)],
+          "seat_top": [(969, 1056, 1051, 1100)], "back_front": [(974, 995, 1097, 1040)],
+          "ottoman_top": [(1400, 1100, 1560, 1150)], "ottoman_front": [(1400, 1175, 1570, 1250)]},
+    "2": {"paint": [(61, 153, 306, 510)],
+          "seat_top": [(300, 1280, 460, 1320)], "seat_front": [(300, 1380, 440, 1415)],
+          "arm_front": [(130, 1350, 220, 1500)]},
 }
 
 
@@ -45,6 +57,8 @@ def region(im, boxes):
 
 def main():
     v = sys.argv[1]
+    if "--sofa" in sys.argv:
+        return sofa(v)
     rows = []
     for n, regs in REGIONS.items():
         ph = Image.open(EXP / f"references/{n}.jpeg").convert("RGB")
@@ -65,6 +79,21 @@ def main():
             print(f"| {n} | {name} | | | {ratio:.2f} | {tp:.2f} | {tr:.2f} |")
         else:
             print(f"| {n} | {name} | {mp} | {mr} | {ratio:.2f} | {tp:.1f} | {tr:.1f} |")
+
+
+def sofa(v):
+    print("| photo | region | photo sRGB | render sRGB | photo /paint | render /paint | photo tex | render tex |")
+    print("|---|---|---|---|---|---|---|---|")
+    for n, regs in SOFA_REGIONS.items():
+        ph = Image.open(EXP / f"references/{n}.jpeg").convert("RGB")
+        rn = Image.open(EXP / f"renders/{v}_{n}.png").convert("RGB")
+        (pp, _), (pr, _) = region(ph, regs["paint"]), region(rn, regs["paint"])
+        for name, boxes in regs.items():
+            if name == "paint":
+                continue
+            (mp, tp), (mr, tr) = region(ph, boxes), region(rn, boxes)
+            print(f"| {n} | {name} | {[round(x) for x in mp]} | {[round(x) for x in mr]} | "
+                  f"{luma(mp) / luma(pp):.2f} | {luma(mr) / luma(pr):.2f} | {tp:.1f} | {tr:.1f} |")
 
 
 main()

@@ -44,6 +44,11 @@ The 2023 sale listing of this flat. The photos are wide and clean, with no clutt
 
 The numbers do not match the plan positions. Listings of **other** Bow Quarter flats must never set dimensions.
 
+## Furniture: `furniture/`
+
+- `furniture/sofa/swyft_*.jpg`: Swyft's product photos of the Model 03 in Pumice (front, three-quarter, back, arm, cushion and foot close-ups, ottoman, the swatch). The fabric's true colour under studio light, and the look of the flanges.
+- `furniture/sofa/drawings/`: Swyft's dimension drawings and the 2020 spec sheet (PDF). The truth for the sofa's sizes: seat seam 39 / crown 45, back blocks, arms 80 deep, feet.
+
 ## Not yet supplied
 
 - Stair photos (10 steps in two flights). The user will send them.

@@ -33,12 +33,12 @@ Gotchas
 - [Headless runs](gotchas/headless.md) — launching, GPU, exit codes, output, paths.
 - [Platform](gotchas/platform.md) — Mac and Windows differences.
 - [API changes](gotchas/api-changes.md) — Blender 4.4 versus 5.x.
-- [Compositor](gotchas/compositor.md) — node behaviour and traps.
-- [Shader nodes](gotchas/shader-nodes.md) — node traps and shading techniques, grain, scratches and creases.
+- [Compositor](gotchas/compositor.md) — node behaviour and traps, raw EXR overwritten by helper passes, EXR size.
+- [Shader nodes](gotchas/shader-nodes.md) — node traps and shading techniques, grain, scratches and creases, fabric at room distance.
 - [Cycles](gotchas/cycles.md) — lighting, refraction, geometry, output quality, dark plastic and light linking, exteriors (sun, sky, glass, context).
 - [Colour](gotchas/colour.md) — view transforms, clipping, dark fades.
 - [Geometry](gotchas/geometry.md) — curves, SVG import, geometry nodes, booleans and plates, filled-curve facades, GN contours and SVG strokes for plotting, formula-driven forms, hidden lines, outlines and blots.
-- [Modelling](gotchas/modelling.md) — characters from code (planar-ring lofts, IK posing, straps and skirts, silhouette checks) and hard-surface plates from traced outlines (edge classes, crisp chamfer, black gaps, detail), architecture from a straight-on photo.
+- [Modelling](gotchas/modelling.md) — characters from code (planar-ring lofts, IK posing, straps and skirts, silhouette checks) and hard-surface plates from traced outlines (edge classes, crisp chamfer, black gaps, detail), architecture from a straight-on photo, upholstery (edge roll as the cushion, sag, flanges, maker's drawings).
 - [Fluid sim](gotchas/fluid-sim.md) — Mantaflow scale, flow volume, why a viscous press failed.
 - [Volumes](gotchas/volumes.md) — GN volume grids, albedo vs scatter colour, emitters in volumes, cloud look.
 
@@ -54,7 +54,7 @@ Process
 - [Insights](insights.md) — deeper lessons.
 
 Decisions
-- [apartment-model](decisions/apartment-model.md) — the user's flat from a LiDAR scan + 7 phone photos: scan plane fits, per-photo cameras, joint fit of dimensions + cameras (fork), cove/asymmetric splays from photos; 7.9 with all pixel targets hit. Round two: brick and herringbone oak from regraded CC0 scans, 6.2 (calibrated 5.9)
+- [apartment-model](decisions/apartment-model.md) — the user's flat from a LiDAR scan + 7 phone photos: scan plane fits, per-photo cameras, joint fit of dimensions + cameras (fork), cove/asymmetric splays from photos; 7.9 with all pixel targets hit. Round two: brick and herringbone oak from regraded CC0 scans, 6.2 (calibrated 5.9). Round three: the Swyft sofa from the maker's drawings, edge roll as the cushion, weave from the maker's close-up, per-photo white balance and output stage, 6.7 (calibrated 6.5)
 - [plotter-forms](decisions/plotter-forms.md) — a catalogue of 50 formula-driven line-art forms with hidden-line removal: formula strings → GN, camera-side visibility test, anti-blot cut; 7.1 calibrated
 - [plotter-blend](decisions/plotter-blend.md) — line art as GN curves → SVG strokes for a pen plotter: contour sphere (marching triangles in GN), flared-catenoid funnel, own exporter; ~6.4 calibrated
 - [aztechno-building](decisions/aztechno-building.md) — photoreal facade at true scale from a traced pixel spec; physical sun + sky, coated glass with sky/street reflections, photographic output stage (fork); 6.4

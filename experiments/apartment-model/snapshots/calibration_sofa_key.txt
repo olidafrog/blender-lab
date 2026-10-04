@@ -1,0 +1,2 @@
+A = experiments/apartment-model/renders/v24.png
+B = experiments/apartment-model/renders/v26.png

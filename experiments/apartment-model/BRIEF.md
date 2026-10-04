@@ -34,9 +34,15 @@ Score 8.5 from the reviewer, judged on spatial and dimensional accuracy and on a
 
 The user's words: "Fix the brick and floor materials". From v13 the reviewer judges the brick window wall and the herringbone floor against the photos (`reviews/REVIEWER_PROMPT.md`; the shell brief is kept as `REVIEWER_PROMPT_shell.md`). Target 8.5. Geometry is frozen at v12.
 
+## Round three: the sofa (2026-10-04)
+
+The user's words: "okay let's model the sofa for the apartment-model project, it's s swfyt model 03 in pumice"
+
+The sofa is a Swyft Model 03 in Pumice: three seats between two arms, with its matching ottoman pushed against the window-end seat as a chaise (photos 1, 2, 3; the scan has the ottoman by the central pier, the `Pouf` block). From v19 the reviewer judges the sofa and ottoman against photos 1, 2 and 3 (`reviews/REVIEWER_PROMPT.md`; round two's brief is kept as `REVIEWER_PROMPT_materials.md`): shape and proportion first, then the fabric. Target 8.5. The shell is frozen at v12 and the brick and floor at v18. The cushions, throws and other loose items on the sofa are not part of this round.
+
 ## Budget
 
-24 review rounds (16 for the shell: 10 + 6 after the fork at v08; then 8 for round two, materials, from v13). When they are spent or the scores go flat, `review-render` calibrates and, if the best is still more than 1.0 under the target, forks once to a new mechanism with 6 more rounds.
+32 review rounds (16 for the shell: 10 + 6 after the fork at v08; then 8 for round two, materials, from v13; then 8 for round three, the sofa, from v19). When they are spent or the scores go flat, `review-render` calibrates and, if the best is still more than 1.0 under the target, forks once to a new mechanism with 6 more rounds.
 
 ## Deliverables
 

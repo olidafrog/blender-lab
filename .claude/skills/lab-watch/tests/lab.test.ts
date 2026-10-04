@@ -10,6 +10,7 @@ import {
   parseJudgement,
   parseScore,
   parseTarget,
+  roundStart,
   sparkline,
 } from '../hooks/lab'
 
@@ -189,4 +190,14 @@ test('the pane draws the experiment on the terminal and the desktop', async ($, 
     expect(await ui.find({ text: /2\/10 reviews|2\/\s*10 reviews/ })).toBeDefined()
     await ui.unmount()
   }
+})
+
+describe('roundStart', () => {
+  test('the newest "## Round ... (from vNN)" heading in PROGRESS.md', () => {
+    const progress = '## Setup\n\n## Round two: materials (from v13)\n\ntext\n\n## Round three: the sofa (from v19)\n'
+    expect(roundStart(progress)).toBe(19)
+  })
+  test('no round heading: every review counts', () => {
+    expect(roundStart('## Setup\n| v01 | 6.8 |')).toBe(0)
+  })
 })

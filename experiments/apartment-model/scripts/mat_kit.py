@@ -259,3 +259,104 @@ def _mix_f(nt, fac, a, b):
         else:
             sock.default_value = v
     return m.outputs[0]
+
+
+
+def fabric_group(P):
+    """Sofa_Fabric: Swyft "Linen" in Pumice, box-projected in Object coordinates (the sofa is built in world metres).
+    The weave and heathering come from the real fabric: a high-passed, seamless patch of Swyft's Pumice close-up
+    (assets/mat/pumice_weave.png, mean 0.5). Slubs: short streaks along the weft, at least a pixel wide at room
+    distance. Fleck: tone per 3 mm cell. Roughness variation from a scanned linen (library/textures/fabric/rough_linen).
+    Puckers: ripples running out of each seam, from the seam_d / seam_s attributes the upholstery kit writes."""
+    ng, gi, go = group("Sofa_Fabric", [
+        ("Colour", "NodeSocketColor", P["sofa_colour"], None, None),               # linear albedo
+        ("Weave", "NodeSocketFloat", P["sofa_weave"], 0.0, 4.0),                   # contrast of the real weave and heather
+        ("Weave Relief", "NodeSocketFloat", P["sofa_weave_relief"], 0.0, 1.0),     # bump of the weave
+        ("Slub", "NodeSocketFloat", P["sofa_slub"], 0.0, 1.0),                     # streaky yarn tone
+        ("Fleck", "NodeSocketFloat", P["sofa_fleck"], 0.0, 0.5),                   # heathered yarn, per 3 mm
+        ("Roughness", "NodeSocketFloat", P["sofa_rough"], 0.4, 1.0),
+        ("Sheen", "NodeSocketFloat", P["sofa_sheen"], 0.0, 1.0),                   # soft grazing glow of the fibres
+        ("Puckers", "NodeSocketFloat", P["sofa_puckers"], 0.0, 1.0),               # ripples where the fabric is sewn
+    ], [("Shader", "NodeSocketShader")])
+    nt = ng
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    vec = nt.nodes.new("ShaderNodeVectorMath"); vec.operation = "DIVIDE"
+    nt.links.new(tc.outputs["Object"], vec.inputs[0])
+    vec.inputs[1].default_value = (P["sofa_tex_size"],) * 3
+
+    def tex(name, colour=True):
+        t = nt.nodes.new("ShaderNodeTexImage")
+        t.image = bpy.data.images.load(str(P["sofa_tex_dir"] / f"rough_linen_{name}_2k.jpg"), check_existing=True)
+        if not colour:
+            t.image.colorspace_settings.name = "Non-Color"
+        t.projection, t.projection_blend = "BOX", 0.25
+        t.interpolation = "Cubic"
+        nt.links.new(vec.outputs[0], t.inputs["Vector"])
+        return t
+    rough = tex("rough", False)
+    # the real fabric: a high-passed, seamless patch of Swyft's Pumice close-up (assets/mat/pumice_weave.png,
+    # mean 0.5); its weave and heather multiply the tone, Weave = gain on its contrast
+    wv = nt.nodes.new("ShaderNodeVectorMath"); wv.operation = "DIVIDE"
+    nt.links.new(tc.outputs["Object"], wv.inputs[0])
+    wv.inputs[1].default_value = (P["sofa_weave_tile"],) * 3
+    wt = nt.nodes.new("ShaderNodeTexImage")
+    wt.image = bpy.data.images.load(str(P["sofa_weave_img"]), check_existing=True)
+    wt.image.colorspace_settings.name = "Non-Color"
+    wt.projection, wt.projection_blend, wt.interpolation = "BOX", 0.25, "Cubic"
+    nt.links.new(wv.outputs[0], wt.inputs["Vector"])
+    wlum = nt.nodes.new("ShaderNodeRGBToBW"); nt.links.new(wt.outputs["Color"], wlum.inputs[0])
+    weave = math(nt, "MULTIPLY", math(nt, "SUBTRACT", wlum.outputs[0], 0.5), gi.outputs["Weave"])
+    tone = math(nt, "ADD", 1.0, math(nt, "MULTIPLY", weave, 2.0))
+    # slubs: thick and thin yarn as streaks along the weft, horizontal on the sides, along x on the tops
+    # (photos 1-3 at 1:1: centimetre streaks are what reads at room distance; the 0.7 mm weave is sub-pixel)
+    inv_l, inv_w = 1.0 / P["sofa_slub_len"], 1.0 / P["sofa_slub_w"]
+    streaks = []
+    for thin_axis in (2, 1):
+        sc = [inv_l, inv_l, inv_l]; sc[thin_axis] = inv_w
+        v = nt.nodes.new("ShaderNodeVectorMath"); v.operation = "MULTIPLY"
+        nt.links.new(tc.outputs["Object"], v.inputs[0]); nt.links.new(_vec(nt, *sc), v.inputs[1])
+        streaks.append(_noise(nt, v.outputs[0], 1.0, detail=3.0, rough=0.6).outputs["Fac"])
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    nz = nt.nodes.new("ShaderNodeSeparateXYZ"); nt.links.new(geo.outputs["Normal"], nz.inputs[0])
+    up = math(nt, "ABSOLUTE", nz.outputs["Z"])
+    slub = math(nt, "ADD", math(nt, "MULTIPLY", streaks[0], math(nt, "SUBTRACT", 1.0, up)), math(nt, "MULTIPLY", streaks[1], up))
+    tone = math(nt, "MULTIPLY", tone, math(nt, "ADD", 1.0, math(nt, "MULTIPLY", math(nt, "SUBTRACT", slub, 0.5),
+                                                                   math(nt, "MULTIPLY", gi.outputs["Slub"], 2.0))))
+    snap = nt.nodes.new("ShaderNodeVectorMath"); snap.operation = "SNAP"
+    nt.links.new(tc.outputs["Object"], snap.inputs[0]); snap.inputs[1].default_value = (0.003, 0.003, 0.003)
+    fl = _white(nt, snap.outputs[0]).outputs["Value"]
+    tone = math(nt, "MULTIPLY", tone, math(nt, "ADD", 1.0, math(nt, "MULTIPLY", math(nt, "SUBTRACT", fl, 0.5),
+                                                                   math(nt, "MULTIPLY", gi.outputs["Fleck"], 2.0))))
+    base = nt.nodes.new("ShaderNodeMix"); base.data_type = "RGBA"; base.blend_type = "MULTIPLY"
+    base.inputs["Factor"].default_value = 1.0
+    nt.links.new(gi.outputs["Colour"], base.inputs["A"])
+    nt.links.new(_vec(nt, tone, tone, tone), base.inputs["B"])
+    b = nt.nodes.new("ShaderNodeBsdfPrincipled")
+    nt.links.new(base.outputs["Result"], b.inputs["Base Color"])
+    # roughness: the scan's own variation around the Roughness input
+    nt.links.new(math(nt, "ADD", gi.outputs["Roughness"], math(nt, "MULTIPLY", math(nt, "SUBTRACT", rough.outputs["Color"], 0.5), 0.3)),
+                 b.inputs["Roughness"])
+    b.inputs["Specular IOR Level"].default_value = 0.3
+    nt.links.new(gi.outputs["Sheen"], b.inputs["Sheen Weight"])
+    b.inputs["Sheen Roughness"].default_value = P["sofa_sheen_rough"]
+    nt.links.new(base.outputs["Result"], b.inputs["Sheen Tint"])
+    # weave relief (fine) then seam puckers (coarse)
+    bw = nt.nodes.new("ShaderNodeBump")
+    bw.inputs["Distance"].default_value = 0.0006
+    nt.links.new(gi.outputs["Weave Relief"], bw.inputs["Strength"])
+    nt.links.new(wlum.outputs[0], bw.inputs["Height"])
+    sd = nt.nodes.new("ShaderNodeAttribute"); sd.attribute_name = "seam_d"
+    ss = nt.nodes.new("ShaderNodeAttribute"); ss.attribute_name = "seam_s"
+    fall = math(nt, "POWER", math(nt, "SUBTRACT", 1.0, math(nt, "DIVIDE", sd.outputs["Fac"], P["sofa_pucker_w"]), clamp=True), 2.0)
+    n1 = _noise(nt, _vec(nt, math(nt, "MULTIPLY", ss.outputs["Fac"], 6.0), 0.0, 0.0), 1.0, detail=2.0, dims="3D")
+    ph = math(nt, "MULTIPLY", math(nt, "ADD", ss.outputs["Fac"], math(nt, "MULTIPLY", n1.outputs["Fac"], 0.08)), 6.283 / 0.045)
+    rip = math(nt, "MULTIPLY", math(nt, "SINE", ph), math(nt, "MULTIPLY", n1.outputs["Fac"], 2.0))
+    bp = nt.nodes.new("ShaderNodeBump")
+    bp.inputs["Distance"].default_value = 0.003
+    nt.links.new(gi.outputs["Puckers"], bp.inputs["Strength"])
+    nt.links.new(math(nt, "MULTIPLY", rip, fall), bp.inputs["Height"])
+    nt.links.new(bw.outputs["Normal"], bp.inputs["Normal"])
+    nt.links.new(bp.outputs["Normal"], b.inputs["Normal"])
+    nt.links.new(b.outputs[0], go.inputs["Shader"])
+    auto_layout(ng)
+    return ng

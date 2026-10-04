@@ -48,3 +48,30 @@ User: "Fix the brick and floor materials." New reviewer brief (materials only; s
 - Lit window reveals read mauve-grey; in the photos they glow orange-red. The brick in daylight is redder than the plum it reads in shade: a lit-vs-shade trade-off in the albedo, or the phone's processing.
 - Plank size: photo 2's rectification read 700 × 140, photo 8 and two reviewers ~20 % smaller; 600 × 120 chosen. A tape measure on one plank settles it.
 - Mortar: reviewers split between "paler net" and "dark, flush"; the scan's joints still catch a lit top edge at Relief 0.3.
+
+## Round three: the sofa (v19–v26)
+
+User: "let's model the sofa ... it's a Swyft Model 03 in Pumice"; mid-round: "search online ... find loads of pictures and dimensions of the actual sofa because it's still on sale". New reviewer brief (shape, placement, detail, fabric against photos 1–3 and Swyft's product photos; scores restart at v19). Eight rounds: 4.7, 5.1, 5.4, 5.8, 6.1, 6.2, 6.1, 6.7. Calibration: **v26 6.5 beat v24 6.3** blind. No fork (the experiment forked at v08; the user asked to wrap up). Final **v26**.
+
+### Chosen
+- **Sizes from the maker, placement from the room.** Swyft's product pages and dimension drawings (`references/furniture/sofa/drawings/`): 254 × 92 × 71, seats 70, arms 22 × 56 and 80 deep (fronts 12 cm behind the seats), seat seam 39 / crown 45, ottoman 70 × 70. The scan gave the arm end and module seams; its depth (1.17 m) bridged the gap behind the sofa and was rejected. The ottoman (the scan's `Pouf`, moved) placed from 8 corner pixels through cameras 1 and 2 (11 px rms).
+- **Upholstered blocks from code** (`scripts/furniture/upholstery.py`): an edge-packed lattice on a rounded box, faces puffed by a pillow profile that is zero at the seams, then a deformation field (sag, front roll and tuck under the overhang, back-front ripples) applied to the block and its flange alike; a solidified, bevelled flange on every seam with ears past the corners.
+- **The edge roll is the cushion** (advisor after v24): under this room's even light a puffed face barely shades; the roll band reads. 2.5 cm read as slabs, 5.5 cm as bolsters; final 4.5 cm on seats and ottoman, 3 cm on arms and backs.
+- **Fabric from the real thing**: the weave and heather are a high-passed, seamless patch of Swyft's own Pumice close-up (`assets/mat/pumice_weave.png`), plus short 4.5 mm slubs and a 3 mm fleck sized to the pixel footprint; colour a measured input. One group node, `Sofa_Fabric`, 8 controls.
+- **Grade per photo, and the photo's processing**: one white balance per camera (9000 / 13000 / 8500 K) so the paint matches each photo in absolute sRGB; renders at 2× through `tools/photo_finish.py` (unsharp 1 px 80 %, JPEG q85), gated by `tools/sharpness.py` (edge ratio 1.41 vs the photo's 1.36).
+
+### Rejected
+- Piping on the seams: the product has a flat self-fabric flange.
+- A scanned CC0 linen recoloured to Pumice (v19–v22) and long 3 cm slub streaks: "painted MDF", then "brushed felt". The 1 mm weave is sub-pixel at 3–4 m whatever its gain.
+- Sheen as the fix for the top-vs-front contrast: Sheen 0.5 → 1.0 moved no ratio by more than 0.03.
+- Darker stand-in blocks for less fill: fixed the ceiling level, made the sofa fronts worse (advisor after v21). The front was geometry: it leans under the seat's overhang.
+- A raked wedge back block from the drawing's plan (v22): leaned back 15°; the drawing's inner line is the crown of a rounded top.
+- Cloth with pressure: held back; the analytic block read as a cushion once the edge roll was right.
+- Camera 3 for placement: it misses the measured radiator by ~100 px in the sofa's corner.
+
+### Open items
+- The flanges read as thin piping: they need a wider (1 cm), wavier lip with a shadowed underside and soft pinched ears.
+- Fabric levels against the nearby wall: reviewers read the seat tops 10–20 % bright, the absolute pixels (with matched paint) read them ~10 % dark; the room's light differs (dark real furniture vs grey stand-ins, the coffee-table block in front).
+- Fabric hue and slub level are a trade-off between photos and reviewers: `Sofa_Fabric` Colour and Slub.
+- No wear or sat-in creases beyond a 2 cm sag; the loose cushions and throws are not modelled.
+

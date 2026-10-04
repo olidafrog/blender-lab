@@ -4,6 +4,9 @@
   tools/blender.sh experiments/apartment-model/scripts/review_sheet.py v13 mat
       materials round: photo | render | 1:1 details (top: photo crops, bottom: render crops at the same
       pixels; left and right as in DETAIL). Needs the renders at full size (--scale 1).
+  tools/blender.sh experiments/apartment-model/scripts/review_sheet.py v19 sofa
+      sofa round: as mat, with the sofa details in SOFA (photos 1, 2, 3), plus a column of the same
+      photo crops with the model edges (from the _ids pass) in red.
 Writes renders/<v>.png (the image review_round.py expects). Rows are 1024 x 768 per panel.
 """
 import sys
@@ -40,6 +43,10 @@ def edges_ids(a):
 DETAIL = {"2": [(1030, 560), (1480, 1330)], "5": [(230, 420), (1000, 1330)], "1": [(1880, 420), (1880, 980)],
           "8": [(1075, 1120), (1075, 1400)]}
 
+# sofa round: left seats | ottoman (1), near arm + seat | back cushions + ottoman (2), seat + arm | seat front (3)
+SOFA = {"1": [(1100, 1070), (1480, 1170)], "2": [(280, 1300), (700, 1080)], "3": [(1790, 1300), (1790, 1480)]}
+SOFA_OVERLAY = ("1", "2")    # camera 3 misses the measured radiator by ~100 px in that corner: no edge overlay there
+
 
 def crop(a, cx, cy, w=512, h=384):
     H, W = a.shape[:2]
@@ -47,9 +54,9 @@ def crop(a, cx, cy, w=512, h=384):
     return a[y0:y0 + h, x0:x0 + w]
 
 
-def mat_sheet(v):
+def mat_sheet(v, detail=DETAIL):
     rows = []
-    for n, pts in DETAIL.items():
+    for n, pts in detail.items():
         d = json.load(open(EXP / f"assets/cams/{n}.json"))
         f = d.get("joint") or d.get("refined") or d.get("fit")
         photo = undistort(load(EXP / f"references/{n}.jpeg", 2048, 1536), f.get("k1", 0.0), f["lens"],
@@ -58,16 +65,25 @@ def mat_sheet(v):
         det = np.concatenate([np.concatenate([crop(photo, *pts[0]), crop(photo, *pts[1])], 1),
                               np.concatenate([crop(ren, *pts[0]), crop(ren, *pts[1])], 1)], 0)
         small = lambda a: a.reshape(PH, 2, PW, 2, 3).mean((1, 3))
-        row = np.concatenate([small(photo), np.ones((PH, 6, 3)), small(ren), np.ones((PH, 6, 3)), det], 1)
+        row = [small(photo), np.ones((PH, 6, 3)), small(ren), np.ones((PH, 6, 3)), det]
+        ids = EXP / f"renders/{v}_{n}_ids.png"
+        if detail is SOFA and n in SOFA_OVERLAY and ids.exists():                    # model edges over the photo crops, at 1:1
+            e = edges_ids(load(ids, 2048, 1536))
+            ov = np.repeat(photo.mean(-1, keepdims=True) * 0.75, 3, -1)
+            ov[e] = (1.0, 0.1, 0.1)
+            row += [np.ones((PH, 6, 3)), np.concatenate([crop(ov, *pts[0]), crop(ov, *pts[1])], 0)]
+        elif detail is SOFA:
+            row += [np.ones((PH, 6, 3)), np.ones((PH, 512, 3)) * 0.5]
+        row = np.concatenate(row, 1)
         rows += [row, np.ones((6, row.shape[1], 3))]
-    return np.concatenate(rows[:-1], 0), list(DETAIL)
+    return np.concatenate(rows[:-1], 0), list(detail)
 
 
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:]
     v = argv[0]
-    if len(argv) > 1 and argv[1] == "mat":
-        sheet, views = mat_sheet(v)
+    if len(argv) > 1 and argv[1] in ("mat", "sofa"):
+        sheet, views = mat_sheet(v, DETAIL if argv[1] == "mat" else SOFA)
         H, W = sheet.shape[:2]
         o = bpy.data.images.new("sheet", W, H)
         o.pixels[:] = np.concatenate([sheet, np.ones((H, W, 1))], -1)[::-1].ravel()

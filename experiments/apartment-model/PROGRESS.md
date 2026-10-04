@@ -44,10 +44,52 @@ Stall guard after v17 ("floor too uniform and pale" v15–v17): the floor mechan
 
 Stopped after v18 (slope flat: best of v16–v18 6.2 vs v13–v15 6.1). Calibration (round two, `reviews/calibration.md`; round one's is `calibration_shell.md`): v18 5.9 beat v17 5.7 blind (more plank variation and grain contrast; v17's planks evener and glossier). The winner is 2.6 under the target, but the experiment forked once already (v08), so no second fork: finish from v18.
 
+## Round three: the sofa (from v19)
+
+User: "okay let's model the sofa ... it's a swyft model 03 in pumice"; mid-round: "search online ... find loads of pictures and dimensions of the actual sofa because it's still on sale". New reviewer brief (`reviews/REVIEWER_PROMPT.md`; round two's is `REVIEWER_PROMPT_materials.md`), so scores restart at v19. Budget 8 rounds (total 32). Instrument: `review_sheet.py <v> sofa` (rows 1, 2, 3: photo | render | 1:1 photo and render crops of the sofa | model edges over the photo crops for rows 1 and 2) and `mat_measure.py <v> --sofa` (fabric luma / paint luma in photos 1 and 2).
+
+Research: two Sonnet agents (Swyft product pages: sizes, construction, the Pumice fabric, 9 product photos; upholstery technique in Blender, tested headless), then a third for more product photos and drawings. Sizes from Swyft; placement from the scan (arm end x −0.87, seams −1.79 / −2.49, seat front y −1.70) and, for the ottoman, 8 corner pixels in photos 1 and 2 (centre −3.03, −1.33; 11 px rms). Camera 3 misses the radiator by ~100 px in the sofa's corner: no placement from it.
+
+**Process guess:** a factory-made modular box sofa (arm | 3 seats | arm, back blocks on the seats, 1 cm self-fabric flanges) in a matte slub linen-look weave, under the room's overcast window light.
+
+Advisor (Fable) on the plan, before v19's review: (1) the block shape reads CG: the real seats belly down and roll over their fronts, the back blocks are pillows, the seams bow; use a pillow profile (exponent ~1.8), a sag per seat and a low-frequency deformation of the whole block, applied to the flanges too; cloth only if that fails. (2) The flange must follow the deformed block and have a rounded section. (3) Puckers as bump are fine. (4) The fabric mechanism is sound; at room distance colour and sheen read, not the weave. (5) Feet are hidden by the rug. → Built as `slump_field` in `upholstery.py` and a bevelled flange; held for v21 (one change per round; v19's review ranks the fabric first).
+
+Sheen sweep after v19 (`sheen`, 4 variants): Sheen 0.5 → 1.0, roughness 0.3–0.7 move every fabric/paint ratio by ≤ 0.03. The photo's stronger top-vs-front contrast is the room's light (dark leather chairs, plants and units against the render's grey blocks), not a fabric value.
+
+Stall guard after v19 (slope flat, "texture uniformity" three reviews v17–v19, form called wrong): v17–v18 were round two's brief; round three restarted the instrument at v19, so the slope and repeat rules count from v19. The form complaint: the advisor was consulted (above); its mechanism is v21.
+
+Stall guard after v20 (slope v15–v20, "fabric" v18–v20): spans rounds two and three again; not acted on (the rules count from v19). v21 acts on v20's top problem (hard boxes) with the advisor's mechanism.
+
+Stall guard after v21 ("seat tops, arm inner face" missed v19–v21; "flat form" three reviews): v21 was the form mechanism change; the advisor is consulted on the missed levels (fill light) before v22. Slope rule: round three has three rounds, not six.
+
+Third agent (more product material): Swyft's dimension drawings and 2020 spec sheet. The back block is a wedge (21 → 11 cm), the seat front seam 39 with a 45 crown, the arm 80 deep, feet 7 × 4 cm. Queued for v23 as P values (v22 is the advisor's fill change).
+
+Advisor (Fable) after v21, on the missed fabric levels: (1) a measurement bug: photo 2's seat_front box was half on the 0.48 m coffee-table stand-in; clean, the render's front/top was 0.80 against the photo's 0.52 (box now y 1380–1415). (2) Direct-only and bounce tests: no room albedo, sky shape, sun patch or AgX look fixes the front without breaking the rug; darker per-piece stand-ins fix the ceiling level but make the sofa front worse. (3) The front is geometry: on the real sofa the seat top overhangs the front, which rolls under toward the shadow gap. (4) Photo 2 has a per-photo white balance offset (every neutral renders R−B +28–34 vs +21–25). → v22: fronts tucked under the overhang (`slump_field` tuck), with the drawing values bundled as one shape change; stand-in albedos and per-photo white balance left as open items.
+
+Stall guard after v22 ("fabric hue and texture" v20–v22, inside round three): mechanism change for the fabric's look at 1:1. (1) The weave now comes from the real fabric: a high-passed, seamless patch of Swyft's Pumice close-up (`assets/mat/pumice_weave.png`, ~5 px period → 11 cm tile); the scanned linen's tone is off. (2) The photographic output stage (`--scale 2 --finish`: Lanczos, unsharp 1 px 80 %, JPEG q85; `tools/photo_finish.py`), gated by `tools/sharpness.py`: the raw render had 0.34 of photo 2's fine detail and edge ratio 1.15 vs 1.36; finished 1.41, fine detail 0.56 (the rest is content the stand-ins lack: rug pile, objects). Values: short 4.5 mm slubs at 0.3, albedo cooled to (0.405, 0.425, 0.465) so the warm grade lands greige. Learned on the way: the 1 mm weave and 3 mm slubs are sub-pixel at 3–4 m and vanish whatever their gain. Back blocks back to near upright (0.21 at the top).
+
+Trade-off after v23 (fabric hue and slub; reviewers contradict round to round): v22's reviewer "too beige, brushed felt", v23's "too grey, too smooth, prefers v22". Measured against the paint: v23 is ~7 % cooler than photo 1 and right for photo 2 (each photo has its own white balance). Not tuned further: Colour and Slub set midway (v24) and named as designer controls in HOW_TO_TWEAK. Stall guard after v23 (fabric three reviews; tops missed): fabric mechanism already changed at v23; the bright tops are the light (advisor after v21), left open.
+
+Advisor (Fable) after v24 ("flat slabs" three reviews): the edge, not the puff. The 3 cm sag cancelled half of the 6 cm dome (mesh profile: 39.0 front, 42.7 crown, 39.3 back), and a 2.5 cm edge radius keeps each block a crisp box: under this room's near-uniform light a 4° puff slope makes no gradient; the width of the roll band reads as the cushion (5 px at 2.5 cm, 20+ px in the photos). Analytic puff tested fine under raking light; a shoulder profile reads flatter; cloth would spend both rounds on pinning. → v25: `sofa_r` 0.055, sag 0.01, profile 2.0 (tested in the scene), plus vertical ripples on the back fronts at 3 mm.
+
+Trade-off after v25 (edge roll): v24's reviewer "flat slabs" at 2.5 cm, v25's "bolsters and loaves" at 5.5 cm; the stall guard's "form wrong" for v25 is this trade-off, not a new mechanism (advisor consulted after v24). v26 splits it: seats and ottoman 4.5 cm, arms and backs 3 cm (`sofa_r`, `sofa_r_square`; designer controls). Last budgeted round, so v26 also carries the per-photo white balance (`wb_view`: photo 1 9000 K, photo 3 8500 K, photo 2 13000 K): the paint now matches each photo in absolute sRGB (R/B 1.16/1.23/1.13 vs 1.17/1.24/1.13), which settles the reviewers' hue argument by pixels; fabric albedo set to (0.445, 0.44, 0.44) against it. Two changes in one round, logged as such.
+
+Stopped after v26: budget spent (8 rounds of round three). Stall guard after v26 ("seat tops too bright" v24–v26): reviewers measure against the wall in their crops; with v26's per-photo white balance the paint matches each photo in absolute sRGB, and in absolute terms the seat tops are ~10 % darker than photos 1 and 3, not brighter. The two measures disagree because the render's wall-to-seat light ratio differs from the room's (the lighting, advisor after v21). Left open, not tuned.
+
+Pre-review: preflight `reviews/preflight_v19.png` clean (clay reads; nothing bright at albedo 0 but the windows; lights tiles black: the sky lights the scene, as in rounds one and two).
+
 Newest first. Updated after every review. Cost is what the version took: Blender runs and minutes since the last row.
 
 | Version | Score | The one change | Cost | Render |
 |---|---|---|---|---|
+| v26 | 6.7 (Shape 7.0, Placement 8.0, Detail 6.0, Fabric 6.3); pair preferred v26 | edge roll split (seats, ottoman 4.5 cm; arms, backs 3 cm), sag 2 cm; per-photo white balance (9000 / 13000 / 8500 K) with the fabric matched in absolute sRGB | 4 runs, 25 min | renders/v26.png |
+| v25 | 6.1 (Shape 5.8, Placement 7.5, Detail 5.8, Fabric 6.0); pair preferred v24 | edge roll 5.5 cm, sag 1 cm, profile 2.0 (advisor), back-front ripples 3 mm | 3 runs + advisor, 25 min | renders/v25.png |
+| v24 | 6.2 (Shape 5.8, Placement 8.3, Detail 5.5, Fabric 6.0); pair preferred v24 | seat fronts bulge 3 cm (V gaps), back tops roll 4 cm; fabric colour and slub set midway (trade-off) | 1 run, 10 min | renders/v24.png |
+| v23 | 6.1 (Shape 6.5, Placement 8.0, Detail 5.5, Fabric 5.0); pair preferred v22 (fabric) | fabric mechanism: weave from Swyft's Pumice close-up, short slubs, cooler albedo; photographic output stage (2x, unsharp, JPEG); backs near upright | 7 runs, 45 min | renders/v23.png |
+| v22 | 5.8 (Shape 6.0, Placement 8.0, Detail 5.0, Fabric 5.0); pair preferred v22 | shape from Swyft's drawings: seat seam 39 / crown 45, fronts tucked under the overhang (advisor), back blocks raked (a `sed` slip left 11.5 cm at the top: they leaned back ~15°), ottoman bow, 7 × 4 cm feet | 3 runs + advisor, 35 min | renders/v22.png |
+| v21 | 5.4 (Shape 5.5, Placement 7.5, Detail 4.0, Fabric 5.0); pair preferred v21 | shape (advisor): pillow profile 1.8, a sag per seat, fronts rolling forward, low-frequency wobble on blocks and flanges, edge radius 2.5 cm | 2 runs, 15 min | renders/v21.png |
+| v20 | 5.1 (Shape 5.0, Placement 7.5, Detail 3.5, Fabric 5.0); pair preferred v20 | fabric: slub streaks 5 mm x 3 cm and a 3 mm tone fleck (the weave is sub-pixel at 3–4 m), linen at 1.5x, near-neutral albedo | 5 runs, 30 min | renders/v20.png |
+| v19 | 4.7 (sofa brief; Shape 5.5, Placement 8.0, Detail 3.5, Fabric 3.0); overlay hit in rows 1 and 2 | round three start: Swyft Model 03 from product sizes, flanged puffed blocks, ottoman fitted to photos 1 and 2, rough_linen fabric | ~12 Blender runs + 3 agents + advisor, 1.5 h | renders/v19.png |
 | v18 | 5.8 (BC 5.8, BP 5.5, FC 6.3, FP 5.8); pair preferred v18 over v17; all luma targets hit | planks 600 x 120, grain contrast 2.0, plank spread 0.6, roughness 0.3 | 1 run, 10 min | renders/v18.png |
 | v17 | 6.2 (BC 6.0, BP 6.0, FC 6.5, FP 6.3); pair preferred v17; all luma targets hit | mechanisms: brick from a whole-wall scan regraded by its height mask (advisor); floor from a rustic oak scan per source plank | 3 runs + advisor, 40 min | renders/v17.png |
 | v16 | 6.0 (BC 6.2, BP 6.0, FC 6.0, FP 5.8); pair preferred v16; all luma targets hit | brick: plum-maroon albedo, bloom across joints, stronger mottling | 2 runs, 15 min | renders/v16.png |
@@ -94,6 +136,8 @@ User (after v11): wrap up this round regardless of score; stairs are 10 steps in
 **Final: v12** (user asked to wrap up this round). Open items from the v12 review: lower-tier glazing rail and right-window mullion spacing; radiator 10–15 cm too high and ~15 cm too far from the window wall; central beam 18 px low in photo 5 only (beam west face or camera 5).
 
 ## Calibration
+
+Round three (`reviews/calibration_sofa.md`): **v26 6.5 beat v24 6.3** blind (v26's per-photo white balance matches the photos; v24 sits under a yellow-brown cast; same shape). Both miss the fabric levels against the wall and both read the flanges as thin. The winner is 2.0 under 8.5; the experiment forked in round one and the user asked to wrap up, so no fork: finish from v26.
 
 Stopped after v08: slope flat (best of v06–v08 7.8 vs v03–v05 7.6, under +0.3). Calibration: v08 vs v07 (blind). **v07 wins 7.3 vs v08 7.1** (same instrument; the deeper cove fits photo 3 but misses 1, 5, 6). 7.3 is 1.2 under 8.5 → fork once (budget +6).
 

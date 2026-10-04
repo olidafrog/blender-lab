@@ -7,14 +7,15 @@ Plain python3, from the repo root:
 
 A round does, in order, and stops at the first that fails:
   1. Budget: counts reviews/review_v*.md against the Budget in BRIEF.md.
-  2. Round 1 only: reviews/preflight_*.png must exist (build.py --preflight), or PROGRESS.md says
-     "preflight skipped: <why>".
+  2. Round 1 only (or the first review of a round: "## Round ... (from vNN)" in PROGRESS.md):
+     reviews/preflight_*.png must exist (build.py --preflight), or PROGRESS.md says "preflight skipped: <why>";
+     with photo references, RESEARCH.md or PROGRESS.md must mention their sharpness (tools/sharpness.py).
   3. Gate: tools/metrics.py between the last reviewed render and this one, with the x,y points as
      target crops. NO CHANGE stops the round.
   4. Crops into reviews/crops_<vNN>/: round 1 gets the centre and quadrants plus the points; later
      rounds get only the points (the area you changed and what the last review flagged), so at
      least one point is required.
-  5. Snapshot scripts/build.py and the local modules it imports to snapshots/ (never reviews/).
+  5. Snapshot scripts/build.py and the local modules it imports, in any subfolder, to snapshots/ (never reviews/).
   6. Writes reviews/prompt_<vNN>.txt and prints the one line to give the reviewer.
 
 Options: --with-prev (round 2 on) adds a blind pair: this render and the last reviewed one as P.png and
@@ -61,15 +62,22 @@ def blender(*args):
 
 
 def snapshot(exp, v):
+    """build.py and every local module it imports, directly or through another, in any subfolder of scripts/."""
     snaps = exp / "snapshots"
     snaps.mkdir(exist_ok=True)
     build = exp / "scripts" / "build.py"
-    src = build.read_text(encoding="utf-8")
+    files = {f.stem: f for f in sorted((exp / "scripts").rglob("*.py")) if "__pycache__" not in f.parts}
+    keep, todo = {"build"}, [build]
+    while todo:
+        src = todo.pop().read_text(encoding="utf-8")
+        for stem, f in files.items():
+            if stem not in keep and re.search(rf"^\s*(import|from)\s+{re.escape(stem)}\b", src, re.M):
+                keep.add(stem)
+                todo.append(f)
     made = []
-    for f in sorted((exp / "scripts").glob("*.py")):
-        if f == build or re.search(rf"^\s*(import|from)\s+{re.escape(f.stem)}\b", src, re.M):
-            shutil.copyfile(f, snaps / f"{f.stem}_{v}.py")
-            made.append(f"{f.stem}_{v}.py")
+    for stem in sorted(keep):
+        shutil.copyfile(files[stem], snaps / f"{stem}_{v}.py")
+        made.append(f"{stem}_{v}.py")
     return made
 
 
@@ -82,18 +90,31 @@ def round_(name, v, points, force, all_crops, with_prev=False):
         stop("reviews/REVIEWER_PROMPT.md is missing. Fill it from the template first (review-render step 2).")
     reviews = sorted((exp / "reviews").glob("review_v*.md"), key=lambda f: f.stat().st_mtime)
     done, cap = len(reviews), budget(exp)
+    progress = (exp / "PROGRESS.md").read_text(encoding="utf-8") if (exp / "PROGRESS.md").exists() else ""
+    # a long-running experiment works in rounds ("## Round three: the sofa (from v19)" in PROGRESS.md);
+    # the first review of a round gets the round-1 checks
+    starts = re.findall(r"^##\s*Round\b[^\n]*\(from v(\d+)\)", progress, re.M | re.I)
+    since = int(starts[-1]) if starts else 0
+    in_round = [f for f in reviews if (m := re.match(r"review_v(\d+)", f.name)) and int(m.group(1)) >= since]
     if (exp / "reviews" / f"review_{v}.md").exists():
         stop(f"{v} already has a review")
     if done >= cap:
         stop(f"budget spent ({done} of {cap} reviews). Go to Stopping in review-render.")
-    first = done == 0
+    first = not in_round
     print(f"[round] {name} {v}: review {done + 1} of {cap}")
 
     if first:
-        progress = (exp / "PROGRESS.md").read_text(encoding="utf-8") if (exp / "PROGRESS.md").exists() else ""
         if not list((exp / "reviews").glob("preflight*.png")) and not re.search(r"preflight skipped", progress, re.I):
             stop("no preflight sheet. Run build.py --preflight and read it before round 1, "
                  "or write 'preflight skipped: <why>' in PROGRESS.md.")
+        # a photo reference is a processing chain: a soft render beside a sharpened JPEG reads CG everywhere
+        # (aztechno-building; apartment-model rounds one to three never measured it)
+        research = (exp / "RESEARCH.md").read_text(encoding="utf-8") if (exp / "RESEARCH.md").exists() else ""
+        photos = [f for f in (exp / "references").rglob("*") if f.suffix.lower() in (".jpg", ".jpeg", ".heic")]
+        if photos and not re.search(r"sharpness", research + progress, re.I):
+            stop("the references include photos, but RESEARCH.md and PROGRESS.md never mention sharpness. "
+                 "Run tools/sharpness.py <photo> <render> (and tools/photo_finish.py if the render is softer), "
+                 "or write 'sharpness skipped: <why>' in PROGRESS.md.")
     else:
         if not points and not all_crops:
             stop("a later round needs at least one x,y: the area you changed and each area the last review "

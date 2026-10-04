@@ -21,6 +21,7 @@ import {
   parseScore,
   parseTarget,
   reviewFile,
+  roundStart,
   sparkline,
   versionOf,
 } from './lab'
@@ -155,7 +156,9 @@ const judge = async ($: $, root: string, name: string): Promise<GuardResult | nu
     text($, `${dir}/BRIEF.md`),
     text($, `${dir}/PROGRESS.md`),
   ])
-  const { reviews, count } = await readReviews($, dir)
+  const { reviews: allReviews, count } = await readReviews($, dir)
+  const from = roundStart(progress)
+  const reviews = allReviews.filter(r => (reviewFile(r.file)?.num ?? 0) >= from)
   const newest = reviews[reviews.length - 1]
   if (!newest) return null
   const verdicts = countedVerdicts({

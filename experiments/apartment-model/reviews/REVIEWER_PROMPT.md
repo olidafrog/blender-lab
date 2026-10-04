@@ -1,60 +1,58 @@
-# Reviewer brief — apartment-model, round two: materials
+# Reviewer brief — apartment-model, round three: the sofa
 
-You are an adversarial materials artist and photographer. Judge one review sheet against the brief and the reference photos. Be specific and hard to please. Do not be kind; a generous score wastes a round.
+You are an adversarial furniture modeller and product photographer. Judge one review sheet against the brief and the reference photos. Be specific and hard to please. Do not be kind; a generous score wastes a round.
 
 ## The brief
 
-The user's real flat (a converted 1909 brick factory loft in London) is modelled in Blender; the shell geometry is finished. This round fixes **two materials only**: the exposed **brick window wall** (with its piers, returns and window reveals) and the **herringbone oak floor**. The goal is photoreal: in the render, the brick and the floor should read as the same materials as in the user's photos, at room distance and at 1:1.
+The user's real flat (a converted 1909 brick factory loft in London) is modelled in Blender; the shell, the brick and the floor are finished. This round models **one piece of furniture**: the user's sofa, a **Swyft Model 03 three-seater in "Pumice"** fabric, with its matching **ottoman** pushed against the window-end seat as a chaise. The goal is photoreal: at room distance and at 1:1, the render's sofa should read as the same object as in the user's photos, at the same size and in the same place.
 
 ## What you are looking at
 
-The render is a review sheet. Each row is one camera, fitted to one of the user's photos. Rows from top to bottom are **photos 2, 5, 1, 8**. Per row:
+The render is a review sheet. Each row is one camera, fitted to one of the user's photos. Rows from top to bottom are **photos 1, 2, 3**. Per row:
 - left: the user's photo,
 - middle: the render from the fitted camera,
-- right: four 1:1 details. **Top pair: photo crops. Bottom pair: render crops at the same pixels.** Row 2: brick (central pier) | floor. Row 5: brick (window wall, oblique) | floor. Row 1: brick (window wall and pier, oblique) | brick (pier and reveal). Row 8: floor | floor (kitchen).
+- then four 1:1 details: **top pair photo crops, bottom pair render crops at the same pixels**. Row 1: the two room-end seats | the ottoman. Row 2: the near arm and seat | the back blocks and the ottoman (far). Row 3: seat and arm | seat front.
+- right column (rows 1 and 2): the same two photo crops with the **model's edges drawn in red**. Use it to judge size and position: a red outline that misses the photo's sofa edge is a shape or placement error. Row 3 has no overlay: the sofa sits in the extreme corner of that 14 mm photo, where its fitted camera misses even the measured radiator by about 100 px. In row 3, a sofa that sits higher or larger than in the photo is the camera, not the model; judge row 3 for shape and fabric only.
 
 Compare each render crop with the photo crop directly above it.
 
 ## References
 
-Read every photo before you look at the render: `1.jpeg`–`8.jpeg` (the user's own, 2026-10-03), and `other references/1–6 of 12.jpg` (2023 listing photos: brighter, heavily processed, but they show the brick colour and bond clearly).
+Read the photos before you look at the render: `references/1.jpeg`, `2.jpeg`, `3.jpeg` (the user's own, 2026-10-03) and the Swyft product photos in `references/furniture/sofa/` (studio shots of the same model and fabric: front, three-quarter, close-ups of the arm, the seat, the feet and the back).
 
 ## Research findings
 
-- Brick: soft red-brown factory brick, worn, strong brick-to-brick tone spread with dusty pale patches; thin near-flush mortar slightly paler than the brick; mostly stretcher courses with scattered headers (read as English garden wall bond, uncertain); courses about 85 mm.
-- Floor: oak-look herringbone, 700 × 140 mm planks, spine along the room (toward the windows), mid warm brown with a grey cast, flat-sawn figure (flame arcs and straight grain), thin dark bevelled seams, satin sheen that picks up window reflections.
-- The photos are warm-balanced (iPhone white balance; the white paint reads warm). A warmer or cooler overall cast is a grade question: judge material colour relative to the white walls in the same image.
+- **Construction (Swyft product pages and photos):** five modules in a row: arm | seat | seat | seat | arm. Overall 254 × 92 × 71 cm. Seats 70 cm wide; the arm 22 cm wide and 56 cm high. Each seat module is a base block with a domed top (seat height 45 cm) and a separate back block (about 23 cm thick, top at 71 cm) on its rear. The seat blocks stand about 14 cm proud of the arms' front faces. The ottoman is 70 × 70 × 45 cm.
+- **Edges:** every block edge carries a **self-fabric flange** about 1 cm wide (not piping): a thin wavy lip, same fabric, that catches light as a pale line, with pinched ears at the corners. The faces are softly puffed between the flanges.
+- **Feet:** short dark round feet (2–4 cm), set in from the corners; a dark shadow gap under every block.
+- **Fabric "Pumice":** Swyft "Linen" (73 % polyester, 27 % cotton), a matte, slubby plain weave with tonal flecks; a warm greige (swatch about sRGB 183, 176, 166). Not shiny; a soft sheen at grazing angles.
+- The loose cushions, throws, the cat and items on the sofa in the photos are not part of this round: their absence is not a fault. The coffee table, rug and other furniture are still grey blocks: out of scope.
+- The photos are warm-balanced (iPhone). Judge the fabric's value and hue **relative to the white walls in the same image**.
 
 ## Numeric targets
 
-Measured by `scripts/mat_measure.py` (the same regions in photo and render); the builder reports the numbers, you check them by eye:
-- Brick luma relative to the white paint: 0.21 (photo 2), 0.25 (photo 5). Floor relative to the paint: 0.89 (photo 2), 0.99 (photo 5).
-- Pattern: brick course about 85 mm; floor planks 700 × 140 mm, chevron spine along the room.
-
-## Design facts
-
-- Everything other than brick and floor is out of scope: grey furniture blocks, white walls, windows, the outside, lighting, and missing objects (art, plants, rugs, lamps, the fan). The rug and furniture in the photos cover parts of the floor; the render has grey blocks instead.
-- The window reveals and piers are brick (same material), lit more strongly near the glass.
-- The pier caps are bullnose bricks in the photos; the model has a square cap. That is geometry: do not score it.
-- Noise and the denoiser: judge material, not render noise, unless it hides the texture.
+Measured with the same regions in photo and render (the builder reports them; check them by eye):
+- Fabric-to-paint luma, photo 1 (paint: the west wall above the sofa): seat tops 1.24, ottoman top 1.28, ottoman front 0.74, back block front 0.89.
+- Fabric-to-paint luma, photo 3: seat top 1.16, arm inner face 1.39.
+- Shape: the red model edges should sit on the photo's sofa edges within about 1 % of the frame width (20 px at 2048).
 
 ## What to judge
 
-1. **Brick colour and value** (25 %): hue, value relative to the white walls, the spread between bricks, dust and staining.
-2. **Brick pattern and relief** (20 %): course height, brick length, bond, mortar width, colour and depth, worn arrises, how it reads at distance and at 1:1.
-3. **Floor colour and value** (20 %): hue, value relative to the walls, plank-to-plank variation.
-4. **Floor pattern, grain and sheen** (35 %): plank size and orientation, herringbone layout, seam lines, wood figure, roughness and reflections.
+1. **Shape and proportion** (35 %): module sizes, heights (seat, arm, back), the seats proud of the arms, the domed tops and puffed faces, rounded edges, the ottoman's size; the overall silhouette.
+2. **Placement** (15 %): position and orientation in the room, against the red edge overlay.
+3. **Construction detail** (20 %): the flanges, the gaps between modules, the feet and the shadow gap, corner ears, wrinkles and softness where fabric is sat on or pulled.
+4. **Fabric** (30 %): colour and value relative to the walls, the woven slub texture at 1:1 (scale and contrast), sheen, how light falls across the puffed faces.
 
 ## Sub-scores
 
-Brick colour 25 %, Brick pattern 20 %, Floor colour 20 %, Floor pattern 35 %. Give each out of 10, and the weighted total as the score.
+Shape 35 %, Placement 15 %, Detail 20 %, Fabric 30 %. Give each out of 10, and the weighted total as the score.
 
 ## Calibration
 
-- 4 = flat placeholder colours.
-- 5 = generic CG brick and parquet; the right idea, wrong material.
-- 7 = good; clearly these materials, visible differences side by side at 1:1.
-- 8.5 = ship it; at 1:1 the render crops could pass for the photo's material, only small differences remain.
+- 4 = grey boxes in the right place.
+- 5 = a generic CG sofa; the right idea, wrong object.
+- 7 = good; clearly this sofa, visible differences side by side at 1:1.
+- 8.5 = ship it; at 1:1 the render crops could pass for the photo, only small differences remain.
 Use one decimal place.
 
 ## Pairwise (round 2 on)
@@ -63,7 +61,7 @@ If the file list below includes a pair folder (P.png and Q.png, in random order:
 
 ## How to look
 
-Open the full sheet first, then every 1:1 crop. Compare each render crop with the photo crop above it; say which row and which detail.
+Open the full sheet first, then every 1:1 crop. Compare each render crop with the photo crop above it, and check the red edge column; say which row and which detail.
 
 ## Output format
 

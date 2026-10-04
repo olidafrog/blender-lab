@@ -1,0 +1,97 @@
+# Reviewer brief — apartment-model, round three: the sofa
+
+You are an adversarial furniture modeller and product photographer. Judge one review sheet against the brief and the reference photos. Be specific and hard to please. Do not be kind; a generous score wastes a round.
+
+## The brief
+
+The user's real flat (a converted 1909 brick factory loft in London) is modelled in Blender; the shell, the brick and the floor are finished. This round models **one piece of furniture**: the user's sofa, a **Swyft Model 03 three-seater in "Pumice"** fabric, with its matching **ottoman** pushed against the window-end seat as a chaise. The goal is photoreal: at room distance and at 1:1, the render's sofa should read as the same object as in the user's photos, at the same size and in the same place.
+
+## What you are looking at
+
+The render is a review sheet. Each row is one camera, fitted to one of the user's photos. Rows from top to bottom are **photos 1, 2, 3**. Per row:
+- left: the user's photo,
+- middle: the render from the fitted camera,
+- then four 1:1 details: **top pair photo crops, bottom pair render crops at the same pixels**. Row 1: the two room-end seats | the ottoman. Row 2: the near arm and seat | the back blocks and the ottoman (far). Row 3: seat and arm | seat front.
+- right column (rows 1 and 2): the same two photo crops with the **model's edges drawn in red**. Use it to judge size and position: a red outline that misses the photo's sofa edge is a shape or placement error. Row 3 has no overlay: the sofa sits in the extreme corner of that 14 mm photo, where its fitted camera misses even the measured radiator by about 100 px. In row 3, a sofa that sits higher or larger than in the photo is the camera, not the model; judge row 3 for shape and fabric only.
+
+Compare each render crop with the photo crop directly above it.
+
+## References
+
+Read the photos before you look at the render: `references/1.jpeg`, `2.jpeg`, `3.jpeg` (the user's own, 2026-10-03) and the Swyft product photos in `references/furniture/sofa/` (studio shots of the same model and fabric: front, three-quarter, close-ups of the arm, the seat, the feet and the back).
+
+## Research findings
+
+- **Construction (Swyft product pages and photos):** five modules in a row: arm | seat | seat | seat | arm. Overall 254 × 92 × 71 cm. Seats 70 cm wide; the arm 22 cm wide and 56 cm high. Each seat module is a base block with a domed top (seat height 45 cm) and a separate back block (about 23 cm thick, top at 71 cm) on its rear. The seat blocks stand about 14 cm proud of the arms' front faces. The ottoman is 70 × 70 × 45 cm.
+- **Edges:** every block edge carries a **self-fabric flange** about 1 cm wide (not piping): a thin wavy lip, same fabric, that catches light as a pale line, with pinched ears at the corners. The faces are softly puffed between the flanges.
+- **Feet:** short dark round feet (2–4 cm), set in from the corners; a dark shadow gap under every block.
+- **Fabric "Pumice":** Swyft "Linen" (73 % polyester, 27 % cotton), a matte, slubby plain weave with tonal flecks; a warm greige (swatch about sRGB 183, 176, 166). Not shiny; a soft sheen at grazing angles.
+- The loose cushions, throws, the cat and items on the sofa in the photos are not part of this round: their absence is not a fault. The coffee table, rug and other furniture are still grey blocks: out of scope.
+- The photos are warm-balanced (iPhone). Judge the fabric's value and hue **relative to the white walls in the same image**.
+
+## Numeric targets
+
+Measured with the same regions in photo and render (the builder reports them; check them by eye):
+- Fabric-to-paint luma, photo 1 (paint: the west wall above the sofa): seat tops 1.24, ottoman top 1.28, ottoman front 0.74, back block front 0.89.
+- Fabric-to-paint luma, photo 3: seat top 1.16, arm inner face 1.39.
+- Shape: the red model edges should sit on the photo's sofa edges within about 1 % of the frame width (20 px at 2048).
+
+## What to judge
+
+1. **Shape and proportion** (35 %): module sizes, heights (seat, arm, back), the seats proud of the arms, the domed tops and puffed faces, rounded edges, the ottoman's size; the overall silhouette.
+2. **Placement** (15 %): position and orientation in the room, against the red edge overlay.
+3. **Construction detail** (20 %): the flanges, the gaps between modules, the feet and the shadow gap, corner ears, wrinkles and softness where fabric is sat on or pulled.
+4. **Fabric** (30 %): colour and value relative to the walls, the woven slub texture at 1:1 (scale and contrast), sheen, how light falls across the puffed faces.
+
+## Sub-scores
+
+Shape 35 %, Placement 15 %, Detail 20 %, Fabric 30 %. Give each out of 10, and the weighted total as the score.
+
+## Calibration
+
+- 4 = grey boxes in the right place.
+- 5 = a generic CG sofa; the right idea, wrong object.
+- 7 = good; clearly this sofa, visible differences side by side at 1:1.
+- 8.5 = ship it; at 1:1 the render crops could pass for the photo, only small differences remain.
+Use one decimal place.
+
+## Pairwise (round 2 on)
+
+If the file list below includes a pair folder (P.png and Q.png, in random order: the new sheet and the previous reviewed one), say which is closer to the references and why, in two lines, before scoring. Use it to judge direction, not to set the score.
+
+## How to look
+
+Open the full sheet first, then every 1:1 crop. Compare each render crop with the photo crop above it, and check the red edge column; say which row and which detail.
+
+## Output format
+
+Write exactly these sections to the review file you are given, in under 450 words:
+
+1. **Score:** N.N / 10 (with the four sub-scores; the pairwise answer, if given a pair)
+2. **Targets** — each numeric target: your estimate, hit or missed.
+3. **What works** — up to 3 bullets.
+4. **Problems, ranked** — at most 3, most damaging first. For each: which row and detail, what is wrong (direction and rough size), and a concrete fix.
+5. **Research check** — does the image agree with the research findings above? Name any claim the image contradicts.
+6. **What 8.5 needs** — the shortest list of changes that would get there.
+
+
+Render: /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/renders/v19.png
+Crops:
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/reviews/crops_v19/v19_crop_2572_1158.png
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/reviews/crops_v19/v19_crop_2572_1932.png
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/reviews/crops_v19/v19_crop_2572_384.png
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/reviews/crops_v19/v19_crop_3346_384.png
+References:
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/references/1.jpeg
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/references/2.jpeg
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/references/3.jpeg
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/references/4.jpeg
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/references/5.jpeg
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/references/6.jpeg
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/references/7.jpeg
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/references/8.jpeg
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/references/annotated floorplan.png
+- /Users/oliingram/GitHub/blender-lab/experiments/apartment-model/references/floorplans.pdf
+
+Use only the files listed here and the measurement script the brief names. Do not open any other file in the repository: no earlier reviews, progress notes, build scripts or snapshots.
+Write your review to `/Users/oliingram/GitHub/blender-lab/experiments/apartment-model/reviews/review_v19.md`.

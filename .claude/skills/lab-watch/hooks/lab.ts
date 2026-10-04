@@ -36,6 +36,15 @@ export const parseTarget = (brief: string): number | null => {
   return n ? Number(n[1]) : null
 }
 
+// A long-running experiment works in rounds, each with its own reviewer brief: PROGRESS.md
+// heads one "## Round three: the sofa (from v19)". Scores compare only within a round, so the
+// rules read only the reviews from the newest round's first version on (all of them when none).
+export const roundStart = (progress: string): number => {
+  const all = [...progress.matchAll(/^##\s*Round\b[^\n]*\(from v(\d+)\)/gim)]
+  const last = all[all.length - 1]
+  return last ? Number(last[1]) : 0
+}
+
 // review-render logs "Fork: <old mechanism> → <new>" in PROGRESS.md.
 export const isForked = (progress: string) => /Fork:\s*\S[^\n]*→/.test(progress)
 

@@ -26,3 +26,6 @@ See [API changes](api-changes.md) for how the compositor differs between 4.4 and
 - A displacement that magnifies near a mask edge (a stretch that samples closer to a line) magnifies the edge's 1 px anti-aliased seam into a stripe. Clamp the sample to ≥ 2 px from the edge. `eclipse-glow`
 - To fade a reflection as the object lifts, with no keyframes: multiply it by the object's coverage within N px above the line, blurred down over the reflection. Each column fades on its own. `eclipse-glow`
 - Glare on many small lights: Streaks at about 0.02 and Bloom at about 0.1. Stronger, distant lights merge into one blur. Source: [Blender Guru, Backrooms](https://www.youtube.com/watch?v=kBsVJSETydU)
+
+- A compositor File Output (a raw EXR) runs on every render, including Workbench overlay passes rendered after the beauty: the saved "raw" was a grey studio pass. Turn `scene.render.use_compositing` off for helper passes. `5.x` `apartment-model`
+- A 2× render's multilayer EXR is ~100 MB, over GitHub's limit. Blender 5.2 bundles OpenImageIO: re-encode as half float with `dwaa:45` (100 → ~1 MB, same pixel stats). `5.x` `mac`

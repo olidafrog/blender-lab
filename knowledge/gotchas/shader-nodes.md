@@ -61,3 +61,10 @@
 - Wave Texture BANDS period is 2π / (20 · Scale) coordinate units: Scale = 0.3142 / spacing in metres (Scale 10 = 31 mm, not 100). `5.2` `apartment-model` (floor agent)
 - Herringbone without textures: in plank-width cells (i, j) of axes rotated 45°, c = (i − j) mod 2n (FLOORED_MODULO); c < n is a plank along p with origin cell (i − c, j), else along q with origin (i, j − (2n − c) + 1). Verified to tile for n = 4, 5, 6; the staircase (spine) runs along p + q. `apartment-model` `scripts/mat_kit.py`
 - No UVs on generated walls and floors: Object coordinates work for colour and bump, but tangent-space normal maps need UVs. Use the scan's height or roughness map through Bump instead. `apartment-model`
+
+## Fabric at room distance
+
+- Size texture features to the pixel footprint, not the thread: at 3–4 m with a 14 mm phone lens a pixel is ~4 mm, so a 1 mm weave and 1.5 mm slubs average to flat paint ("painted MDF"). What reads is ~5 mm × 1.5–3 cm slub streaks along the weft and a per-3 mm tone fleck; 3 cm streaks at high contrast read as "brushed felt". `apartment-model`
+- A material from the real thing: a flat, evenly lit patch of the maker's close-up, high-passed (divide by a 30 px blur), made seamless (half offset, sine-window blend), tile size from its FFT weave period; colour stays a measured input. Keep such a texture with the experiment (not CC0). `apartment-model`
+- Principled Sheen on a light fabric moves nothing measurable: 0.5 → 1.0, roughness 0.3–0.7 changed fabric/paint ratios by ≤ 0.03. `5.x` `apartment-model`
+- The Attribute node's float output is `Fac` (not `Fact`). `5.x`

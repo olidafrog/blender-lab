@@ -11,3 +11,7 @@
 - Find a veil or wash with one-light-at-a-time renders at 25% scale and 64 samples (~3 s each). Two runs found what several rounds of tuning had not. Also toggle one material input (milk 0, frost 0) to see which path carries it. `opal-essence`
 - Edit `build.py` with `str.replace` plus `assert count == 1`, or `sed` over a line range. A slice splice whose end marker also matched earlier in the file duplicated half the script. Snapshot `build.py` with each reviewed version so you can diff it. `opal-essence`
 - Profile the geometry before tuning the look: `tools/mesh_profile.py` prints top-surface height along a line from a build.py in seconds. In `wax-seal-chaos` it found a field 0.46 mm below the die and a 0.2 mm dip ring, after two renders had been misread.
+
+- Check every measuring region on both images. A photo-2 box half on a 0.48 m stand-in block in the render (the real table is a thin top on legs) drove three rounds of "missed levels" (`apartment-model`, advisor).
+- After a scripted edit (`sed -i`, string replace), grep the key and check its value before rendering: two silent misses (comment spacing) rendered a version with the wrong back-block shape (`apartment-model` v22).
+- Placing an object from photo corners: draw the projected model box on the photo first, then pick points; corner pixels read from gridded crops were wrong twice (a slanted edge read as a corner).

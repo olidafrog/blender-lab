@@ -12,7 +12,7 @@ Pointers only. Each script's docstring has its usage. Run Blender scripts throug
 | `assets/cache/` | The aligned scan (`scan.npz`), made on first use by `scan_tools.py` | no |
 | `assets/scan_views/` | Plan slices, sections and elevations of the scan with a metric grid (`scan_views.py`, `scan_render.py`) | no |
 | `assets/grid/` | The photos with a pixel grid, for reading landmark pixels (`grid_photos.py`) | no |
-| `assets/mat/` | Photo crops and photos rectified onto the floor and window wall | yes (not `.npy`) |
+| `assets/mat/` | Photo crops, photos rectified onto the floor and window wall, and `pumice_weave.png` (the sofa's weave, cut from Swyft's close-up) | yes (not `.npy`) |
 | `assets/joint_fit.json` | The last joint fit of dimensions and cameras | yes |
 | `renders/` | Every render and review sheet | no |
 | `reviews/` | Reviewer briefs, prompts, reviews, crops, blind pairs, calibrations | yes |
@@ -25,7 +25,9 @@ Pointers only. Each script's docstring has its usage. Run Blender scripts throug
 |---|---|
 | `build.py` | **The entry point.** Builds the whole scene from `P`, renders the chosen views, saves the `.blend` |
 | `shell_kit.py` | Geometry helpers in metres: boxes, walls with holes, prisms, lofted rings, arches, glazing bars |
-| `mat_kit.py` | The `Brick` and `Oak_Floor` group nodes |
+| `mat_kit.py` | The `Brick`, `Oak_Floor` and `Sofa_Fabric` group nodes |
+| `furniture/upholstery.py` | Upholstered blocks: rounded, puffed boxes with seam flanges and deformation fields (sag, roll, tuck, ripples) |
+| `furniture/sofa.py` | The sofa and ottoman from `P`'s `sofa_*` keys |
 | `review_sheet.py` | Makes the review image `renders/vNN.png` from the per-view renders. `mat` mode for material rounds |
 | `mat_measure.py` | Brick and floor luma relative to the white paint, photo against render |
 | `rectify.py` | Projects a photo onto the floor or window wall through its camera, to measure patterns in metres |
@@ -46,6 +48,8 @@ Pointers only. Each script's docstring has its usage. Run Blender scripts throug
 | How big is a pattern (planks, bricks, tiles)? | `rectify.py`, then read the gridded output |
 | Is a material's brightness right? | `mat_measure.py` (add regions for new surfaces) |
 | A/B two values | `tools/sweep.sh` (shell loops around `--set` are blocked) |
+| Where does a piece of furniture stand? | Draw its box corners through the fitted cameras onto the photos, then fit to corner pixels (round three: the ottoman) |
+| Is the render as crisp as the photo? | `tools/sharpness.py <photo> <render>`; render `--scale 2 --finish` |
 | Bring tweaks made in the `.blend` back | `/sync-tweaks` |
 
 ## Shared lab tools used here

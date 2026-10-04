@@ -94,6 +94,40 @@ Cameras: `assets/cams/<n>.json` "refined" (loc, rot_deg XYZ, lens at sensor 34.6
 - The bond (garden wall vs English) and the course height to ±5 mm need a close, square-on photo of the brick.
 - The floor's true colour under neutral light (a photo with a white card would settle it).
 
+## Round three: the sofa (2026-10-04)
+
+**Read of the reference** (photos 1, 2, 3 at 1:1; Swyft product photos in `references/furniture/sofa/`; the scan's height map and sections):
+- A Swyft Model 03 three-seater in Pumice: five modules in a row, arm | seat | seat | seat | arm, 254 × 92 × 71 cm. Each seat module is a base block with a domed top (crown 45 cm, front seam ~40 cm) and a separate back block (~23 cm thick, top 71 cm) on its rear. The arms are 22 cm wide, 56 cm high, and stand about 14 cm behind the seat fronts (scan: arm front y −1.84, seat front −1.70; product three-quarter shot).
+- Every block edge carries a ~1 cm self-fabric **flange**, not piping (Swyft's designer interview; product close-ups). It catches light as a pale line in photos 1 and 3, with pinched ears at the corners.
+- Short dark round feet (~3.5 cm) and a dark shadow gap under every block.
+- The ottoman (70 × 70 × 45) stands in front of the window-end seat as a chaise. The scan has it by the central pier (the `Pouf` block): it was moved between the scan and the photos.
+- Fabric: Swyft "Linen" Pumice, 73 % polyester / 27 % cotton, a matte slubby plain weave with tonal flecks; warm greige. Swatch thumbnail sRGB (183, 176, 166).
+- In the photos the fabric is a touch cooler than the white paint (R/B 1.04–1.11 against the paint's 1.13–1.17) and close to it in value: lit tops 1.16–1.42 × the paint, vertical faces 0.46–0.89 ×.
+- The loose cushions, throws and the cat are not part of this round.
+
+**Swyft drawings** (`references/furniture/sofa/drawings/`, from the product pages and the 2020 spec sheet; third Sonnet agent):
+- Seat: front seam 39 cm, dome crown 45 cm; seat depth 69 cm in front of the back block; the seat front bows forward 2–3 cm.
+- Back block: a wedge, ~21–23 cm thick at the seat and ~11–12.5 cm at the top, its front raked and bowed; the top bows ~3 cm above its side edges (crown 71).
+- Arm: 80 cm deep, flush at the back, so its front sits ~12 cm behind the seat front; 20–22 cm wide.
+- Ottoman: 70 × 70, edge 39, crown 45, sides bowing 1.8–3.5 cm.
+- Feet: turned dark wood pucks ~7 cm across, 4 cm tall, outer edge ~3 cm in from the module edge; modules ~5 mm apart when unclipped.
+
+**Most likely process:** a factory-made modular sofa photographed in the room under the same overcast window light as the shell. Every dimension is published; only the placement and the fabric under this light come from the user's photos.
+
+**Techniques to use**
+- Geometry from code (`scripts/furniture/upholstery.py`): each block is a lattice packed toward its edges, pushed onto a rounded box (r 2.5 cm), and each face puffed along its normal by a cushion profile (1 − |2t − 1|ⁿ)², zero at the seams; the seat dome only over the exposed seat. A flange strip (solidified, subdivided, with a slow wave) stands out of every seam along its 45° direction. Dimensions in `P` (`sofa_*`).
+- Placement: the room-end arm and the seat seams from the scan (x −0.87, seams −1.79 / −2.49), the seat front from the scan sections (y −1.70); depth 0.92 from Swyft (the scan bridges the gap to the wall behind). The ottoman from 8 corner pixels in photos 1 and 2 through the fitted cameras: centre (−3.03, −1.33), 11 px rms.
+
+**Rejected approaches**
+- The scan's depth (1.17 m): the LiDAR mesh fills the 25 cm behind the sofa back to the wall.
+- Piping (a round cord on each seam): the product has a flat flange.
+- Camera 3 for placement: in its bottom-right corner it misses the measured radiator by ~100 px.
+
+**Numeric targets** (`scripts/mat_measure.py vNN --sofa`, regions in photos 1 and 2; fabric luma / paint luma):
+- Photo 1: seat top 1.24, back block front 0.89, ottoman top 1.42, ottoman front 0.78.
+- Photo 2: seat top 0.92, seat front 0.46, arm front 0.59.
+- Shape: the model edges within ~20 px of the photo's sofa edges in photos 1 and 2.
+
 ## Sources
 
 - Polycam floor plan pipeline: https://poly.cam/blog/how-we-turn-raw-spatial-data-into-a-floor-plan-you-can-build-from-inside-polycams-floor-plan-pipeline
@@ -107,3 +141,6 @@ Cameras: `assets/cams/<n>.json` "refined" (loc, rot_deg XYZ, lens at sensor 34.6
 - Pages that failed: learn.poly.cam (403), historicengland.org.uk (403), several Rightmove pages (410), YouTube.
 - Round two (materials): https://physicallybased.info ; https://api.polyhaven.com ; https://en.wikipedia.org/wiki/Brickwork ; https://en.wikipedia.org/wiki/London_stock_brick ; https://www.buildingconservation.com/books/bcd2022/85/ ; https://www.designingbuildings.co.uk/wiki/Brick_sizes ; https://blenderartists.org/t/randomizing-brick-texture/1356217 ; https://blenderartists.org/t/should-bump-node-distance-ever-really-be-higher-than-0-001/1418023 ; https://blenderartists.org/t/how-to-make-a-herringbone-map-quick-written-tutorial/1255109 ; https://google.github.io/filament/notes/material_properties.html ; https://www.alpinefloor.com/news/which-direction-should-you-lay-herringbone-flooring.html ; https://www.meister.com/en/inspiration/Herringbone-a-classic-laying-pattern-for-parquet-flooring.html ; https://trade.ukflooringdirect.co.uk/products/karndean-art-select-glacier-oak-gluedown-herringbone-lvt
 - Round two failed: poliigon old English bond (403), projects.blender.org issue 83184 (403), Karndean brochure PDF (certificate), floorwarehouse and flooringsurgeons (403). No Stack Exchange or shadertoy herringbone source found.
+- Round three (sofa): https://swyfthome.com/products/model-03-3-seater-pumice ; https://swyfthome.com/products/model-03-ottoman-pumice ; https://swyfthome.com/products/model-03-left-arm-module-pumice ; https://swyfthome.com/blogs/lifestyle/sofa-dimensions-and-measuring-guide ; https://swyfthome.com/blogs/lifestyle/model-03-an-interview-with-the-designer ; https://swyfthome.com/cdn/shop/files/Pumice.jpg ; Costco UK item 533038 ; afternoah.com Model 03 pages (Wayback).
+- Round three, drawings: cdn.shopify.com/s/files/1/0875/6599/2271/files/MODEL-03-*-linedrawing*.png ; cdn.shopify.com/s/files/1/0052/8770/6673/files/MODEL_03_COMPOSITIONS_VF1.pdf ; Swyft assembly video ; Ideal Home and Real Homes owner photos.
+- Round three failed: afternoah.com live pages (404), cuckooland (timeout, 429), John Lewis footstool page (404); no Reddit or YouTube reviews found.

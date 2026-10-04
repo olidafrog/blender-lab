@@ -64,3 +64,11 @@ Learned on `apartment-model` (the user's flat: a Polycam scan plus 8 iPhone phot
 - LiDAR rounds every edge by 5–15 cm and fills small steps. Coves, pilaster heads, reveal splays and frame depths come from the photos, checked against the scan's transitions. The scan read a 0.20 m pilaster (photos: 0.10) and no step at the wall tops (photos: a cove that meets the ceiling about 5 cm in). `apartment-model`
 - Window reveals can splay asymmetrically: here toward the central pier. Symmetric splays fitted the head-on photo and missed the oblique ones by 24 px. An oblique view is the test for reveal geometry. `apartment-model`
 - Model only what the user wants kept, and ask what a moving part is. Six rounds treated open secondary glazing as factory casements. `apartment-model`
+
+## Upholstery (sofas, cushions, ottomans)
+
+- Under soft, even interior light a puffed face barely shades (a 4° slope gives no gradient); the width of the edge roll is what reads as a cushion. 2.5 cm read as "flat slabs" for four rounds, 5.5 cm as "bolsters and loaves"; 4.5 cm on seats, 3 cm on arms and backs worked. `apartment-model` round three
+- A sat-in dip can silently cancel a dome: a 3 cm Gaussian sag left 3.7 of a 6 cm crown. Check puff and sag with a mesh profile (`tools/mesh_profile.py`), not by eye. `apartment-model`
+- Build blocks from code: an edge-packed lattice on a rounded box, faces puffed to zero at the seams, then one deformation field (sag, front roll, tuck under the overhang, ripples) applied to the block and to its seam flange alike, so the flange stays on the seam (`experiments/apartment-model/scripts/furniture/upholstery.py`). Cloth with pressure was not needed.
+- A front face that stays too bright under window light leans under the seat's overhang in reality; tuck its foot back 3–4 cm (photo 2 front/paint 0.80 → 0.60, photo 0.48). Darker surroundings did not fix it. `apartment-model`
+- For a bought piece, the maker's dimension drawings beat photo estimates: they corrected the seat (39 seam / 45 crown), back blocks and arm depth four rounds in. A LiDAR scan bridges the gap behind furniture to the wall (depth read 1.17 m against 0.92). `apartment-model`
